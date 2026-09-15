@@ -26,10 +26,13 @@ export async function applyHardening(root: string, plan: HardenPlan, opts: { dry
   const wrote: string[] = [];
 
   let settings: SettingsJson = {};
-  try {
-    settings = JSON.parse(await fs.readFile(settingsPath, "utf8"));
-  } catch {
-    settings = {};
+  const raw = await fs.readFile(settingsPath, "utf8").catch(() => null);
+  if (raw !== null) {
+    try {
+      settings = JSON.parse(raw);
+    } catch (e) {
+      throw new Error(`${settingsPath} is not valid JSON (${(e as Error).message}); fix it before hardening so nothing gets overwritten`);
+    }
   }
   settings.permissions ??= {};
   settings.permissions.deny ??= [];
@@ -37,15 +40,24 @@ export async function applyHardening(root: string, plan: HardenPlan, opts: { dry
   settings.permissions.deny.push(...addedDeny);
 
   settings.hooks ??= {};
-  settings.hooks.PreToolUse ??= [];
-  const already = settings.hooks.PreToolUse.some((g) => g.hooks?.some((h) => h.command === HOOK_CMD));
   let hookRegistered = false;
-  if (!already) {
-    settings.hooks.PreToolUse.push({
-      matcher: "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|WebFetch",
-      hooks: [{ type: "command", command: HOOK_CMD, timeout: 10 }],
-    });
-    hookRegistered = true;
+  for (const event of ["PreToolUse", "PostToolUse"] as const) {
+    settings.hooks[event] ??= [];
+    const already = settings.hooks[event]!.some((g) => g.hooks?.some((h) => h.command === HOOK_CMD));
+    if (!already) {
+      settings.hooks[event]!.push({
+        matcher: event === "PreToolUse" ? "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|WebFetch" : "Bash",
+        hooks: [{ type: "command", command: HOOK_CMD, timeout: 10 }],
+      });
+      hookRegistered = true;
+    }
+  }
+  // The hook and its policy must not be editable by the agent it constrains.
+  for (const d of ["Edit(.claude/hooks/**)", "Edit(.claude/settings.json)", "Edit(.claude/settings.local.json)"]) {
+    if (!settings.permissions.deny.includes(d)) {
+      settings.permissions.deny.push(d);
+      addedDeny.push(d);
+    }
   }
 
   if (!opts.dryRun) {

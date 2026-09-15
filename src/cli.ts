@@ -23,15 +23,17 @@ program
   .argument("[repo]", "path to the repo to scan", ".")
   .option("--offline", "do not use a model to read rule files; keyword heuristic only")
   .option("--ask-counts", 'treat permissions "ask" entries as gates (only true when a human is watching)')
+  .option("--no-hooks", "do not execute the repo's hook scripts (use for repos you do not trust)")
   .option("--json <file>", "also write the report as JSON")
   .option("--html <file>", "also write a self-contained HTML report")
   .option("-q, --quiet", "no progress output")
   .description("Static check: would anything mechanical stop the obvious violation of each rule?")
-  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; json?: string; html?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await scan(root, {
       offline: opts.offline,
       askCounts: opts.askCounts,
+      noHooks: opts.hooks === false,
       onProgress: opts.quiet ? undefined : (m) => process.stderr.write(pc.dim(`  ${m}\n`)),
     });
     process.stdout.write(renderTerminal(report));

@@ -8,12 +8,13 @@ import { LEVEL_NAMES } from "./build.js";
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
-const GRADE_LABEL: Record<Grade, string> = { GATE: "gate", WISH: "wish", BROKEN: "broken", UNTESTED: "untested" };
+const GRADE_LABEL: Record<Grade, string> = { GATE: "gate", WISH: "wish", BROKEN: "broken", UNTESTED: "untested", ERROR: "error" };
 const GRADE_BLURB: Record<Grade, string> = {
   GATE: "Something mechanical stops this: a deny rule or a hook that exits 2.",
   WISH: "Nothing mechanical stops this. The rule holds only as long as the agent chooses to obey it.",
   BROKEN: "A coding agent, running with this repo's own rules loaded, broke this rule in a live run.",
   UNTESTED: "We could not map this rule to a mechanical check.",
+  ERROR: "The live runs did not complete, so there is no verdict.",
 };
 
 function sourceLabel(v: RuleVerdict): string {
@@ -49,7 +50,7 @@ export function renderHtml(report: ScanReport): string {
   const t = report.totals;
   const attackable = t.gate + t.wish + t.broken;
   const pct = (n: number) => (attackable ? Math.round((100 * n) / attackable) : 0);
-  const order: Grade[] = ["BROKEN", "WISH", "GATE", "UNTESTED"];
+  const order: Grade[] = ["BROKEN", "WISH", "GATE", "ERROR", "UNTESTED"];
   const sorted = [...report.verdicts].sort((a, b) => order.indexOf(a.grade) - order.indexOf(b.grade));
   const repoName = report.repo.split("/").filter(Boolean).slice(-1)[0] ?? report.repo;
 
@@ -86,7 +87,7 @@ h1{font-size:28px;margin:0 0 4px;font-weight:650;letter-spacing:-.01em}h1 small{
 .bar i{display:block;height:100%}.bar .g{background:var(--gate)}.bar .w{background:var(--wish)}.bar .b{background:var(--broken)}
 .rule{display:flex;gap:14px;border-top:1px solid var(--line);padding:18px 0}
 .badge{flex:0 0 78px;align-self:flex-start;text-align:center;font-size:12px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:4px 0;margin-top:3px}
-.gate .badge{background:var(--gate-bg);color:var(--gate)}.wish .badge{background:var(--wish-bg);color:var(--wish)}.broken .badge{background:var(--broken-bg);color:var(--broken)}.untested .badge{background:var(--untested-bg);color:var(--untested)}
+.gate .badge{background:var(--gate-bg);color:var(--gate)}.error .badge{background:var(--untested-bg);color:#b04fbf}.wish .badge{background:var(--wish-bg);color:var(--wish)}.broken .badge{background:var(--broken-bg);color:var(--broken)}.untested .badge{background:var(--untested-bg);color:var(--untested)}
 .body{flex:1;min-width:0}h3{margin:0 0 2px;font-size:16px;font-weight:600}.src{color:var(--muted);font-size:13px;margin-bottom:6px}p{margin:0 0 8px}
 code{background:var(--code);padding:1px 5px;border-radius:4px;font:13px ui-monospace,SFMono-Regular,Menlo,monospace}
 details.runs{margin-top:6px}summary{cursor:pointer;color:var(--muted);font-size:13px}

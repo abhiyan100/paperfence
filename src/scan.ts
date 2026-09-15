@@ -10,6 +10,7 @@ export interface ScanOptions {
   offline?: boolean;
   model?: string;
   askCounts?: boolean;
+  noHooks?: boolean;
   onProgress?: (msg: string) => void;
 }
 
@@ -22,6 +23,6 @@ export async function collectRules(root: string, opts: ScanOptions = {}): Promis
 
 export async function scan(root: string, opts: ScanOptions = {}): Promise<ScanReport> {
   const { cfg, rules } = await collectRules(root, opts);
-  const statics = await staticProbe(cfg, rules, { askCounts: opts.askCounts, onProgress: opts.onProgress });
+  const statics = await staticProbe(cfg, rules, { askCounts: opts.askCounts, noHooks: opts.noHooks, onProgress: opts.onProgress });
   return buildReport(cfg.root, rules, statics, [], "static");
 }

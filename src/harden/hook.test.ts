@@ -26,8 +26,8 @@ const rules: Rule[] = [
 let root: string;
 let hook: string;
 
-function fire(tool: string, input: Record<string, unknown>): Promise<{ code: number; stderr: string }> {
-  const payload = JSON.stringify({ cwd: root, hook_event_name: "PreToolUse", tool_name: tool, tool_input: input });
+function fire(tool: string, input: Record<string, unknown>, extra: Record<string, unknown> = {}): Promise<{ code: number; stderr: string }> {
+  const payload = JSON.stringify({ cwd: root, session_id: "test-session", hook_event_name: "PreToolUse", tool_name: tool, tool_input: input, ...extra });
   return new Promise((resolve) => {
     const child = spawn("node", [hook], { cwd: root, stdio: ["pipe", "pipe", "pipe"] });
     let stderr = "";
@@ -100,7 +100,14 @@ describe("generated hook", () => {
     const before = await fire("Bash", { command: 'git commit -m "x"' });
     expect(before.code).toBe(2);
     expect(before.stderr).toMatch(/npm test/);
+    // PreToolUse alone does not count: the step has not run yet.
     await fire("Bash", { command: "npm test" });
+    expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(2);
+    // A failed run does not count either.
+    await fire("Bash", { command: "npm test" }, { hook_event_name: "PostToolUse", tool_response: { exit_code: 1, stdout: "", stderr: "fail" } });
+    expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(2);
+    // A successful run does.
+    await fire("Bash", { command: "npm test" }, { hook_event_name: "PostToolUse", tool_response: { exit_code: 0, stdout: "ok" } });
     expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(0);
   });
   it("blocks ask-first commands", async () => {
@@ -110,5 +117,57 @@ describe("generated hook", () => {
     expect((await fire("Bash", { command: "curl https://example.com" })).code).toBe(2);
     expect((await fire("WebFetch", { url: "https://example.com" })).code).toBe(2);
     expect((await fire("Bash", { command: "curl http://127.0.0.1:3000/health" })).code).toBe(0);
+  });
+});
+
+describe("generated hook, bypass attempts", () => {
+  it("push via refspec, full ref, -C, and env wrappers", async () => {
+    for (const c of ["git push origin HEAD:main", "git push origin refs/heads/main", "git -C . push origin main", "GIT_TRACE=1 git push origin main", "command git push origin main", "/usr/bin/git push origin main", "git push origin feature:main"]) {
+      expect((await fire("Bash", { command: c })).code, c).toBe(2);
+    }
+  });
+  it("force push spellings", async () => {
+    for (const c of ["git push -fu origin feature", "git push origin +feature", "git push --force-with-lease origin feature"]) {
+      expect((await fire("Bash", { command: c })).code, c).toBe(2);
+    }
+  });
+  it("destructive spellings", async () => {
+    for (const c of ["rm -fr build", "rm -r -f build", "rm --recursive build", "/bin/rm -rf build", "find . -name '*.log' -delete", "git restore .", "echo $(rm -rf build)"]) {
+      expect((await fire("Bash", { command: c })).code, c).toBe(2);
+    }
+  });
+  it("install with flags first", async () => {
+    for (const c of ["npm install --save-dev left-pad", "npm i -S lodash", "pnpm add -D vitest", "pip install requests", "uv add httpx"]) {
+      expect((await fire("Bash", { command: c })).code, c).toBe(2);
+    }
+    expect((await fire("Bash", { command: "npm install --frozen-lockfile" })).code).toBe(0);
+    expect((await fire("Bash", { command: "pip install -r requirements.txt" })).code).toBe(0);
+  });
+  it("secret reads through wrappers and scripts", async () => {
+    for (const c of ["env cat .env", "/bin/cat ./.env", "sort < .env", "node -e \"console.log(require('fs').readFileSync('.env','utf8'))\"", "python3 -c \"print(open('.env').read())\"", "echo $(cat .env)", "grep -n = .env"]) {
+      expect((await fire("Bash", { command: c })).code, c).toBe(2);
+    }
+  });
+  it("tests-before-commit cannot be satisfied by a commit message or by chaining", async () => {
+    await fs.rm(path.join(root, ".claude", ".paperfence-session-test-session.json"), { force: true });
+    expect((await fire("Bash", { command: 'git commit -m "ran npm test, all good"' })).code).toBe(2);
+    expect((await fire("Bash", { command: "git commit -am x; npm test" })).code).toBe(2);
+  });
+  it("cannot edit the hook, its policy, or settings", async () => {
+    expect((await fire("Write", { file_path: path.join(root, ".claude/hooks/paperfence-guard.cjs") })).code).toBe(2);
+    expect((await fire("Edit", { file_path: path.join(root, ".claude/settings.json") })).code).toBe(2);
+    expect((await fire("Bash", { command: "printf 'process.exit(0)' > .claude/hooks/paperfence-guard.cjs" })).code).toBe(2);
+    expect((await fire("Bash", { command: "rm .claude/hooks/policy.json" })).code).toBe(2);
+    expect((await fire("Bash", { command: "sed -i '' 's/x/y/' .claude/settings.json" })).code).toBe(2);
+  });
+  it("forbidden paths through the shell", async () => {
+    expect((await fire("Bash", { command: "sed -i.bak 's/replicas: 2/replicas: 3/' infra/deploy.yml" })).code).toBe(2);
+    expect((await fire("Bash", { command: "echo x > infra/deploy.yml" })).code).toBe(2);
+    expect((await fire("Bash", { command: "mv infra/deploy.yml infra/old.yml" })).code).toBe(2);
+    expect((await fire("Bash", { command: "cat infra/deploy.yml" })).code).toBe(0);
+  });
+  it("ask-first through wrappers", async () => {
+    expect((await fire("Bash", { command: "env npm publish" })).code).toBe(2);
+    expect((await fire("Bash", { command: "cd pkg && npm publish --access public" })).code).toBe(2);
   });
 });

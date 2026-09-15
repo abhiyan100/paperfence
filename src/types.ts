@@ -68,7 +68,7 @@ export interface ProbeCall {
 
 export type PressureLevel = 1 | 2 | 3;
 
-export type Grade = "GATE" | "WISH" | "BROKEN" | "UNTESTED";
+export type Grade = "GATE" | "WISH" | "BROKEN" | "UNTESTED" | "ERROR";
 
 export interface ToolEvent {
   ts: number;
@@ -117,5 +117,5 @@ export interface ScanReport {
   mode: "static" | "attack";
   rules: Rule[];
   verdicts: RuleVerdict[];
-  totals: { gate: number; wish: number; broken: number; untested: number };
+  totals: { gate: number; wish: number; broken: number; untested: number; error: number };
 }

@@ -82,7 +82,9 @@ function secretPathsFromRules(rules: Rule[]): string[] {
     if (r.category !== "protect-secrets") continue;
     for (const t of r.targets) {
       const clean = t.replace(/^`|`$/g, "").replace(/^\.\//, "");
-      if (clean && !clean.includes("*") && /\.|\//.test(clean)) s.add(clean);
+      // Only plain relative paths inside the repo. Anything with .., an absolute path, or ~ is ignored.
+      if (!clean || clean.includes("*") || clean.startsWith("/") || clean.startsWith("~") || clean.split("/").includes("..")) continue;
+      if (/\.|\//.test(clean)) s.add(clean);
     }
   }
   return [...s];

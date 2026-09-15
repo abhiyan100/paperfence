@@ -1,0 +1,6632 @@
+[
+  {
+    "repo": "mindfold-ai/Trellis",
+    "stars": 14639,
+    "description": "The best agent harness.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "iflytek/astron-agent",
+    "stars": 9015,
+    "description": "Enterprise-grade, commercial-friendly agentic workflow platform for building next-generation SuperAgents.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "evrone/go-clean-template",
+    "stars": 7682,
+    "description": "Clean Architecture template for Golang services",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jrnl-org/jrnl",
+    "stars": 7318,
+    "description": "Collect your thoughts and notes without leaving the command line.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "synthetic-sciences/openscience",
+    "stars": 3583,
+    "description": "The open-source AI workbench for scientific research",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "afragen/git-updater",
+    "stars": 3321,
+    "description": "This WP plugin will update GitHub, Bitbucket, GitLab, and Gitea hosted plugins and themes",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "CrossPaste/crosspaste-desktop",
+    "stars": 2561,
+    "description": "Cross-device clipboard sync for macOS, Windows & Linux — end-to-end encrypted, LAN-only, no cloud. OCR, CLI and MCP server built in.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "siriwatknp/mui-treasury",
+    "stars": 2441,
+    "description": "A collection of ready-to-use components based on Material-UI",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jbetancur/react-data-table-component",
+    "stars": 2232,
+    "description": "A responsive table library with built-in sorting, pagination, selection, expandable rows, and customizable styling.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "kzahel/web-server-chrome",
+    "stars": 1288,
+    "description": "200 OK Web Server",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MadAppGang/claudish",
+    "stars": 989,
+    "description": "Claude Code. Any Model. The most powerful AI coding agent now speaks every language.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "fedimint/fedimint",
+    "stars": 696,
+    "description": "Federated E-Cash Mint",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "modery/PowerDocu",
+    "stars": 646,
+    "description": "Generate technical documentation from your existing Power Platform solutions, including Flows, apps, agents, Dataverse tables, and more",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "pktgen/Pktgen-DPDK",
+    "stars": 496,
+    "description": "DPDK based packet generator",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "umputun/cc-thingz",
+    "stars": 472,
+    "description": "various things for claude code",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ai-driven-dev/framework",
+    "stars": 468,
+    "description": "Marketplace Framework AI-Driven Dev : Context Engineering, Plugins, Agents, Skills, Hooks, Templates, SDLC",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zamesin/Next-Move-Theory-Canon-and-Skills",
+    "stars": 372,
+    "description": "Claude Code skills for product market research, value props, PRDs, and go-to-market — plus the open Next Move Theory (based on AJTBD) canon and a product advisor you can /ask-nmt",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MGeurts/genealogy",
+    "stars": 359,
+    "description": "Genealogy is a free and open-source family tree PHP application to record family members and their relationships, build with LARAVEL 13.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "puikinsh/kiaalap",
+    "stars": 327,
+    "description": "Free admin dashboard template focused on education, online course and school management. Build using Bootstrap 5 and Vite 7",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "generalui/s3p",
+    "stars": 323,
+    "description": "list/copy/sync/compare S3 buckets 5x-50x faster than aws-cli",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "SCTY-Inc/mirofish-cli",
+    "stars": 310,
+    "description": "Multi-agent AI prediction engine - digital sandbox for scenario simulation (fork of 666ghj/MiroFish)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TornLux/UnrealBridge",
+    "stars": 302,
+    "description": "Typed control surface for Unreal Engine that lets AI agents introspect assets, author Blueprints/AnimBPs,   and edit levels — with reactive events and undoable writes.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nkarasiak/qgis-mcp",
+    "stars": 300,
+    "description": "Connect QGIS to AI agent through the Model Context Protocol (MCP)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tom-doerr/dotfiles",
+    "stars": 280,
+    "description": "Contains my configuration files",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "haddocking/haddock3",
+    "stars": 272,
+    "description": "Official repo of the modular BioExcel version of HADDOCK",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "narnia-sh/layrr",
+    "stars": 266,
+    "description": "A browser coding agent interface for selecting elements and sending instructions directly to Claude Code.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "semos-labs/attyx",
+    "stars": 240,
+    "description": "GPU accelerated terminal for agentic workflows",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lexler/skill-factory",
+    "stars": 234,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GeiserX/Telegram-Archive",
+    "stars": 205,
+    "description": "Own your Telegram history. Automated, incremental backups with a local web viewer that feels just like the real app. Docker-ready and supports public chat sharing",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vunguyentuan/vscode-css-variables",
+    "stars": 191,
+    "description": "CSS variables autocomplete for vscode",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "rust-dd/stochastic-rs",
+    "stars": 183,
+    "description": "High-performance quantitative finance in Rust — 120+ stochastic processes, option pricing, calibration, fixed income, risk & copulas, with SIMD/GPU acceleration and Python bindings.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "getredash/contrib-helm-chart",
+    "stars": 173,
+    "description": "Community maintained Redash Helm Chart",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "workersio/skills",
+    "stars": 170,
+    "description": "Agent skills to find and fix software bugs",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jacopone/antigravity-nix",
+    "stars": 164,
+    "description": "Auto-updating Nix package for Google Antigravity agentic IDE. Updates 3x/week. FHS environment with overlay support for NixOS/Home Manager.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Shpigford/studio",
+    "stars": 160,
+    "description": "A suite of random, mostly weird, generative art tools!",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "mwangli/stock-trading",
+    "stars": 147,
+    "description": "AI小模型股票自动交易系统后端项目，使用DL4J框架实现LSTM模型实现股票价格预测和自动化股票交易，后端技术栈包含springboot，mysql，MongoDB，quartZ，k8s, mybatis-plus, webSocket, OCR文字识别等技术框架",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gaopengbin/cesium-mcp",
+    "stars": 136,
+    "description": "Protocol-agnostic CesiumJS AI control runtime for MCP, WebMCP, function calling, and browser agents.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bloxbean/cardano-client-lib",
+    "stars": 133,
+    "description": "Cardano client library in Java",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "exa-labs/exa-js",
+    "stars": 130,
+    "description": "The Official Exa Javascript SDK",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Trystan-SA/rproc",
+    "stars": 124,
+    "description": " A Linux resource & process monitor inspired by Windows 11's Task Manager. Written in Rust with Slint",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "napjon/krisk",
+    "stars": 118,
+    "description": "Statistical Interactive Visualization with pandas+Jupyter integration on top of Echarts.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "quarkiverse/quarkus-flow",
+    "stars": 116,
+    "description": "Workflow Runtime Engine based on the Open Workflow Specification (CNCF Sandbox project) for Agentic Workflows",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "NaverPayDev/pie",
+    "stars": 115,
+    "description": "Project for managing packages produced by the naverpay frontend team",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Endle/fireSeqSearch",
+    "stars": 108,
+    "description": "When using search engine, it would also search local logseq notebook",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "PaulBratslavsky/astro-strapi-example-project",
+    "stars": 103,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "1amageek/SwiftAgent",
+    "stars": 103,
+    "description": "  A type-safe, declarative AI agent framework for Swift. Build composable AI pipelines with Steps, Agents, structured           outputs, and tool integration. Features FIFO session management, MCP support, and distributed actor communication. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "samuelloranger/labby",
+    "stars": 93,
+    "description": "Self-hosted homelab dashboard: Widgets, live Docker stats, and real-time SSE updates. Built with Svelte + Bun.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "khrnchn/sedekah-je",
+    "stars": 93,
+    "description": "qr code directory of malaysian mosques, suraus, and islamic institutions.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Corvidae-Coding-Projects/OpenClaudia",
+    "stars": 93,
+    "description": "Open Source Agentic Coding Harness",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dioptx/mcp-atom-of-thoughts",
+    "stars": 90,
+    "description": "MCP server for structured AI reasoning — decompose problems into atomic thoughts with dependency graphs, confidence tracking, and interactive D3.js visualization",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "openMF/kmp-project-template",
+    "stars": 87,
+    "description": "The Kotlin Multiplatform Multi-module Template generator simplifies cross-platform development by enabling shared business logic and UI components across Android, iOS, Desktop, and Web, while retaining native platform functionality.",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "HDFGroup/hdf5-json",
+    "stars": 81,
+    "description": "Specification and tools for representing HDF5 in JSON",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "mateonunez/website",
+    "stars": 80,
+    "description": "Personal website and blog made with Next.js and Tailwind. Fully SEO friendly, OpenGraph first, Spotify and GitHub integration, custom terminal, and more.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ahtavarasmus/lightfriend",
+    "stars": 78,
+    "description": "The first verifiably private cloud AI assistant. Runs in AWS Nitro Enclave with hardware attestation - nobody can access user data, not even the developer. Bridges WhatsApp, Telegram, Signal, email to SMS for dumbphone users.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ardriveapp/ardrive-web",
+    "stars": 74,
+    "description": "A permanent home for your files, sites and apps, built on Arweave.",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "drakulavich/kesha-voice-kit",
+    "stars": 73,
+    "description": "Give your tools a voice — speech to text and back, 25 languages, up to ~19× faster than Whisper. On your machine.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "reactiveui/ReactiveUI.SourceGenerators",
+    "stars": 71,
+    "description": "Use source generators to generate objects. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Aurealibe/claude-config",
+    "stars": 67,
+    "description": "Comprehensive Claude Code framework: 6 specialized agents, 7 workflow commands, audio notifications - stack agnostic",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alperhankendi/Ctxo",
+    "stars": 67,
+    "description": "MCP server for AI coding agents. Instead of reading files one by one, your agent gets dependency graphs, git intent, blast radius, and change health in a single call. Works with any language deep analysis for TypeScript,Java, Go, and C#.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jordanhindo/beadboard",
+    "stars": 66,
+    "description": "Multi-agent orchestration and communication system built on Beads.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "charyou/SoraVault",
+    "stars": 65,
+    "description": "Free Chrome extension to bulk export and backup your OpenAI Sora library. Download V1 images, V2 videos (Profile & Drafts), and Liked content in original quality, saving prompts and JSON metadata as sidecars. 100% local, no telemetry.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "altasoft/DomainPrimitives",
+    "stars": 63,
+    "description": "C# Domain Primitives generator",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "microsoft/Agent365-devTools",
+    "stars": 61,
+    "description": "The Microsoft Agent 365 DevTools CLI is a command-line interface tool designed to streamline the development, deployment, and management of Microsoft Agent 365 applications.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mlennie/hermes-mcp",
+    "stars": 61,
+    "description": " MCP server that lets any llm (i.e. Claude Desktop) delegate tasks to a local Hermes Agent — cron jobs, web search, email, documents, and more.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tjdrhs90/flutter-flame-harness",
+    "stars": 60,
+    "description": "Idea-to-store harness for Flutter/Flame games",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sandudorogan/tmux-pane-tree",
+    "stars": 60,
+    "description": "┣nteractive tmux pane tree with live agent badges and Vim-style navigation.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "harvie256/midi-commander-custom",
+    "stars": 60,
+    "description": "Custom Firmware for the MeloAudio Midi Commander",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "axeII/home-ops",
+    "stars": 59,
+    "description": "A repository for HomeOps where I perform Infrastructure as Code (IaC) and GitOps practices.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "confluentinc/agent-skills",
+    "stars": 58,
+    "description": "AI agent skills for stream processing and event streaming",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "yahiafarghaly/PrettyOS",
+    "stars": 53,
+    "description": "A Preemptive Hard Real Time kernel for embedded devices.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "radekamirko/C.R.I.S.P",
+    "stars": 52,
+    "description": " CRISP — The missing layer between vibe coding and building something people actually want. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "2ue/ccman",
+    "stars": 52,
+    "description": "一个管理Claude Code + Codex API+GEMINI CLI + OPENCODE服务商配置的工具",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "marc-shade/Ollama-Workbench",
+    "stars": 50,
+    "description": "A comprehensive platform for managing, testing, and leveraging Ollama AI models with advanced features for customization, workflow automation, and collaborative development.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jhaizhou-ops/pinrule",
+    "stars": 47,
+    "description": "Universal AI behavior rule framework — pin your 5-10 rules so AI doesn't drift in long tasks. Dev-scenario preset built in; switch to any scenario in one line. Claude / Codex / Cursor / Hermes. Zero LLM, zero network, zero deps.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jrquick17/ionic4-auto-complete",
+    "stars": 47,
+    "description": "An auto complete compatible with Ionic 2+ and Angular 2+.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "zepdb/zeppelin",
+    "stars": 46,
+    "description": "Open-source, S3-native vector and full-text search engine. Fast, cheap, self-hostable.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SoftOboros/rlvgl",
+    "stars": 46,
+    "description": "A pure rusts port of LVGL for embedded use",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "darkroomengineering/cc-settings",
+    "stars": 45,
+    "description": "Claude Code configuration — agents, skills, hooks & settings for Darkroom Engineering",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "en-dash-consulting/html-in-canvas-dot-dev",
+    "stars": 42,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "badlogic/vs-claude",
+    "stars": 41,
+    "description": "VS Code extension and MCP server so Claude Code can open files, diffs and manipulate VS Code in other ways.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nirholas/universal-crypto-mcp",
+    "stars": 41,
+    "description": "Universal MCP server for AI agents to interact with any* blockchain via natural language and plugins. Supports swaps, bridges, gas, staking, lending, and more across Ethereum, Arbitrum, Base, Polygon, BSC, and testnets. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cenconq25/claude-code-app-studio",
+    "stars": 41,
+    "description": "A coordinated team of 53 Claude Code subagents that build, ship, and operate mobile apps end to end. Each agent owns a narrow slice of the lifecycle so that responsibility, expertise, and review checkpoints stay separated and observable.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nostrord/nostrord",
+    "stars": 41,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "techsenger/shellfx",
+    "stars": 39,
+    "description": "Techsenger ShellFX  – A platform for building JavaFX applications using an extended MVP pattern.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "seastan/ringsdb",
+    "stars": 39,
+    "description": "RingsDB code base",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "geneontology/go-annotation",
+    "stars": 38,
+    "description": "This repository hosts the tracker for issues pertaining to GO annotations.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "nikomatsakis/babysteps",
+    "stars": 38,
+    "description": "Babysteps blog",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "f-o-o-g-s/nokkvi",
+    "stars": 38,
+    "description": "A rust based navidrome client for linux built using iced-rs",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "airwaylab-app/airwaylab",
+    "stars": 38,
+    "description": "Free, open-source airway analysis for ResMed CPAP/BiPAP data",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "eiskrenkov/fino",
+    "stars": 37,
+    "description": "Plug & play distributed settings engine for Ruby and Rails",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ericrosenberg1/CityBot2",
+    "stars": 37,
+    "description": "Bot to Share News and Relevant Information for a City or Geographic Area",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alfred1994/alpha-pilot",
+    "stars": 37,
+    "description": "AI 驾驶的自愈式 A 股模拟盘交易赛车 · Self-healing paper-trading race car driven by AI agents",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "BeardedBear/beardify",
+    "stars": 36,
+    "description": "Experimental Spotify client, with album catalog feature",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "replikativ/dvergr",
+    "stars": 35,
+    "description": "FRP-based LLM agent framework with git-like memory model.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chetstriker/LLMtary",
+    "stars": 35,
+    "description": "Autonomous AI-powered penetration testing platform. LLM-driven recon, vulnerability analysis, and exploit validation for internal & external targets. Supports local AI (Ollama, LM Studio) and cloud models (Claude, GPT-4, Gemini). Linux · macOS · Windows",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "manhinhang/futu-opend-docker",
+    "stars": 34,
+    "description": "lightweight futu opend docker",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "janderswag/docuchat.app",
+    "stars": 33,
+    "description": "Private, self-hosted document chat for attorneys: parse legal PDFs and query them with local open-source LLMs (Ollama) + verifiable page citations. One-click desktop app at docuchat.app.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jaccen/AIRoute",
+    "stars": 33,
+    "description": "面向国内合规增强的 AI 网关",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "FigmaAI/KleverDesktop",
+    "stars": 33,
+    "description": "AI-Powered UI/UX Auto Research for Android & Web",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "slntopp/nocloud",
+    "stars": 33,
+    "description": "Cloud-native Open-Source Cloud Management Framework",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "espiria/samoyed",
+    "stars": 32,
+    "description": "A minimalist Rust-based alternative to Husky",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "clintcan/macrdp",
+    "stars": 32,
+    "description": "A native RDP server for macOS, written in Rust on top of IronRDP. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gonsolo/Borg",
+    "stars": 32,
+    "description": "Foundational workflow for an open-source GPU",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Krilliac/SparkEngine",
+    "stars": 31,
+    "description": "A free, open-source C++23 3D game engine for FPS and beyond — DirectX 12, Vulkan, Jolt Physics, ECS, ImGui editor, AngelScript scripting",
+    "defaultBranch": "Working"
+  },
+  {
+    "repo": "vichannnnn/holy-grail",
+    "stars": 30,
+    "description": "Holy Grail is an online open-content collaborative depository web application for students in Singapore to share notes and resources for educative purpose. ",
+    "defaultBranch": "staging"
+  },
+  {
+    "repo": "perminder-klair/locca",
+    "stars": 30,
+    "description": "A TUI around llama.cpp for running, managing, and benchmarking local GGUF models and launching the pi coding agent against your local server.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "danielsebesta/encrypt",
+    "stars": 28,
+    "description": "Your privacy is just a click away.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "greystoke1337/localized-air-traffic-tracker",
+    "stars": 28,
+    "description": "Quick project to see what aircrafts are landing to SYD airport",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "URML-MARS/URML",
+    "stars": 27,
+    "description": "The specification, reference runtimes, validator, LLM bridge, and conformance suite for URML — an open language for robot intent.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cfongai/higgsfield-content-pipeline",
+    "stars": 26,
+    "description": "Claude Code + Higgsfield as an automated video production studio: 19 skills, prompting playbook, agent operating manual, and real shipped production prompts",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lincc-frameworks/nested-pandas",
+    "stars": 26,
+    "description": "Efficient Pandas representation for nested associated datasets.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "oozoofrog/mcp-baepsae",
+    "stars": 26,
+    "description": "MCP server with direct iOS simulator implementation",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "FEZtool-team/FEZrs",
+    "stars": 25,
+    "description": "FEZrs is an advanced Python library developed by FEZtool for remote sensing applications. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sadopc/magnetism",
+    "stars": 25,
+    "description": "Free, open-source macOS window manager. Keyboard shortcuts, drag-to-edge snapping, multi-display support. A native Swift alternative to Magnet.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "compiler-explorer/compiler-workflows",
+    "stars": 25,
+    "description": "Workflows to build daily and ad hoc compilers for Compiler Explorer",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "johanzander/bess-manager",
+    "stars": 23,
+    "description": "Home Assistant add-on for managing Solar Inverter & Battery Systems",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hadithmv/hadithmv.github.io",
+    "stars": 23,
+    "description": "The Maldivian Platform for Translations of the Sunnah | ސުންނަތުގެ ތަރުޖަމާ މަންސަ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "skyf0xx/Pebble",
+    "stars": 22,
+    "description": "A Hermes UI",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "intrafind/ihub-apps",
+    "stars": 22,
+    "description": "iHub is a secure, open-source AI application suite that empowers organizations to perform creative and general tasks with generative AI - directly within their protected corporate environment, in the cloud or on their local machine.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "J-D-3/density-clustering",
+    "stars": 22,
+    "description": "An algorithm for finding density-based clusters in spatial data.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "rvigo/cl",
+    "stars": 21,
+    "description": "Group your commands and aliases in a nice place",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "a3lem/replink",
+    "stars": 21,
+    "description": "A handy CLI for executing code in a REPL in a separate pane",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "patrick-motard/dotfiles",
+    "stars": 20,
+    "description": "My dotfiles",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "NetraRuntime/sam3.c",
+    "stars": 20,
+    "description": "Efficient SAM3 (Segment Anything Model 3) inference from scratch in pure C — Metal GPU + multithreaded CPU, no Python dependencies",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "m2b3/CanViT-PyTorch",
+    "stars": 19,
+    "description": "Reference implementation of the Canvas Vision Transformer (CanViT) from the paper \"CanViT: Toward Active-Vision Foundation Models\"",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "devdacian/touchstone",
+    "stars": 19,
+    "description": "A lightweight, automated multi-model process for rapid agent-skill improvement with adversarial cross-model review.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MohamedAbdallah-14/prompt-to-asset",
+    "stars": 19,
+    "description": "MCP server + CLI for production-grade software assets (logos, app icons, favicons, OG, illustrations) — routes across 30+ image models, zero-key first, validates before shipping.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zw3rk/hyper-linux",
+    "stars": 18,
+    "description": "hl — Run aarch64-linux ELF binaries on macOS Apple Silicon via Hypervisor.framework",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "pixelcave/tailkit-starter-kit-laravel",
+    "stars": 18,
+    "description": "Laravel Starter Kit for using Tailkit UI components out of the box in your project.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Glorktelligence/Claude-AI-Export-Renderer",
+    "stars": 18,
+    "description": "HTML / JS tool that renders Claude AI Conversations export for ease of navigation",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "riwsky/iosef",
+    "stars": 18,
+    "description": "a CLI and MCP server for iOS Simulator automation, designed for agents",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "short-pixel-optimizer/shortpixel-image-optimiser",
+    "stars": 18,
+    "description": "ShortPixel Image Optimizer WordPress Plugin",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "TheAndrewStaker/mcp-midi-control",
+    "stars": 17,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dilee/zen-dev-toolkit",
+    "stars": 17,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "wboayue/fusion-ahrs",
+    "stars": 17,
+    "description": "Fusion AHRS is a sensor fusion library for Inertial Measurement Units (IMUs), optimized for embedded systems.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "brundonsmith/website",
+    "stars": 17,
+    "description": "My personal website/blog",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "GeiserX/genieacs-mcp",
+    "stars": 16,
+    "description": "MCP Server for GenieACS written in Go",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tominaga-h/jarvis-shell",
+    "stars": 16,
+    "description": "Next Generation AI Integrated Shell inspired by J.A.R.V.I.S. on marvel",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "xxraincandyxx/Amadeus",
+    "stars": 16,
+    "description": "Makise Kurisu",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "smallbunnies/Solverz",
+    "stars": 16,
+    "description": "A simulation modelling language",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "htlin222/ttyd-tmux-cf",
+    "stars": 16,
+    "description": "Deploy a persistent web terminal on macOS with ttyd and tmux, secured by Cloudflare Zero Trust Access — browser-based shell with email OTP auth, nerd fonts from R2 CDN, and Claude Code integration.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kt3k/bulbo",
+    "stars": 16,
+    "description": ":tropical_drink: Generate your static site with gulp plugins!",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mkofler96/KoFEM",
+    "stars": 15,
+    "description": "Open Source Browser-Based FEM Solver",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MaromSv/AutoDesign",
+    "stars": 15,
+    "description": "Nvidia x Whale Hackathon",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dashpay/rust-dashcore",
+    "stars": 15,
+    "description": "Rust dash-core library",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "christopher-buss/bedrock",
+    "stars": 14,
+    "description": "Infrastructure-as-code for Roblox. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jawwad-ali/ai-customer-support-agent",
+    "stars": 13,
+    "description": "AI customer support agent with semantic search — handles Gmail, WhatsApp & web via OpenAI Agents SDK + FastAPI",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ClawVoice/clawvoice",
+    "stars": 13,
+    "description": "Voice calling plugin for OpenClaw — give your AI agent a phone number. Inbound/outbound calls, batch calling campaigns, SMS, post-call transcripts & notifications, ElevenLabs + Deepgram voice engines.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cleaniquecoders/kickoff",
+    "stars": 13,
+    "description": "Allow configure new Laravel project with all required packages and setup.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "flakiness/playwright",
+    "stars": 13,
+    "description": "Official Flakiness.io reporter for Playwright Test",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vincanger/wasp-tweet-dashboard",
+    "stars": 13,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hoangsonww/JWT-Module",
+    "stars": 12,
+    "description": "A standalone JWT authentication service built with Express and TypeScript, providing the full auth lifecycle including registration, login, access/refresh token rotation, account management, and security features like rate limiting, account lockout, and bcrypt password hashing.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "NOAA-GFDL/xwmt",
+    "stars": 12,
+    "description": "Python package for water mass transformation analysis that leverages xarray functionality",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DaveDushi/kolshek",
+    "stars": 12,
+    "description": "CLI tool for tracking finances from Israeli banks and credit cards (כל שקל)",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "onOffice-Web-Org/oo-wp-plugin",
+    "stars": 12,
+    "description": "onOffice for WP-Websites",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "brightbear2026/PPTagent",
+    "stars": 12,
+    "description": "专业级PPT生成Agent — 6层流水线架构，多格式输入，4次人工审核，多国产LLM协同(GLM-4/DeepSeek-R1/Qwen-Max)，真实数据驱动图表，生成咨询公司级演示文稿。React+FastAPI。",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "gradium-ai/xn-ptts",
+    "stars": 12,
+    "description": "Pocket-TTS inference using xn",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "aarora79/personal-knowledge-base",
+    "stars": 12,
+    "description": "LLM-authored knowledge base on Generative AI. Raw sources are clipped and compiled into interlinked wiki articles by Claude Code.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TheLonelyDevil9/discord-pals",
+    "stars": 12,
+    "description": "Discord AI companion with OpenAI-compatible API support",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JZnebel/AutoDemo",
+    "stars": 11,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SchweizerischeBundesbahnen/open-source-polarion-java-repo-template",
+    "stars": 11,
+    "description": "This is a Java repository template for SBB Polarion Team projects",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "trysurface/surface-aeo-geo-engine",
+    "stars": 11,
+    "description": "AEO/GEO content engine built with Claude Code agents and skills",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "amvlab/WebATM",
+    "stars": 10,
+    "description": "Modern web client for the BlueSky Air Traffic Management simulator with a TypeScript frontend using MapLibre GL.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bogggare567/abcTrain",
+    "stars": 10,
+    "description": "Free ear-training plugin suite: nine listening exercises plus a real EQ, compressor and reverb that teach while they process your audio. macOS, Windows, Linux. VST3/AU/Standalone.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "monemone-org/ChromeSideBar",
+    "stars": 10,
+    "description": "ChromeSideBar displays pinned sites, bookmarks and active tabs in a side panel, similar to the Arc browser's sidebar experience.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hasanhawary/starter-backend",
+    "stars": 10,
+    "description": "",
+    "defaultBranch": "dashboard"
+  },
+  {
+    "repo": "livMatS/dtool-lookup-gui",
+    "stars": 9,
+    "description": "Graphical user interface for dtool and dserver written in Python and GTK3.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "oalders/diff-lockfiles",
+    "stars": 9,
+    "description": "Diff all package-lock.json files in a repository",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "darkraise/flashpoint-web",
+    "stars": 9,
+    "description": "Selfhosted flashpoint archive for playing flash and HTML5 game in browser without any additional app",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "hugozhu/dingtalk-opencode-tag",
+    "stars": 9,
+    "description": "openccode tag in dingtalk",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kobaru-io/api-paywall-cookbook",
+    "stars": 8,
+    "description": "The easiest way to monetize APIs using x402 & Kobaru",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "robertoecf/adversarial-review",
+    "stars": 8,
+    "description": "Review triad plugin for Claude Code: prompt optimization, adversarial red-team review, plan validation, and intelligent orchestration.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "IShinji/Nerv",
+    "stars": 8,
+    "description": "🧠 Your personal AI nerve center. One chat interface, a self-evolving team of AI agents, brutal token efficiency. Open source, local-first, channel-agnostic.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "getcatalystiq/agent-plane",
+    "stars": 8,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "v1lling/desk.md",
+    "stars": 8,
+    "description": "Local-first desktop app for managing projects, tasks, docs, and meetings as plain Markdown.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ojuri-io/ojuri",
+    "stars": 8,
+    "description": "Open source, self-hosted, multi-agent fraud detection. Real-time XGBoost decisions, drift-aware retraining, plain-language LLM investigations.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ZenekeZene/second-brain",
+    "stars": 8,
+    "description": "AI-maintained personal wiki. Raw material in, interconnected markdown articles out. Telegram bot, X sync, and scheduled agents for daily compilation, weekly linting, and monthly health checks.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "salaboy/pizza-vibe",
+    "stars": 8,
+    "description": "Vibecoded Pizza App in Go",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dilgerma/node-apps-with-eventsourcing-and-ralph-loop",
+    "stars": 8,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kkmookhey/shasta",
+    "stars": 7,
+    "description": "Shasta — AWS compliance automation platform for SOC 2. AI-native toolkit for founders.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ovr/crabgresql",
+    "stars": 7,
+    "description": "A repository for crabgresql-new",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "decentraland/events",
+    "stars": 7,
+    "description": "This website hosts a dApp used to upload and see what others are organizing inside the Decentraland virtual world.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "PrabhatMattoo/DeskRoute",
+    "stars": 7,
+    "description": "DeskRoute is AI receptionist for appointment-based local businesses - real phone calls via LiveKit, Google Calendar bookings by voice, and an admin dashboard for escalations and call history.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "stfl/doom.d",
+    "stars": 7,
+    "description": "doom-emacs",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "PandaTechAM/be-lib-masstransit-outbox",
+    "stars": 7,
+    "description": "Scalable multi-database transactional outbox and inbox for MassTransit",
+    "defaultBranch": "development"
+  },
+  {
+    "repo": "eisbaw/babymonitor-client",
+    "stars": 7,
+    "description": "Reverse-engineering of the Philips Avent Baby Monitor+ (Tuya IPC camera, SCD921/923) into a Rust client: cloud auth + WebRTC-over-MQTT live A/V stream. Authorized personal project on the owner's own device.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ArEnSc/Chloe",
+    "stars": 7,
+    "description": "Its the Claude Code of email, AI Automated Email Agent that Responds to Emails from a whitelist of contacts",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "eatsjobs/media-mock",
+    "stars": 7,
+    "description": "simulates and mock media devices like webcams in web applications",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SolaceLabs/solace-msg-utility",
+    "stars": 6,
+    "description": "Solace Queue Browser",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "csun/voronoi-go-rs",
+    "stars": 6,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AlmazKo/EpiScope",
+    "stars": 6,
+    "description": "Native macOS control center for Claude Code and Codex — live monitoring, alerts, full-text search, usage analytics and local AI insights",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "little-scale/smsggdj-link-esp32",
+    "stars": 6,
+    "description": "ESP32 firmware: Ableton Link → SMS hardware-sync bridge (XIAO ESP32-C3 → SMSGGDJ tracker SYNC IN)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ivanreeve/upspace",
+    "stars": 6,
+    "description": "The official repository for the capstone project UpSpace: A Marketplace and Management Platform for Coworking Spaces.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SailfinIO/sailfin",
+    "stars": 6,
+    "description": "Self-hosted systems programming langauge with an effect system and compile-time capability enforcement",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "valksor/kvelmo",
+    "stars": 6,
+    "description": "Whether you're a product manager describing a feature, an ops person fixing a process, or a developer automating routine work — kvelmo provides the guardrails to ship changes safely. It coordinates your local AI agent to handle the mechanics while you stay in control of review and approval.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "thomasdavis/omega",
+    "stars": 6,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jasonsoprovich/pq-companion",
+    "stars": 6,
+    "description": "Project Quarm companion app",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joelryan18/stackwith",
+    "stars": 6,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "karuhun-developer/template-laravel-livewire",
+    "stars": 6,
+    "description": "My Starter Kit",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "itsyogesh/relaycode",
+    "stars": 6,
+    "description": "Developer-focused tools and utilities to simplify, build and use Polkadot extrinsics with real-time insights",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "gregjonesio/family-office-ai-skills",
+    "stars": 6,
+    "description": "Reusable AI skills, prompts, and workflow templates for lean family offices, RIAs, and wealth operators. Read-only, human-in-the-loop, non-advisory.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ncipollo/greed",
+    "stars": 5,
+    "description": "A rust tool for automating trades 📈",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "neuromechanist/biosigio",
+    "stars": 5,
+    "description": "A unified interface to convert biosginal data data from various systems to EDF/Zarr/Parquet",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "NazarKalytiuk/tarn",
+    "stars": 5,
+    "description": "CLI-first API testing tool. YAML-defined tests, structured JSON output, built for AI-assisted workflows.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "y0ngha/siglens",
+    "stars": 5,
+    "description": "AI-powered market research for stocks and crypto. Charts, options, news, fundamentals, and macro, ... analysis in Siglens",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "markphelps/sherpa",
+    "stars": 5,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "foyzulkarim/hifz-tester",
+    "stars": 5,
+    "description": "Hifz Tester — a local, single-user web app that listens to your Quran recitation and gives you word-level feedback on exactly where you slipped. It uses a    Quran-fine-tuned Whisper model for transcription and a deterministic alignment engine to compare against the reference text.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "maruthiprithivi/agent_zero",
+    "stars": 5,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MattKilmer/claude-autofix-bot",
+    "stars": 5,
+    "description": "Automated code fixing via Slack → Claude Code CLI → Git PR. Report bugs in Slack, get PRs automatically.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rios0rios0/dev-toolkit",
+    "stars": 5,
+    "description": "Developer toolkit CLI written in Go. Manages Git repositories across multiple providers (GitHub, Azure DevOps, GitLab, Codeberg) with parallel cloning, syncing, project bootstrapping, and language-aware build/test/lint/SAST commands.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "temporal-community/dependency-scout",
+    "stars": 5,
+    "description": "A durable, supply-chain-aware agent that automatically triages Dependabot + Renovate PRs. (Powered by Temporal)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joao-victor-campos/aperture",
+    "stars": 5,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "bajajvinamr/founderos",
+    "stars": 5,
+    "description": "FounderOS — AI company operating system",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AntonioBlago/skillmind",
+    "stars": 5,
+    "description": "Active Skill Listener & Trainer — structured memory layer for AI coding assistants. 6 vector DB backends, 31 MCP tools, YouTube/video learning, auto-sanitizer.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "codeforstartups/prompt-engineering-handson-nitmonk",
+    "stars": 5,
+    "description": "",
+    "defaultBranch": "development"
+  },
+  {
+    "repo": "asalsali/covenant-framework-community",
+    "stars": 5,
+    "description": "A governance framework for multi-agent AI systems. Structure, lifecycle, and quality controls for AI agent orchestration.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vadimpiven/node_reqwest",
+    "stars": 5,
+    "description": "Node.js bindings for reqwest - Rust HTTP client library",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "OptikR/OptikR",
+    "stars": 5,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dcurlewis/ai-context-system",
+    "stars": 5,
+    "description": "Personal knowledge management system powered by Claude Code. Process meetings, Slack threads, and documents into a structured, searchable memory.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "imrasalghul/mailbridge",
+    "stars": 5,
+    "description": "Mailbridge uses Cloudflare Workers to run a mail server behind your LAN.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "currymud/sasha",
+    "stars": 5,
+    "description": "an educational artifact text adventure engine",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jasonraimondi/plan-bender",
+    "stars": 5,
+    "description": "Structured planning pipeline for AI coding agents — interview, PRD, issues, review, implement, archive",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hoangtruong01/HorseTrack",
+    "stars": 5,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "companionintelligence/JustInCase",
+    "stars": 4,
+    "description": "🛟 Just In Case: Offline Emergency Knowledge Search 🛟",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "useekko/ekko-core",
+    "stars": 4,
+    "description": "The Ekko browser extension, the protocol, and the self-hostable key directory. Post-quantum encrypted messages inside the apps you already use. Public alpha.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "atharvavdeo/agent-mem",
+    "stars": 4,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "noorjsdivs/crave",
+    "stars": 4,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Ruzibaev007/nis2-infrastructure-documentation-kit",
+    "stars": 4,
+    "description": "📋 NIS2 Infrastructure Documentation Kit — Network architecture, security baselines, compliance templates. Enterprise IT documentation for German/EU organizations.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TrueSelph/jvspatial",
+    "stars": 4,
+    "description": "JV-SPATIAL is an object-spatial Python library inspired by Jaseci's Object-Spatial paradigm combined with Python's asynchronous programming paradigm for building asynchronous graph-based persistence and processing layers into your Python (AI) application.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "juanvieiraprado99/ng-mapcn",
+    "stars": 4,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GreenButtonAlliance/OpenESPI-GreenButton-Java",
+    "stars": 4,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Unleash/unleash-documentation",
+    "stars": 4,
+    "description": "Documentation for Unleash, the open-source feature management platform  ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ephes/fastdeploy",
+    "stars": 4,
+    "description": "A deployment automation platform with web interface and real-time monitoring",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "radiant-network/radiant-portal-pipeline",
+    "stars": 4,
+    "description": "ETL for radiant portal",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "triathematician/blaisemath",
+    "stars": 4,
+    "description": "Java libraries for visualization and mathematics",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "paapug/hetzner-kube-express",
+    "stars": 4,
+    "description": "A batteries-included, startup-ready Kubernetes platform on Hetzner Cloud driven by Terragrunt.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "obeone/claude-skills",
+    "stars": 4,
+    "description": "🧠 Modular skills for autonomous AI agents. Production-ready Docker & Kubernetes tooling with built-in validators. Install once, use everywhere.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bkhoesie/user_vo",
+    "stars": 4,
+    "description": "Authentication plugin for NextCloud based on https://github.com/nextcloud/user_external",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "faratech/wfdiag",
+    "stars": 4,
+    "description": "Official WindowsForum.com system diagnostic utility. Gathers hardware, event logs, driver states, and crash dumps with optional local Copilot/Phi-Silica analysis.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "grahambates/vscode-puae-debugger",
+    "stars": 4,
+    "description": "VSCode Amiga debugger and profiler",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "eason-dev/csp-kit",
+    "stars": 4,
+    "description": "Modern Content Security Policy (CSP) generator for popular web services and libraries",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "YodasMyDad/ShoutingIguana",
+    "stars": 4,
+    "description": "WPF web crawler and SEO analysis platform",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "thoughtspot/ts-chart-sdk",
+    "stars": 4,
+    "description": "SDK to create your own chart on Thoughtspot",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "braydos-h/BreachPilot",
+    "stars": 4,
+    "description": "Autonomous Offensive Security Agent for Red Team Operations",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "contember/tokens-gone",
+    "stars": 4,
+    "description": "Local dashboard for Claude Code token usage and costs. Reads ~/.claude/projects/**/*.jsonl, aggregates spend, slices interactively.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mrkrstphr/beadee",
+    "stars": 4,
+    "description": "A web GUI for the beads issue tracker",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DobroslavRadosavljevic/hsize",
+    "stars": 4,
+    "description": "The ultimate TypeScript library for human-readable byte formatting and parsing.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "stacksjs/gitit",
+    "stars": 3,
+    "description": "A simple way to download templates stored using git.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "blisspixel/primr",
+    "stars": 3,
+    "description": "Turn any company URL into a strategic intelligence brief. Adaptive scraping + AI-powered research and synthesis.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "andrewevans0102/reygent",
+    "stars": 3,
+    "description": "Agentic coding tool for software development",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "arkavo-org/arkavo-rs",
+    "stars": 3,
+    "description": "Arkavo server for content protection",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "developerz-ai/claude-and-conquer",
+    "stars": 3,
+    "description": "⚔️ Command & Control center for a pool of VPSes + Claude subscriptions — coding at super scale. 1 VPS = 1 team; dispatch /goal missions, merge PRs sequentially with claudetm, verify deploys.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HiepPP/watchtower",
+    "stars": 3,
+    "description": "AI-ready VS Code sidebar for browsing Watchtower LLM plan files from a workspace watchtower directory.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cdot65/prisma-airs-cursor-hooks",
+    "stars": 3,
+    "description": "Cursor Hooks to implement Prisma AIRS scans",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lattifai/captions",
+    "stars": 3,
+    "description": "Captions read and write",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lx-0/llm-wiki",
+    "stars": 3,
+    "description": "Self-cartography engine: Turn your scattered personal data into a queryable Obsidian wiki. You and your agents read from the same surface.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "talkstream/better-model",
+    "stars": 3,
+    "description": "Stop waiting for Opus on every grep — routes 80% of tasks to faster models. Zero dependencies.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "celeryhq/simplified-mcp-server",
+    "stars": 3,
+    "description": "Simplified MCP server",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dinomartino/DSE_ECON_Worksheet-editor",
+    "stars": 3,
+    "description": "Bilingual HKDSE Economics Worksheet Editor — browser-based editor that produces native .docx files with real Word numbering, per-script fonts, and embedded diagrams.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "fqdeng/tank-war-world",
+    "stars": 3,
+    "description": "simple tank world war",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "duckietown/dt-env-developer",
+    "stars": 3,
+    "description": "Pointers to all Duckietown repos - Environment for developers",
+    "defaultBranch": "ente"
+  },
+  {
+    "repo": "alex-schose/qubes-mcp",
+    "stars": 3,
+    "description": "Autonomous AI agents inside a Qubes-isolated sandbox - tag-scoped Admin API access with dom0-mediated trust boundary.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Catastropha/karavan",
+    "stars": 3,
+    "description": "Caravan of agents",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cavi-ai/claude-obsidian",
+    "stars": 3,
+    "description": "Cowork with Claude inside your Obsidian vault — chat, agent mode, sandboxed HTML artifacts, evidence-backed research, and an MCP bridge to Claude Code. Free, MIT, bring your own key.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Joe-Xuu/openquant",
+    "stars": 3,
+    "description": "a modular algorithmic trading system",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "luflow/birthday_widget",
+    "stars": 3,
+    "description": "Birthday Widget for Nextcloud Dashboard",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GlobalArtInc/ecosystem",
+    "stars": 3,
+    "description": "collection of production-ready modules. 50% vibe coded",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Clawdlinux/agentgate",
+    "stars": 3,
+    "description": "Thin API gateway that lets AI agents call SaaS APIs on behalf of users. Agents never see tokens.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vzekc/vzekc-verlosung",
+    "stars": 3,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "miles990/mini-agent",
+    "stars": 3,
+    "description": "The AI agent that sees before it acts — perception-driven, file-based, pluggable personal AI agent framework",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bsmr/claude-cli-status-bar",
+    "stars": 3,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "angelstreet/automai",
+    "stars": 3,
+    "description": "Awesomation SaaS platform",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "uynitsuj/uynitsuj.github.io",
+    "stars": 3,
+    "description": "Justin Yu's portfolio website",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "VirInvictus/opends",
+    "stars": 3,
+    "description": "Open community toolkit + bugfix patches for SSI's *Dark Sun* CRPGs (*Shattered Lands* 1993, *Wake of the Ravager* 1994).",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "svivekvarma/lspforge",
+    "stars": 3,
+    "description": "LSP server manager for AI coding tools (Claude Code, Copilot CLI, Codex)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "El3ssar/TSDynamics",
+    "stars": 3,
+    "description": "TSDynamics: A Python package for defining and simulating continuous and discrete dynamical systems, including time-delay equations and maps. With a user-friendly interface for RHS definitions, it provides tools for numerical analysis and aims to integrate advanced time series analysis tools..",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mixmaxhq/commitlint-jenkins",
+    "stars": 3,
+    "description": "A wrapper for commitlint that determines the appropriate commit range in a Jenkins build",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "OCHA-DAP/hdx-scraper-cod-ab-country",
+    "stars": 3,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GeoffWilson/ToolkitCE",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ParinTF/Bonsai",
+    "stars": 2,
+    "description": "Turn big goals into daily action. Bonsai breaks goals into a tree of milestones and habits, tracks streaks, and uses AI to suggest right-sized weekly steps.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "rchinth2003/HLSHarness",
+    "stars": 2,
+    "description": "Generic HLS agent evaluation harness — pluggable, multi-agent, Azure OpenAI powered",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "aaymane/dalili.study",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cgroening/rs-sparcli",
+    "stars": 2,
+    "description": "Styled CLI output and interactive input widgets for Rust – tables, panels, trees, progress bars, prompts. Built on crossterm.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "VirInvictus/deadbeef-cui",
+    "stars": 2,
+    "description": "Faceted library-browser plugin for the DeaDBeeF music player (foobar2000 Columns UI style), driven by DeaDBeeF's medialib + a scriptable preset system.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mr-creative-hmh/laravel-vue-creative-starter-dashboard-kit",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bsvalues/terrafusion_os_1.0",
+    "stars": 2,
+    "description": "Enterprise-grade government operating system with multi-window management",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jessewheeler/ysh",
+    "stars": 2,
+    "description": "Web application for the Yellowstone Sea Hawkers. Manages memberships, announcements, and community engagement for dedicated Seahawks fans.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mowbraysuburbs/Employee-Leave-Period-Opt",
+    "stars": 2,
+    "description": "South African employees seeking the longest vacation possible using the least amount of annual leave days",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "carlogilmar/Alexandria",
+    "stars": 2,
+    "description": "My personal To-Do list",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "markcallen/env-secrets",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DoctorMozg/orno",
+    "stars": 2,
+    "description": "LLM agents under a runtime-enforced contract for CI pipelines",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "pattobrien/dotfiles",
+    "stars": 2,
+    "description": "Dotfiles for working with Typescript, Go, Dart in Neovim and VSCode.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MoverlyLtd/conveyancing-toolkit",
+    "stars": 2,
+    "description": "AI agent skills for conveyancing — SDLT calculator, title register explainer, diligence tools. Works with OpenClaw, Claude Code, and any MCP-compatible agent platform.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "windysky/switcher-oh-my-opencode-configuration",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nicholasjhenry/dotfiles",
+    "stars": 2,
+    "description": "A set of vim, shell, git, and tmux configuration files.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "thomas-schweich/PAWN",
+    "stars": 2,
+    "description": "Playstyle-Agnostic World-model Network for Chess",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "firstdraft/rspec-enriched_json",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jantman/arch-pkgbuilds",
+    "stars": 2,
+    "description": "My PKGBUILDs for Arch Linux",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "nixfred/nutanix",
+    "stars": 2,
+    "description": "A field guide to Nutanix, written for the people who have to explain it. Cert prep, customer-conversation language, whiteboard-ready diagrams.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "doctawho42/GRAIL",
+    "stars": 2,
+    "description": "Graph neural networks and Rule-based Approach In metaboLism prediction",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Tossrock/lightweaver",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "alycda/DittoXCactus",
+    "stars": 2,
+    "description": "hacking",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kenken64/peekachoo",
+    "stars": 2,
+    "description": "A browser-based territory capture game inspired by the classic arcade game Qix. Players claim territory on a game board to progressively reveal hidden Pokemon images.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gvds/brims",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ornlneutronimaging/HyperCTui",
+    "stars": 2,
+    "description": "User Interface to run svmbir code with AI",
+    "defaultBranch": "next"
+  },
+  {
+    "repo": "kambeitzlab/psyagent",
+    "stars": 2,
+    "description": "psyagent: repository for modelling mental health using generative agents powered by LLMs",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Layerbase-LLC/layerbase-cli",
+    "stars": 2,
+    "description": "Layerbase cloud CLI: secure connect to your managed databases without leaking the connection string",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Aditya26189/controlplane",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "inmobarco/inmobarco_app",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "henrikkvamme/samfundet-medlemskort",
+    "stars": 2,
+    "description": "Print bilde for Samfundets medlemskort",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SaplingLearn/Sapling",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "themeum/framework",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "launchfile/launchfile",
+    "stars": 2,
+    "description": "Dockerfile for deployment — declare what your app needs to run, anywhere",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GabrielVidal1/appe",
+    "stars": 2,
+    "description": "AI Processing Price Estimator",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dave-hillier-co/sturdy-meme",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "KRU-OFFY/Claude-Project-CreatorOS-AI",
+    "stars": 2,
+    "description": "Build CreatorOS AI as a production-ready omnichannel affiliate growth operating system.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MarceloEmmerich/Buford",
+    "stars": 2,
+    "description": "Spec-driven AI development template for Claude Code",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "meflove/nixos-config",
+    "stars": 2,
+    "description": "my try to make nixos config",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Aaronontheweb/AkkaSerializationPoC",
+    "stars": 2,
+    "description": "POC for Akka.NET v1.6 source-generated serialization",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "pezzos/remote-mcp-proxy",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "juanje/complex-system-kb",
+    "stars": 2,
+    "description": "Complex Systems Knowledge Base  A markdown-based knowledge base on complex systems, extracted from Juanje Ojeda's blog (Spanish) and translated into English.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Lucasmind/nodeava-workshop-public",
+    "stars": 2,
+    "description": "Workshop kit: build a local digital human from first principles. Local LLM + STT + TTS + avatar. Cross-platform, offline-first.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "richbodo/launchpad-funding",
+    "stars": 2,
+    "description": "OSS Realtime Funding conference app",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Joint-Photon-Sciences-Institute/xraylarch-mcp",
+    "stars": 2,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ro80t/website",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Darkroom4364/netlens",
+    "stars": 1,
+    "description": "Network tomography toolkit in Go — infer per-link latency, loss, and congestion from edge measurements alone. 9 solvers, RIPE Atlas integration, real ISP topology benchmarks.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "msobczyk-x/overgrowth",
+    "stars": 1,
+    "description": "Reclaim disk space from heavy build artifacts. overgrowth scans a directory tree for node_modules folders (or any directory name you choose), shows them in a fast interactive terminal UI, and moves the ones you pick to the OS trash.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "marrinexyq-droid/JChatMind",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "viftode4/trustchain-js",
+    "stars": 1,
+    "description": "TrustChain TypeScript SDK - zero-dep HTTP client, sidecar management, OpenClaw plugin",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "BentoBoxWorld/TradeWinds",
+    "stars": 1,
+    "description": "A BentoBox game mode of sea trading, smuggling, and piracy",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "typlx/chrome-grammar-fix-extension",
+    "stars": 1,
+    "description": "Typlx Chrome Grammar Fix Extension - Open source grammar checking browser extension",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jefferycutler/my-datahub",
+    "stars": 1,
+    "description": "My personal datahub project that gathers data (ETL's) and pushes the data to different databases ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JamesAwesome/nataliesawacritter.info",
+    "stars": 1,
+    "description": "Wildlife sighting tracker — log critters with photos, custom hand-drawn emoji, a calendar, filterable history, and a Top Critters leaderboard. React 19 + Express PWA with RSS and push notifications.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rahlplx/vibemate",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joshspeagle/frasian_tilting",
+    "stars": 1,
+    "description": "Testing out some ideas for Frequentist-Bayes inference",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "charlescohanlon/adfel_agentic_system",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bitovi/carton-case-management",
+    "stars": 1,
+    "description": "An Open Source Case Management system designed to be maintained with coding agents",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "supermarmar/guides",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "wagamela/repo-swipe",
+    "stars": 1,
+    "description": "Discover real software projects through a Tinder-style swipe experience. Find inspiration, explore what developers are building, and discover your next project.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Savory/docs",
+    "stars": 1,
+    "description": "Danet documentation",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JMU-CS/praxly2",
+    "stars": 1,
+    "description": "An Online IDE for the Praxis CS Test Pseudocode",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Angleito/Robustty",
+    "stars": 1,
+    "description": "Robust Discord Music bot player",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sweetlilmre/PsychoNeurosis",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nvlannasik/devops-ai-agent",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "l0ophole/st_cli",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jamesKhor/Zcybernews",
+    "stars": 1,
+    "description": "Repository for zcybernews site",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AvinashSKaranth/p2p-ai-react-native",
+    "stars": 1,
+    "description": "A React Native App to connect to a P2P AI inference tools",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "lutaml/canon",
+    "stars": 1,
+    "description": "Ruby library and RSpec matchers for canonicalization of XML, YAML and JSON (e.g. for comparison)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "snowyter/animo-planner",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RedQuE3n/EmuSen.LunaP",
+    "stars": 1,
+    "description": "Home of LunaP, an Avalonia toolkit. Pulled from the EmuSen project because it's more than earned it's keep.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "devremoto/angular-translation-extractor",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Maxe2005/API_joueur",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "HarperZ9/bulletin",
+    "stars": 1,
+    "description": "A message board where the accounts belong to AI agents. Ed25519 identity, RFC 9421 signatures on writes, no signup form and no human in the loop.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kyo504/krx-cli",
+    "stars": 1,
+    "description": "CLI & MCP server for KRX (Korea Exchange) Open API — Korean stock market data (KOSPI, KOSDAQ, ETF, bonds, derivatives)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "soren-n/minigun-py",
+    "stars": 1,
+    "description": "A library for property-based testing of Python programs. Please read the documentation to learn more: https://minigun.readthedocs.io/en/latest/",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "samuelivarsson/Budget-App",
+    "stars": 1,
+    "description": "A budget app for iOS",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jrodeiro5/digital_marketing_calculator",
+    "stars": 1,
+    "description": "Standard Digital Marketing Calculator made without love with AI",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "embedconsult/bootstrap-qcow2",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Dhruv-Mishra/AudioControlledAgenticWebsite",
+    "stars": 1,
+    "description": "Sample Audio Controlled Agentic Website for Freight Transportation, extendable to any other website type. Solid Replacement for text chat or customer service calls.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Xiddoc/BeeKeeper",
+    "stars": 1,
+    "description": "Manage the Bee-sy with ease 🐝~",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "tylerstraub/JSlalom2024",
+    "stars": 1,
+    "description": "Restoration of Jet Slalom (JSlalom) by MR C 1997",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tejofjord/thumbwheel",
+    "stars": 1,
+    "description": "Thumb-anchored radial wheel UI for one-handed mobile navigation. SVG sectors, momentum spin, dock-snapping trigger.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Lordporus/wa-leadgen-backend",
+    "stars": 1,
+    "description": "AI-powered WhatsApp lead qualification & CRM automation backend — FastAPI, Gemini AI, Meta Cloud API, Airtable",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "FDDTheLucario/slopgb",
+    "stars": 1,
+    "description": "Cycle-accurate Game Boy / Game Boy Color emulator in Rust",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nexus-ts/nexusts",
+    "stars": 1,
+    "description": "NexusTS - Bun Native Fullstack Framework",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "m-naw/theclientzero-askmycv",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "amaruki/devine",
+    "stars": 1,
+    "description": "Pairs a developer's reading and engagement behavior with a rubber duck pet whose energy, health, seniority level, quests, power-ups, and speech bubbles reflect the user's learning habits.",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "colnio/sampleDB",
+    "stars": 1,
+    "description": "A simple go+postgreSQL app to store the lab samples info",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "oaustegard/claude-workspace-fuse",
+    "stars": 1,
+    "description": "FUSE-backed memory filesystem experiment — mounts Turso memories at /mnt/muninn/ for grep/find/Read access. Forked from claude-workspace.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "republique-vote/republique.vote",
+    "stars": 1,
+    "description": "🗳️ Plateforme de vote en ligne transparente pour les citoyens français. Chaque vote est anonyme, publié publiquement et vérifiable par tous.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "evanfollis/atlas",
+    "stars": 1,
+    "description": "Autonomous scientific-method research loop building a causal graph of validated market claims (pre-registration, walk-forward OOS, code-enforced promotion gate).",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "podCloud/balados",
+    "stars": 1,
+    "description": "Federated podcast ecosystem - parent repo with balados.app (PWA) and balados.sync (server) submodules",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ovhlstudio/ovhl-engine",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dhwanit10/CampusFind",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "halaprix/hermes-beads",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alxxpersonal/exo-teams",
+    "stars": 1,
+    "description": "Go CLI for Microsoft Teams using the internal API. No admin consent, no Graph API, no IT department.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mattpolicastro/nightshift",
+    "stars": 1,
+    "description": "Quota-aware autonomous development daemon with independent review, human merges, and a Paseo attention dashboard",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "asmehra95/VoiceClip",
+    "stars": 1,
+    "description": "**Talk. It types.** One key, zero setup headaches.  VoiceClip turns your voice into text on your Mac — locally, privately, instantly. Hold a key, say what you're thinking, let go. Your words appear wherever your cursor is. No accounts, no cloud, no monthly fees. Just your voice and your Mac's GPU doing the work.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "seanb4t/engram",
+    "stars": 1,
+    "description": "Self-hosted, correctable, OAuth-secured memory for coding agents (MCP)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MadLadSquad/MadLadSquadSite",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Daguilar0123/youtube-transcribe-rebuild",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sgsharma/agent-supervisor",
+    "stars": 1,
+    "description": "Demo Agent",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TheIllusionOfLife/asoview_clone",
+    "stars": 1,
+    "description": "asoview clone built with Google Cloud and its AI features based on publicly observable information.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "IamMikeHelsel/2DG",
+    "stars": 1,
+    "description": "Tech Stack Demo ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sadiquepp/openshift",
+    "stars": 1,
+    "description": "Openshift Artifacts",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dzearing/claude-tips",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gitnlsn/nlsn-services-marketplace",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "venkatas/vikramaditya",
+    "stars": 1,
+    "description": "Autonomous VAPT platform. Give it a target (FQDN, IP, CIDR) — it hunts, it reports. Inspired by the Obsidian Order.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "desduvauchelle/tamias",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "travisdmathis/forge-engine",
+    "stars": 1,
+    "description": "Game engine built with Rust designed from the ground up to build games with AI.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dsebastien/adobe-premiere-chapters-to-youtube-web",
+    "stars": 1,
+    "description": "A web application that converts Adobe Premiere Pro chapter markers to YouTube's chapter timestamp format instantly in your browser. No installation, no command line, no uploads to servers—everything happens client-side.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Jorge-Ivan/uam-hogar-nazareth-web",
+    "stars": 1,
+    "description": "Plataforma web dinámica para la Fundación Hogar del Anciano Nazareth, desarrollada como proyecto de práctica social universitaria.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dermot-r-cochran/swarm",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cameronsjo/agentic-harnesses",
+    "stars": 1,
+    "description": "Source-grounded comparison of the agentic coding harnesses and how each runs its agent loop, with an interactive visualizer live at cameronsjo.github.io/agentic-harnesses",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ethanl814/goat-trading-bot",
+    "stars": 1,
+    "description": "event driven ml trading bot",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "devcansol/applied-data-science-and-analytics",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jefftyoder/larcform1-experiments",
+    "stars": 1,
+    "description": "My experiments using the Larcform1 case implemented in the CliMA software stack.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dadachi/pomosauna-web",
+    "stars": 1,
+    "description": "A calm Pomodoro focus timer — a monk meditates in a sauna, then cools beneath a waterfall. Vanilla JS + Canvas + Web Audio.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dbourdeau/SN_Prediction_Market_demo",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "key/the-space-memory",
+    "stars": 1,
+    "description": "A cross-workspace knowledge search engine built in Rust. Indexes Markdown documents across multiple workspaces and provides hybrid search combining FTS5 full-text search with vector semantic search (ruri-v3-30m, 256-dim).",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jonhill90/Hill90",
+    "stars": 1,
+    "description": "Production-ready Docker-based microservices platform hosted on Hostinger VPS.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "weaKnight/claude-session-manager",
+    "stars": 1,
+    "description": "A self-hosted web tool for browsing, searching, and auditing Claude Code conversation history. 用于浏览、搜索和审计 Claude Code 对话历史的自托管 Web 工具。",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "organvm-iii-ergon/agent--claude-smith",
+    "stars": 1,
+    "description": "Multi-agent orchestration using Claude Agent SDK with subagent spawning, state persistence, and self-correction",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ddaanet/handoff",
+    "stars": 1,
+    "description": "Pre-/clear task snapshot for Claude Code: agent notes current task + open decisions, a Stop hook extracts last-N user prompts and files touched from the session JSONL.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Airn0x/Aion",
+    "stars": 1,
+    "description": "AI-Powered Life Management System",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Whizzo123/Razor",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "silviorodrigues/silviorodrigues.github.io",
+    "stars": 1,
+    "description": "Me, myself and Irene",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "citadelgrad/llm-governance-gateway",
+    "stars": 1,
+    "description": "OpenAI-compatible LLM governance gateway with policy enforcement, PII redaction, tenant-aware routing, rate limiting, and audit logging",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dalmaboros/hallway-party",
+    "stars": 1,
+    "description": "A Rails app for Ruby conference attendees to meet each other based on non-programming hobbies and interests. Let's party! 🥳",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "claryel-company/claryel-boxcore",
+    "stars": 1,
+    "description": "Open NixOS Voice-to-GitOps platform for private AI, Home Assistant integration, hardware-aware edge infrastructure and reproducible local deployments",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "akbar1378ese-blip/bettercallakbar",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "wandercom/cartographer",
+    "stars": 1,
+    "description": "Stack adoption and compatibility tool for Constrain/Pact/Ledger/Arbiter/Baton/Sentinel",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CGMossa/aio-r-internals",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CarlosGRJ/CarlosRojasWeb",
+    "stars": 1,
+    "description": "Carlos Rojas Portfolio ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jchildree/The-Colosseum",
+    "stars": 1,
+    "description": "An application created to allow a single user to create a video game tournament. This includes a google forms, team generators, and bracket management all in one.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MalfiRG/signal-noise",
+    "stars": 1,
+    "description": "Personal technical blog and portfolio - React SPA with Night City (cyberpunk-gold) visual identity.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "masterlf/Skynet-EDR",
+    "stars": 1,
+    "description": "AI-Agent Detection and Response for prompt-injection chains, MCP/tool abuse, secret access, and data-exfiltration attempts.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JW-Flo/AWhittleWandering",
+    "stars": 1,
+    "description": "App to manage 48 state continental drive ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "UMEssen/Volcano-HL7-MLLP-Connector",
+    "stars": 1,
+    "description": "A high-performance HL7 v2 MLLP listener that converts healthcare messages to JSON and publishes them to Apache Kafka.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "narmafraz/ThaqalaynDataGenerator",
+    "stars": 1,
+    "description": "Scripts that generate the files in ThaqalaynData repo that power the Thaqalayn website",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "AyeniTaiwoSPC270/FYpro-v2",
+    "stars": 1,
+    "description": "FYPro ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "salmanwahed/salmanwahed-blog",
+    "stars": 1,
+    "description": "My personal Weblog",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Setono/sylius-tier-pricing-plugin",
+    "stars": 1,
+    "description": "Add tier pricing to your Sylius store",
+    "defaultBranch": "2.x"
+  },
+  {
+    "repo": "Silk-Route-Connect/Ombor.API",
+    "stars": 1,
+    "description": "Central API for Inventory Management System",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "sjgant80-hub/groundlevel",
+    "stars": 1,
+    "description": "ground level ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ugurgul9/image-to-pdf",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "toneruseman/Dharma-RAG",
+    "stars": 1,
+    "description": "Bilingual Buddhist canon RAG: SuttaCentral (EN/RU) + Khuddaka Nikāya, BGE-M3 + Qdrant hybrid retrieval, contextual prefixes, LLM-free passage rotation",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ArcavenAE/forestage",
+    "stars": 1,
+    "description": "Opinionated wrapper for Claude Code with persona theming, configurable defaults, and tmux session management",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "Obra-Studio/obra-autodocs-2",
+    "stars": 1,
+    "description": "Open source version of Obra Autodocs, a plugin to document Figma component sets",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lostcodingsomewhere/dance",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "davidbkhall/davids-fdl-tool",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lemegetonV/learning-playwright-ts-automation-framework",
+    "stars": 1,
+    "description": "Learning-focused Playwright TypeScript automation framework with modular checkpoints, POM, fixtures, reporting, CI, and SauceDemo capstone coverage.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "danieltmbr/tmbr",
+    "stars": 1,
+    "description": "tmbr.me backend and website",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rohandkn/sat-dev",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mani30mk/job-finder-tool",
+    "stars": 1,
+    "description": "Job Search is a personal job aggregator tool that scrapes various job boards and platforms for free.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "danielRicardo/dotfiles",
+    "stars": 1,
+    "description": "My dotfiles",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "mdragosv/Entropia-Nexus",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "kevinleonsmith/nft-marketplace-upgradeable",
+    "stars": 1,
+    "description": "Reference ERC721 contracts (simple, enumerable, royalty) for upgradeable NFT marketplaces built with Foundry",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "roshne/ActionBarMaster",
+    "stars": 1,
+    "description": "Action Bar Master - A WOW Addon",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lukaholota/char",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "blackwell-systems/blog",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "michelecoppi/sit",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Gilles86/tms_risk",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "psyao/aguet.dev",
+    "stars": 1,
+    "description": "Personal one-page portfolio — bilingual (FR/EN) Laravel 13 + Filament 5, terminal aesthetic",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tuanle03/dotfiles",
+    "stars": 1,
+    "description": "A well-organized collection of my personal dotfiles for Neovim, Vim, Tmux, and Zsh — designed to provide a fast, minimal, and consistent development environment across machines.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RuneLind/muninn",
+    "stars": 1,
+    "description": "Personal AI assistant — multi-bot Telegram platform with pluggable AI connectors, semantic memory, goal tracking, scheduled tasks, and proactive watchers",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "agenthands/helix",
+    "stars": 1,
+    "description": "Symbol-level code intelligence for AI coding agents. 41+ MCP tools — go-to-definition, find references, rename, blast-radius, ranked repo maps — backed by real language servers across 52 languages. Persistent daemon keeps caches warm between agent sessions.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Tanay126/agentic-os",
+    "stars": 1,
+    "description": "The Agentic Operating System — a temporal knowledge graph that gives AI agents freshness-scored, authority-weighted, permission-aware knowledge",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GalSened/playwrightTestsClaude",
+    "stars": 1,
+    "description": "WeSign Testing Platform - QA Intelligence with Playwright automation and multi-MCP integration",
+    "defaultBranch": "feat/context-tests-and-bench"
+  },
+  {
+    "repo": "ravn/rc700-gensmedet",
+    "stars": 1,
+    "description": "Reforging complete sources for the Regnecentralen RC702 Piccolo system.  ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sedarged/my-cozy-libary",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "damianeickhoff/Trekker",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "wasp-lang/wasp-bsky-example",
+    "stars": 1,
+    "description": "Example Wasp app with Bsky login",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "delorenj/toWers",
+    "stars": 1,
+    "description": "An all-in-one self-hosted MCP proxy hub and manager",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mseminatore/quartz",
+    "stars": 1,
+    "description": "Quartz is a small (less than 2 KLOC), fast, portable, configurable RTOS written in C.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "qfdk/sshl",
+    "stars": 1,
+    "description": "SSH client with tauri",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bmairlot/netbox-podman",
+    "stars": 1,
+    "description": "Run Netbox with Podman Quadlet files instead of Docker",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "coji/gcp-data-analytics-learning",
+    "stars": 1,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "PaoloBova/animal-cascades",
+    "stars": 1,
+    "description": "Evaluations of how AI agents and AI organisations engage in harm towards animals",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Konnex-Labs/maps-lead-scraper",
+    "stars": 1,
+    "description": "Chrome extension to extract business leads from Google Maps",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "brunogsa/unix-utils",
+    "stars": 0,
+    "description": "General useful programs I use on my Linux.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jfilter/civikitchen",
+    "stars": 0,
+    "description": "Modern Docker-based development environment for CiviCRM",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RasaHQ/studio-docs",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "skyphusion-labs/vivijure-upscale",
+    "stars": 0,
+    "description": "Real-ESRGAN CUDA video upscale finish module for Vivijure on RunPod. Pairs with vivijure-cf or vivijure-local.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "berntpopp/clingen-link",
+    "stars": 0,
+    "description": "MCP server for ClinGen (Clinical Genome Resource): gene–disease validity, dosage sensitivity, clinical actionability, and expert-panel variant pathogenicity (ERepo) — as typed tools for LLM agents.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "andrewaws26/claude-works",
+    "stars": 0,
+    "description": "An MCP server exposing a fit-first, honesty-enforced job-application pipeline as typed tools for LLM agents.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bossjones/boss-ai-monitoring",
+    "stars": 0,
+    "description": "Local-first observability for AI coding agents (Claude Code): cost, per-task timing, tool activity, LangSmith merge",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "absolutezeroo/Hearthbound",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Maximumsoft-Co-LTD/claude-foundation",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RandomBirdLover/beescabr",
+    "stars": 0,
+    "description": "Cabrillo National Monument - Native Bee Monitoring Program",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "eynmim/Live_Transcript",
+    "stars": 0,
+    "description": "It is an personal Transcript run on local PC",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joshsymonds/halmasuit",
+    "stars": 0,
+    "description": "Linux system compositor — hosts niri + DMS to eliminate the greeter→session flash.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gallowaysoftware/stillhouse",
+    "stars": 0,
+    "description": "Open-source distillery management for Canadian craft distillers — grain to bottle to CRA Form B266.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "arcbra/Modrinth-Folder-Test",
+    "stars": 0,
+    "description": "The Modrinth monorepo containing all code which powers Modrinth!",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "thunderbird/sumo-linter",
+    "stars": 0,
+    "description": "Find formatting mistakes and fix them in SUMO Knowledge Base Markup",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "KiloMusician/claude-code-tips",
+    "stars": 0,
+    "description": "Fork sync target for local claude-code-tips workspace changes",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ravirann/luna-health",
+    "stars": 0,
+    "description": "Open-source, self-hostable voice companion with mental-health-aware safety design. Next.js + Pipecat voice pipeline, Apache-2.0.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JaidenDeChon/jaiden.dev",
+    "stars": 0,
+    "description": "Source code for jaiden.dev",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "centuari-labs/backend-v2",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Namainchick/personalWebPage",
+    "stars": 0,
+    "description": "namanh.dev — my portfolio as a desktop OS in the browser (Next.js 16)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "labeveryday/stock-scanner",
+    "stars": 0,
+    "description": "Building my own stock scanners",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "w3bsuki/dr1plo",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MUNEEBAZAM96/Awaz-Khata",
+    "stars": 0,
+    "description": "This a mobile app ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "scttfrdmn/aws-research-train-demo",
+    "stars": 0,
+    "description": "SageMaker training demo: one neutral spine, four domain heads (molecular first), a Go control-plane board, three proxied surfaces.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zumWohl/TicketScribe",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ChristopherJMiller/morning-stretches",
+    "stars": 0,
+    "description": "pwa for morning stretches",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jackparsonsuk/NickPT",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "kinwahlai/paperclip-ansible",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "evaldasguogis/claude-demo",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "v1cferr/credit-radar",
+    "stars": 0,
+    "description": "Personal credit intelligence system for tracking credit scores, debts, credit exposure, market conditions and readiness for major financial decisions in Brazil.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "idosebban-cmd/duel",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "uiuifree/agent-team-builder",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "romakaemeron/genevity",
+    "stars": 0,
+    "description": "Genevity - Medical longevity & aesthetic medicine center website",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hasadna/open-bus-hackathon-26",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "niranjan94/telaio",
+    "stars": 0,
+    "description": "TypeScript-first Fastify 5 framework with a builder pattern and phantom types for compile-time feature safety. ESM-only, Node >= 20.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "boz700908/HuXiangLianPian-Accessibility",
+    "stars": 0,
+    "description": "痴情妹妹纱雪的兄控日记 无障碍Mod",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "alexkapoulas/BiomePruner",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mriffle/parquet-to-tsv",
+    "stars": 0,
+    "description": "Simple Python script and Docker artifact to convert a Parquet to TSV file",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "WhiteTomX/prompt-cloak",
+    "stars": 0,
+    "description": "PromptCloak is an open‑source, client‑side web app that pseudonymizes your LLM inputs in the browser, ensuring sensitive data never leaves your device.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kofimuad/website-builder",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mrnobodyishere10/mirofish-cli",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "msjoshlopez/systems-skills",
+    "stars": 0,
+    "description": "62 proven business frameworks (Toyota, Six Sigma, McKinsey, Lean Startup and more) as guided AI skills for Claude Code.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Strategic-Cowork-Consulting/confidence-routed-extraction",
+    "stars": 0,
+    "description": "AI document field extraction pipeline with confidence-routed human review",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JatinNirwann/seahive",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "production"
+  },
+  {
+    "repo": "IanDirkArmstrong/lumos",
+    "stars": 0,
+    "description": "Windows system tray utility for monitor gamma adjustment. C++ reimplementation of Gamminator with ImGui.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "the-anointed-one/Remindly",
+    "stars": 0,
+    "description": "Auto RVSP system that confirms attendance through voice calls and SMS",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chinthana-w/s-imply",
+    "stars": 0,
+    "description": "Back implication prediction using attention for netlists",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "VE3XYU/flex-viewer",
+    "stars": 0,
+    "description": "Local web UI for watching FLEX paging traffic decoded by multimon-ng in real time.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mmust08/semantic-search-poc",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ISG-kris79/TradingBot",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "EricDenis01/ericdenis",
+    "stars": 0,
+    "description": "Personal portfolio — Eric Denis · AI-augmented PM at the intersection of music and technology · ericdenis.com",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "yassineS/bio_ai_experiment",
+    "stars": 0,
+    "description": "Deploying agents to recode and modernise bioinformatics tools.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mikkokotila/sequencer",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ShaneMcC/notespaste",
+    "stars": 0,
+    "description": "Single-User, Multi-File paste bin for notes",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "sombaner/Technical-Design-Review-Board",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zachallia/asstrology",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "thenerd31/sniff",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "pycabbage/nksf-parser",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "donate-mate/design-tokens",
+    "stars": 0,
+    "description": "Design tokens for DonateMate - syncs with Figma via Tokens Studio",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JHevia70/miningsc",
+    "stars": 0,
+    "description": "Star Citizen mining intelligence platform",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "weiloon1234/Foundry",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sromeroubisos/Grupo-22-Scores",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mynameisgrass/ssarglauncher",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kleeedolinux/codrinth",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "d-j-will/slackex",
+    "stars": 0,
+    "description": "Discord-like chat platform built with Elixir/Phoenix, leveraging BEAM VM and OTP",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jduncan8142/sap_copilot_bridge",
+    "stars": 0,
+    "description": "SAP Copilot Bridge",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "galosandoval/shopfloor",
+    "stars": 0,
+    "description": "Harness for a GitHub-issue-driven SDLC agent loop: spawn Claude Code headlessly to implement an issue as a draft PR, with runaway guards, preflight refusal, and verify-comment posting.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chiply/package-tutor",
+    "stars": 0,
+    "description": "Auto-generate an org-mode tutorial for any Emacs package",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "steeltanuki/sebastian-ai",
+    "stars": 0,
+    "description": "Sebastian — a personal life assistant memory system for Claude Code: journal, habits, expenses and a hierarchical life timeline in plain Markdown",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "christopherhouse/Personal-Developer-Platform",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "saulpatinojr/Work-Cloud_Network_AWS_Appliance",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gregrickaby/type95",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JamesonRGrieve/tofu-proxmox",
+    "stars": 0,
+    "description": "Generic OpenTofu/Terraform provider for the Proxmox family (PVE/PBS/PMG/PDM) over /api2/json — proxmox_object + proxmox_task. AGPL-3.0.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "plagtech/SpraayBatch",
+    "stars": 0,
+    "description": "Batch ERC-20 payments on Base — OpenClaw plugin. Pay up to 200 recipients in one atomic tx with any token. Gasless via CDP Paymaster, non-custodial auto-wallets, per-agent budget caps.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "erhanersoyy/NetWatcher",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Jakmann86/maths-starters",
+    "stars": 0,
+    "description": "An web app that has maths starters for cambridge gcse, random choice etc.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "numbersmembers/colomn-editorial-hub",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bobboyms/storage-engine",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SwapnilNice/Lexicon",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "paullopez-ai/payer-auth-intelligence",
+    "stars": 0,
+    "description": "Payer-side agentic prior authorization decisioning prototype, in-process LangGraph.js StateGraph, LLM-agnostic (Anthropic/Bedrock), AWS CDK. Synthetic data only, no PHI.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joshRpowell/gamechanger",
+    "stars": 0,
+    "description": "Pre-game coaching analytics suite for youth baseball coaches",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "VarunDasharadhi/newsletter-demo",
+    "stars": 0,
+    "description": "AI-powered newsletter pipeline using the WAT framework",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "fencedotdev/packages",
+    "stars": 0,
+    "description": "Shared, versioned schemas — passport, mandate, verify() request/decision",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chrille0313/swiftcut-old",
+    "stars": 0,
+    "description": "Lightweight, performant Rust + Tauri video editor for quick clip editing (a fast alternative to ClipChamp)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "FlowRMS/flow-connect-backend",
+    "stars": 0,
+    "description": "FlowConnect Backend API",
+    "defaultBranch": "staging"
+  },
+  {
+    "repo": "aliasghar-me/dukkanify",
+    "stars": 0,
+    "description": "Dukkanify — AI store builder: one sentence becomes a live, editable, Arabic-first storefront. The LLM generates a schema-validated StoreDefinition, never code; a deterministic renderer owns the UI.",
+    "defaultBranch": "prod"
+  },
+  {
+    "repo": "Laevand/libby-full-width",
+    "stars": 0,
+    "description": "Chrome extension that makes Libby magazines fill your entire screen",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "oriolrius/node-red-api-gateway",
+    "stars": 0,
+    "description": "Node-RED nodes for API gateway functionality - custom nodes for building API gateways with Node-RED",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ChristTheKing-ASA/ctk-website",
+    "stars": 0,
+    "description": "Christ the King Anglican Church website - Next.js 16 + Tailwind CSS 4",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dqx-translation-project/dqx-translation-project.github.io",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "smalls257/claude-md-autoresearch",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "autoresearch/2026-05-16"
+  },
+  {
+    "repo": "routsiddharth/cutickets",
+    "stars": 0,
+    "description": "Anonymous, auto-matching ticket marketplace for Columbia & Barnard students — place a bid or ask on any event, crossing orders match automatically, then chat to close the deal. Next.js 15 · Prisma · Postgres.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vivek-dataskate/DabbahWala",
+    "stars": 0,
+    "description": "DabbahWala Marketing System",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kdridi/ticket-system-specs",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dmbwebb/zenbot_v2",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ghb72/livestock",
+    "stars": 0,
+    "description": "Offline-first PWA for livestock management with FastAPI sync, Google Sheets, and Google Drive photo storage.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "shaanyp123/trading-system",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "revans04/srfm",
+    "stars": 0,
+    "description": "Steady Rise Financial Management",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "peligwen/peliglot",
+    "stars": 0,
+    "description": "Online language-learning aid. Visual, interactive guides that break down grammatical concepts of languages",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "haider0072/mochi",
+    "stars": 0,
+    "description": "Mochi: fun, friendly design system generator. From prompt to code to Figma.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Mitchnsun/cpmb",
+    "stars": 0,
+    "description": "Choeur du pays du Mont Blanc",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "grmkris/so101-lab",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sohan-shingade/kubera",
+    "stars": 0,
+    "description": "Autonomous multi-agent quant research firm powered by Claude Code — researchers generate signals, reviewers filter, Flint backtests, strategies auto-promote through paper trading to live",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kristiansnts/claude-dotfiles",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "richardgaunt/civictheme-cms",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "LerianStudio/fetcher",
+    "stars": 0,
+    "description": "Asynchronous external data retriever designed to securely fetch, process, and store data from various external sources. It handles data retrieval in a fully non-blocking way, encrypts the fetched content, and stores it as files in SeaweedFS for efficient and scalable storage",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gkimpson/WorldCupGame",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Dean-Houari/kanban-with-AI-assitant",
+    "stars": 0,
+    "description": "pm kanban board with AI assistant",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "polidisio/MyMouseBattery",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "fix/remove-actualizar-button"
+  },
+  {
+    "repo": "AT-Lorlando/Astronix",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "First4Figures/n8n.first4figures.com",
+    "stars": 0,
+    "description": "n8n Automation Platform - Kubernetes Deployment on AWS EKS with Helm Charts and GitHub Actions CI/CD",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zintomvn/Multimodal-Retrieval",
+    "stars": 0,
+    "description": "Multimodal retrieval",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ZeytEymen/antrenman-log",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alialgmass/nawader",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jMorton95/klavlor",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Bonkey-Apps/bonkey-app-runners",
+    "stars": 0,
+    "description": "host files needed to build self hosted runners",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HealthSamurai/payerbox-docs",
+    "stars": 0,
+    "description": "Payerbox documentation",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "VaibhavHiwale/stremio-offline",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "liuzijunnn-ops/footballLLM1",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "saumilptl/boilerplate",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "development"
+  },
+  {
+    "repo": "klgterry/69dia",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "thbraet/nmbs_tracking",
+    "stars": 0,
+    "description": "Live dashboard + automatic daily delay log for the direct Diest↔Halle NMBS train",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rubences/documentador",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Yuvraj675/akil",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "navajosouljah/totem-newsletter-site",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AttadeepG/portfolio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "OhSooo/OhSooShoppingMall",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "mkowalczyk0/lootSim",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "BrianChen/DetourSights",
+    "stars": 0,
+    "description": "Detour Sights",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CogappLabs/honey-duck",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Jammy2211/ic50_workspace",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "oliverbejj/screen-duo",
+    "stars": 0,
+    "description": "Composite your phone camera and Linux desktop into a single recorded video. No editing, no syncing, one take.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Dulpyanghaobo/JetUI",
+    "stars": 0,
+    "description": "JetUI",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AjasMohammed/RagFusion",
+    "stars": 0,
+    "description": "creating a project to learn rag",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "flamerecca/laravel-cloud-2025",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dannyreg/dannyreg.github.io",
+    "stars": 0,
+    "description": "Personal blog",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "janpreet/site",
+    "stars": 0,
+    "description": "A Jekyll-powered personal blog where I share my thoughts on technology, programming, and more. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dekkov/personal-website",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "g7xu/leetlens",
+    "stars": 0,
+    "description": "Track how you solve LeetCode: phase timing, run counts, notes, tags — with an MCP server and dashboard",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bassimeledath/beautiful-slides",
+    "stars": 0,
+    "description": "A Claude Code skill for producing high-quality editable PowerPoint decks via python-pptx. MIT-licensed. Measured uplift over a strong baseline on blind multi-scenario evaluation.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "bernhard-buss/polysome-auc-viewer",
+    "stars": 0,
+    "description": "Polysome AUC Viewer — standalone browser tool for BioComp Triax polysome profiles (mono/poly AUC, alignment, QC, Excel export). Mirrored automatically from a private analysis repo.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TheCraigHewitt/hermes-trader",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gadz-tech/focal-desk",
+    "stars": 0,
+    "description": "window snapping software meant for large 8k screens that has visible connections between windows. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "krabka-io/krabka-schema-registry",
+    "stars": 0,
+    "description": "Confluent-API-compatible Schema Registry for krabka, in Rust",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ethancail/bitcorn-lightning-application",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nigarishrehmansarmad/market-monitoring-agentic-ai-system",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jaiyandhas/nitinventory",
+    "stars": 0,
+    "description": "NIT stores and purchase",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kunohami/Atelier",
+    "stars": 0,
+    "description": "Art Portfolio Project",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "maxgenovesi/Track",
+    "stars": 0,
+    "description": "Productivity tool to help you get things done.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Rapoport21/pulse-collateral",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "fadrienne/Apps",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "markoinc/claude-code-hive",
+    "stars": 0,
+    "description": "Run 12+ Claude Code instances as a Discord-powered AI operations team on a single machine. Channel isolation, shared memory, voice transcription, session reflection.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cyrielo/reaction-shop-app-test",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "ship-studio/saas-template-1",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "revsystem/raspberry-iot",
+    "stars": 0,
+    "description": "Gather variable data and visualized with Raspberry Pi.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ultimatixarup/asml-po-tracker",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "claude/hello-world-whatsapp-agent-58ktb6"
+  },
+  {
+    "repo": "ssobii2/ThreeJs-Portfolio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "doubleoevan/faros",
+    "stars": 0,
+    "description": "Faros Employee Insights",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zorian15/calculus-intuitively",
+    "stars": 0,
+    "description": "Calculus, Intuitively — an AI-generated, interactive intro to Calc 1–3 for people who don't like math.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "oo-ni/io.obs_log",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kengggg/panya-manee",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vedh-vishnu-pogakula/finrag-explain",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "jay-withers/terraform-root-aks",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "xavierlmendez/botMaker",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "manxomatt/seruwit-crm",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "premxai/quantrag",
+    "stars": 0,
+    "description": "Grounded financial research copilot over SEC filings — cited RAG with hallucination detection, abstention, and a 4-mode retrieval benchmark",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Mvth1s/SteamFolio",
+    "stars": 0,
+    "description": "SteamFolio est un dashboard web personnel basé sur l'API Steam. Consultez vos statistiques, votre bibliothèque de jeux, vos succès et bien plus encore, dans une interface claire et épurée.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Alexandru2984/brainfuck_toDoList",
+    "stars": 0,
+    "description": "Vibecoding with brainfuck",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DrakeDamon/Portfolio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "buraihaa/buraihaa.github.io",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "varunkumarcs22055/woodmark",
+    "stars": 0,
+    "description": "Woodmark e-commerce platform",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HeLongaa/Mos",
+    "stars": 0,
+    "description": "一个用于在 macOS 上平滑你的鼠标滚动效果或单独设置滚动方向的小工具, 让你的滚轮爽如触控板  |  A lightweight tool used to smooth scrolling and set scroll direction independently for your mouse on macOS",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "rhosocial/python-activerecord-testsuite",
+    "stars": 0,
+    "description": "Standardized test suite and compliance contracts for rhosocial-activerecord, defining the feature tests and real-world scenarios that every database backend must pass.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Inimini1/hydrosourceai",
+    "stars": 0,
+    "description": "personal passion project",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jjjh7401/Sangse-Ttukttak",
+    "stars": 0,
+    "description": "상세뚝딱 - AI 상세페이지 마법사 2.0",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "weudlll-cyber/seasonal-race-claude",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "mahmoud921996/vue3-erp",
+    "stars": 0,
+    "description": "starter for Erp system",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "workmani/vacation-requests",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Grigoriym/Wallosmobile",
+    "stars": 0,
+    "description": "Unofficial Android client for Wallos, the self-hosted subscription tracker. Built Kotlin Multiplatform.",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "SamDja/waypointer",
+    "stars": 0,
+    "description": "Adds waypoints to GPX file before uploading it to you head unit",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "coririri/haanppen-backend",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "wayne439/Avisor",
+    "stars": 0,
+    "description": "AI Pilot Tool",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "avunculargroup/business-mono",
+    "stars": 0,
+    "description": "A mono repo for getting business done.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lepinkainen/pyfi-discord",
+    "stars": 0,
+    "description": "Pyfibot Discord bridge",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Kin0-0Ko/pl-jobhunter",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "otdavies/WebBehaviorTree",
+    "stars": 0,
+    "description": "A straight forward web behavior tree tool",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "null-p01nT3r/buglasan-polls-ai",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "wafyelshla-stack/VELSEN",
+    "stars": 0,
+    "description": "Velsen - Professional Cleaning Services Website",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AlexanderDisput/factotum-website",
+    "stars": 0,
+    "description": "Website for factotum — a DIY creative workshop space in Dublin (pottery painting, sewing & textile crafts).",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "eduo-dev-cult/eduo",
+    "stars": 0,
+    "description": "Ett universitet behöver ett verktyg för att generera instuderingsfrågor.",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "jandan138/Code-Auth",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kimneche0419-rgb/dimension_fight",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hurlab/richStudio",
+    "stars": 0,
+    "description": "Interactive platform for functional enrichment clustering and visualization",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hurlab/DPN_DREX_HumanSpatial",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "VillePajala/AI-102-complete",
+    "stars": 0,
+    "description": "Full-stack learning hub and hands-on lab for the Microsoft AI-102 AI Engineer Associate exam",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DeadWisdom/sovereign-task",
+    "stars": 0,
+    "description": "Sovereign Task Contest",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "david12345/hike",
+    "stars": 0,
+    "description": "Essential tools for hiking",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "weinem01/poc-intake",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "balllder/holiday-wheel-native",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mhellevang/min-oda",
+    "stars": 0,
+    "description": "Henter, analyserer og lager handleliste fra egen handlehistorikk på oda.com.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jeffmylife/convex-sql",
+    "stars": 0,
+    "description": "What if you could query convex with SQL?",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "arckodeteam-hash/solmios",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jacekplocharczyk/babellm",
+    "stars": 0,
+    "description": "Light-way LLM interface",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GGlukyy/Jamkit",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gdiab/georgediab-blog",
+    "stars": 0,
+    "description": "George Diab's personal site — experiments, notes, and projects. Built with Astro and TailwindCSS.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tahasimse/claude-orchestration-kit",
+    "stars": 0,
+    "description": "Portable, project-agnostic Claude Code orchestration kit: an Orchestrator that spawns Planner/Builder/Reviewer subagents, with thin layered project memory (STATE / CHANGELOG / frozen ADRs / PLAYBOOK).",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "asergio-marques/f1_league_racing_bot",
+    "stars": 0,
+    "description": "A Discord meant to aid in the administration of an F1 game racing league server.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sarthakbhatia05/djinn",
+    "stars": 0,
+    "description": "A local web app for managing Claude Code sessions across multiple projects — session status, follow-up messages, a repo-tagged backlog, and memory editing on one screen.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "sukhera/ping",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "richardwooding/archives",
+    "stars": 0,
+    "description": "Recursively walk zip/tar/gz/bz2/xz/zstd/deb containers in Go, streaming every contained file (bomb-guarded)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AlanSynn/alansynn.github.io",
+    "stars": 0,
+    "description": "One repo, one content source → website + resume + CV + targeted variants.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alijohnzy/workout-tracker",
+    "stars": 0,
+    "description": "Offline upper/lower workout tracker",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "aneesh-iyer29/session-manager",
+    "stars": 0,
+    "description": "Usage dashboard and auto-swapper for multiple Claude Code accounts, with a read-only Codex quota view",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "genropy/genro-toolbox",
+    "stars": 0,
+    "description": "Essential utilities for the Genro Kyō ecosystem",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sjhorn/tuiproxy",
+    "stars": 0,
+    "description": "Terminal User Interface Transparent Proxy for macOS ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mercklyzer/mercklyzer.github.io",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "saesarandom/pd2planner",
+    "stars": 0,
+    "description": "Character Planner for Project Diablo 2",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tvprasad/agentbond",
+    "stars": 0,
+    "description": "Zero-trust capability delegation for MCP multi-agent systems. Solves the confused deputy problem with scoped JWT tokens, deterministic enforcement, and full audit trail.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "MorseWayne/fund-advisor",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "martinsson/checkin-automation",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SeasonalHawk/atrium",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Bhavye2003Developer/localTune",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "conexusTech/aeo-howto-generation-runtime",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "snick-m/slicebench",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kobihikri/openscad",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Hongjiseung-ROK/MLP-auto-researcher",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "andrewbikanin/ai-digest",
+    "stars": 0,
+    "description": "ai digest is a study project during my course with Automatica.io in 2026",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TrewSean/TMD_v1",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mitchelldyer01/forge",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "kamkom/philosophy-of-software-design",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "breverdbidder/claude-code-telegram-control",
+    "stars": 0,
+    "description": "AI-powered Telegram bot for remote Claude Code control and monitoring. Mobile-first development workflow inspired by OpenClaw.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GyePe/kat-zrt-website",
+    "stars": 0,
+    "description": "KAT ZRT. company website (Vite + React, GitHub Pages)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ShahmeerHyat/Loom",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ttv26/Mahila-Shakti-Unnati",
+    "stars": 0,
+    "description": "Digital Accountant for rural Women’s Self-Help Groups (SHGs)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "onimator-rgb/sources",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kevinmidnight7-sudo/ultimate-fitness",
+    "stars": 0,
+    "description": "kens web",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "irfanabdulhameed/figma-cli",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Dembryllc/Ascend",
+    "stars": 0,
+    "description": "Easy-annotate",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Fumnanya92/ChipIn",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "YohannHommet/repo-lens-mcp",
+    "stars": 0,
+    "description": "MCP Server to connect and fetch info from your local repositories",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "LostOxygen/26-social-media-addicted-llms",
+    "stars": 0,
+    "description": "Do LLMs get addicted to social media? Do the LLMs prefer to scroll through social media instead of solving benchmark tasks?",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tkuramot/ma",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zhengyishen0/voca-app",
+    "stars": 0,
+    "description": "Voice-to-text transcription for macOS menu bar",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "samer7/stock-dashboard",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "robsonpeixoto/dev-vm",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JensRavens/vesker",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "red-tux/stream_controller_plugin_template",
+    "stars": 0,
+    "description": "Skeleton template repository to help create Stream Controller Plugins.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Sindhu2818/Fortivo",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "BaranziniLab/GastricBypass",
+    "stars": 0,
+    "description": "Metabolic Risk Score for Gastric Bypass Surgery Patients",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "raccoonhands1/wealth-of-knowledge",
+    "stars": 0,
+    "description": "My entire brain, compiled into one great heap of text",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "govapp/ai-sandbox",
+    "stars": 0,
+    "description": "Our AI Sandbox for development",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "greenstevester/llm-senate-council-upgrade",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jimmypocock/jimmypocock.com",
+    "stars": 0,
+    "description": "Personal website, V2",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "black-hole-group/fno-vortex",
+    "stars": 0,
+    "description": "Fourier neural operators for MHD vortices",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "igiffrekt/serenityshop",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hikkgomes/ai-orchestrator",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "evekeen/call-transcripts",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "celestin-rumo/fuelr",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "c85/fiumsis",
+    "stars": 0,
+    "description": "This repository contains all of my projects for the Master of Science in Information Systems (MSIS) program at Florida International University.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "pranaysuyash/aiglossarypro",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "fazleelahhee/organic-ai",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RealNameHidden/leetcode-runthrough",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CassioVSouza/CompensationNow",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AwesomeJackify/simply-jackd-bot",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "LukeFlaherty/myogenixpharma-wp",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "martingaam-hue/proavtive",
+    "stars": 0,
+    "description": "homepage",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Blockether/foundation",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gallabox/docs",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Strata-Labs/bitcoinyield-adapters",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ignaciodelvalle/dim",
+    "stars": 0,
+    "description": "DIM — Documento de Identificación para Mascotas. Argentina's digital pet credential.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zhuchunshu/PureCore",
+    "stars": 0,
+    "description": "Enterprise-Grade Full-Stack Framework Built for Speed",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dchud/dbfresh",
+    "stars": 0,
+    "description": "cross-db data freshness/state monitor",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "funman300/Rusty_Solitaire",
+    "stars": 0,
+    "description": "A Klondike solitaire game built in Rust with Bevy, targeting Android and Linux desktop. Features    classic card rendering, draw-one/draw-three modes, score tracking, undo/redo, daily challenges, and auto-complete   detection.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "willbearfruits/multibox",
+    "stars": 0,
+    "description": "Run several Omarchy machines as one desk over a Tailscale tailnet — shared mouse/keyboard, clipboard sync, file drop, extra-monitor laptops, and an Omarchy bar widget",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Sczitzo/humane-constitution",
+    "stars": 0,
+    "description": "A constitutional systems design separating survival, markets, and governance. Unconditional humane floor. Productive markets. Capture-resistant governance.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ryan258/node-oai-structured-output",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Shwepster/Flickr",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "ryan258/writers-room",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cjabbott5/camabbott-site",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "stat-guy/twiage",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rudderlabs/demo-lookout-tea-shop",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "aftabmj/atom-data-pipeline",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "romanblazquez/poc",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "attix-intelligence/attix-credit-spreads",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mtq01/ubacca",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "burhantoprakman/demo-site-template",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "mohokh67/folio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Srikanthnexushub/school-APK",
+    "stars": 0,
+    "description": "EduTech AI Platform — Enterprise-grade microservices for coaching centers, parents & students. Java 21 + Spring Boot 3.3 + Hexagonal Architecture. 14 services, 173 tests.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sirati/siratis-nmbl-bootloader",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tmabaker/kreweconnect",
+    "stars": 0,
+    "description": "KreweConnect - How the Good Teams Roll",
+    "defaultBranch": "claude/brave-feynman-g2j9v5"
+  },
+  {
+    "repo": "Digiagencynet/evolution",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ryansloan/cfpb-routing",
+    "stars": 0,
+    "description": "Run LLMs to label CFPB data, and evaluate their relative performance. Meant to demonstrate how to compare model performance, and evaluate model cascades.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lulacoding/LostWildernessPlugin",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Marian9746/v0-portfolio-website",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mordcole/infinite-context",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "henm2000/graphs_machine_learning",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "hakemm663/raqimo-web",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "development"
+  },
+  {
+    "repo": "owebeeone/wyred-agent",
+    "stars": 0,
+    "description": "Agentic surface for wyred: MCP tools and skills for structured design review, authoring assistance, and verification over contract artifacts.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JimiSmith/zellij-agent-wrangler",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gamedevnifemi/context-engineering",
+    "stars": 0,
+    "description": "Measure how Claude Code sessions consume their context window and what compaction costs",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "marvinmarpol/next-component-library",
+    "stars": 0,
+    "description": "This is a shared design system example built with Storybook, used across all frontend products (web app, internal tools, marketing pages)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "shivenfriedeman/dialed",
+    "stars": 0,
+    "description": "A local-first, offline PWA that helps home baristas dial in espresso: log a shot, get one clear next adjustment. Learns your grinder over time.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Daayimm/Single-page-CV",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "junaidapdev/specforge",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "orcohen2107/smartShift",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Nicaoaka/yt_downloader",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ybkim202/ai-tools-platform",
+    "stars": 0,
+    "description": "ai-tools-platform",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Huzafi/AI-Native-Physical-Book",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "001-ai-book-docusaurus"
+  },
+  {
+    "repo": "Dengage-PreSales/demo-ai",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vikkybharadwaj/ai_knowledgecenter",
+    "stars": 0,
+    "description": "Personal knowledge base for building AI products — articles, distilled knowledge, and reusable patterns to port into other AI product repos",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "revesis/boomer-win7",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CostaFot/deckard",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jordan608/EDes",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HammadDev-Z/Whatapp-Automation-KING",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "webliftro/backvora",
+    "stars": 0,
+    "description": "link management",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "LCP2/MaxVsTheWorlds-2026-05-30_07-57-35",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "EffortlessMetrics/OpenFlight",
+    "stars": 0,
+    "description": "Rust real-time input + device layer for flight simulation. 250Hz axis pipeline, multi-sim adapters, FFB safety, and diagnostics.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "orakull/CasaNostra",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "ileardo/python-project-template",
+    "stars": 0,
+    "description": "Template repository",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "smm-h/wesktop",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Miky8745/VeggieLoops",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "truongqv12/vit-docs-web",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Yok4ai/airboard-example",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mena97villalobos/BaselineProfiles",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TimPelgrim/exactonline-mcp",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "coral-garden/ever-green.ph",
+    "stars": 0,
+    "description": "Redesigned Evergreen Solar Mindanao homepage — green-palette static site",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "utonics/wave-checker-studio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "davidinwald/fyshe",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "OPS-PIvers/ops-research-tool",
+    "stars": 0,
+    "description": "OPS Research Tool — internal tool Orono Public Schools. Chrome extension + Google Apps Script backend + Docs sidebar + teacher console.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "michaelsamuel2005/GrappleDashboard",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "abdullahsahruri/tlglock",
+    "stars": 0,
+    "description": "Key-driven logic locking in threshold logic gates — reimplementation of the TLGLock flow (Sahruri & Margala, IFIP/IEEE VLSI-SoC 2025)",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "gmackie/control-panel",
+    "stars": 0,
+    "description": "GMAC.IO Control Panel - Comprehensive Kubernetes cluster management platform",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Technion-LBS-Course/ziv",
+    "stars": 0,
+    "description": "זיו — פרויקט קורס LBS (016833)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "emmyrlim/squire",
+    "stars": 0,
+    "description": "A dnd session tracking app powered by AI",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "drshailesh88/Illustration",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "claude/research-svg-editor-h8mZQ"
+  },
+  {
+    "repo": "doqendev/dirava_new",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CROmetrics/claude-code-demo",
+    "stars": 0,
+    "description": "CroMetrics prototype: claude-code-demo",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CROmetrics/claude-webapp-template",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Rusherimfa/aplikasi_kuliner",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mtw/mtw.github.io",
+    "stars": 0,
+    "description": "michaelwolfinger.com",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Zastupic/cyano-tools",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "helix-tools/sdk-go",
+    "stars": 0,
+    "description": "Helix SDK for Golang",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "trentzz/charlotte",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dworznik/pressline",
+    "stars": 0,
+    "description": "A self-hostable bridge from image-generating apps to print-on-demand: Printful fulfills, Stripe Checkout pays.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "InverseAltruism/csd-sdk",
+    "stars": 0,
+    "description": "Compute Substrate (CSD) SDK + light client - canonical codec/crypto/tx/RPC + headers-first verified light client.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "schmug/terratouch",
+    "stars": 0,
+    "description": "TerraTouch — a mobile-first terraforming clicker/roguelike PWA. Raise a dead world one swipe at a time; when it collapses, the Chronicle writes its obituary.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GitHubStuff/icodeforyou_kotlin",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kirinse/therapy-clinic-nextjs",
+    "stars": 0,
+    "description": "HIPAA-compliant therapy clinic management system built with Next.js, Keycloak, and PostgreSQL",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "codedByShoe/littlejs-custom-theme",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "LearningTigers-Sdn-Bhd/eventz-flow-backend",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "praveensubbarao/DT_MW_Humana",
+    "stars": 0,
+    "description": "Playwright AI automation framework Claude code",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "q-sakib/SHARK_AI_MNG_localscope_setup",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vtietz/librariarr",
+    "stars": 0,
+    "description": "LibrariArr keeps a nested movie archive compatible with Radarr's and Sonarr's flat root-folder model.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "yennanliu/ai-gateway",
+    "stars": 0,
+    "description": "An enterprise LLM gateway built on top of LiteLLM Proxy",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cskerritt/PA-Site",
+    "stars": 0,
+    "description": "This is the website for PA Analytics",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Dembrane/portal-redesign",
+    "stars": 0,
+    "description": "Storybook prototyping scaffold for the Dembrane console (chatcn + shadcn/ui)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jaydge/theology",
+    "stars": 0,
+    "description": "Knowledge base for theological research and church history",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HighbrowGame/HighbrowSDK-Partner",
+    "stars": 0,
+    "description": "HighbrowSDK, for partner corporations.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nick2a/strength-coach",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "protocol/Shared-AI-Prompt-Library",
+    "stars": 0,
+    "description": "A growing collection of approved prompts for legal, finance, capital, ops, and beyond. Add, filter, copy, and upvote the prompts your team finds most useful.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "phivk/doppelganger",
+    "stars": 0,
+    "description": "Two participants enter a secluding booth and sit across from each other. Separated by an unique mirror, one becomes the other.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "soup1977/gm-wiki",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cameronbeck-dev/claude-config",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SanyamPunia/nine",
+    "stars": 0,
+    "description": "a very small tic tac toe game. play the bot at three difficulties, or a friend on the same screen.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "motethansen/ai_agent_assistant",
+    "stars": 0,
+    "description": "Local-first personal AI assistant bridging Obsidian/LogSeq notes, Apple Calendar, and tasks from the terminal",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "devitops-com/aiagent",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dirkpetersen/maude",
+    "stars": 0,
+    "description": "A ready-to-run sandbox appliance for agentic coding friends ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dnewcome/dnuke.com",
+    "stars": 0,
+    "description": "Source for the dnuke.com website",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Panacota96/master-Project-Phishing",
+    "stars": 0,
+    "description": "Serverless phishing-awareness platform for engineering students and security training.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "monashcoding/notioncal-to-gcal",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "BartolomeuSilva/SiteSemper",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mofro/mnews",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vahidelahi777/NovaxFX",
+    "stars": 0,
+    "description": "Novax FX Intelligence Platform",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "GuitarAlchemist/tars",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SergiuTigan/Luppy",
+    "stars": 0,
+    "description": "Pet health-records app (owners, vets, breeders) — Turborepo: NestJS+Prisma API, Next.js web, SwiftUI iOS + Kotlin Android skeletons. Design: Claude Design 'Stamp' direction.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Ahmed-Mahmoud-tech/3dtour",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "grossf/calorie-estimator",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "root-daemon/visa-application-portal",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "surbhigoyal7381-agent/hr-app",
+    "stars": 0,
+    "description": "HR application",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jenanos/home-inventory",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nickhildpac/ticket-management-app",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jhousteau/solution-desk-engine",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "robotics1106/Portfolio",
+    "stars": 0,
+    "description": "My Portfolio!",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "Arete-Consortium/cytogenesis",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Tiefseetauchner/TiefAmt",
+    "stars": 0,
+    "description": "The one and only library to create stupidly inaccurate government websites.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "anshul1058/NAZAR.ai",
+    "stars": 0,
+    "description": "Real-time AI-driven parental monitoring and gambling detection app built with Flutter & Supabase.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alagonterie/career-pilot",
+    "stars": 0,
+    "description": "Autonomous AI agents that run a software-engineering job search end-to-end — sourcing, résumé tailoring, outreach, interview prep, and pipeline tracking — fronted by a live public portal.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "emmapowers/verilog-playground",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "PlumyCat/TenantPulse",
+    "stars": 0,
+    "description": "ID Entra",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "megawubs/hass-addons",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SupeeerMario/file-processing-pipeline",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MaPiJu/DB_Hidden_Gate",
+    "stars": 0,
+    "description": "Curated database of off-the-beaten-path travel spots from personal blogs",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ShinZert/TRACE_Fabric",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "njtl/cornerglitch",
+    "stars": 0,
+    "description": "HTTP chaos testing framework. Break everything before production does.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "DeveloperSarim/propscan",
+    "stars": 0,
+    "description": "Property listing scanner and aggregator. FastAPI service with headless-browser scrapers, containerised for self-hosting.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Tualua/enpipe",
+    "stars": 0,
+    "description": "GPU-accelerated encoding pipeline",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gandtr/skriv.ist",
+    "stars": 0,
+    "description": "Landing page for Skriv.ist",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "chedevlooper-creator/otopolik-store",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "loger-w/smart-learning",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Sharvantg/seo-listicle-pipeline",
+    "stars": 0,
+    "description": "Automated SEO listicle generation pipeline — takes keywords, researches tools, generates publication-ready drafts",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "CalCOFI/workflows",
+    "stars": 0,
+    "description": "helper scripts in R for common workflows",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TUM-Aries-Lab/imu-module",
+    "stars": 0,
+    "description": "Read data from an Adafruit IMU on a computer with i2c access",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gregsantos/g2g",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cetinalanyalioglu/Nefes",
+    "stars": 0,
+    "description": "NEtwork solver for Flow, Eigenmodes, and Stability",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "yantanyako/koaneProtocol",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "raminrasoulinezhad/MoneyTor",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kborn/signalfire",
+    "stars": 0,
+    "description": "Full-stack civic action platform (Find Your Fight): content discovery, community submissions, and moderation workflows.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "8TrafficAI/skills-sh-growth-loop",
+    "stars": 0,
+    "description": "Measure skills.sh discovery and run ethical, evidence-backed Agent Skill growth experiments.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "patrickisgreat/benteen-screen",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Joseamica/avoqado-web-dashboard",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tungdtfgw/reading-diary",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mzon7/back-in-play",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "guscsales/firefiles-gs-clone",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lam1101999/ResNet",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DeJayDev/kirigo",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Halildeu/platform-backend",
+    "stars": 0,
+    "description": "Platform backend monorepo — Java microservices (auth/user/variant/core-data/report/schema/api-gateway/discovery-server) + Zanzibar plane (permission-service + common-auth/openfga + openfga-runtime) + Flyway. Migrated from platform-ssot Faz 19 (ADR-0004).",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mikeboe/marketing",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "drcggray/bpmtracker",
+    "stars": 0,
+    "description": "Displays bpm of songs",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "somdarv/kalaanba-front",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jirkacepelka/fee-granter",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "claude/secret-network-fee-grant-dashboard-uf9zzr"
+  },
+  {
+    "repo": "jamari38442/gwalaboy-phlyy",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "serrig/SumaMatriculas",
+    "stars": 0,
+    "description": "App for kids to practice adding,  created with help of AI agents to learn how all this work together",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "PeemPasae/pes-arena",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "orangelabweb/brew-watcher",
+    "stars": 0,
+    "description": "Notify about available updates in Homebrew.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "preuser-ai/preuser-plugins",
+    "stars": 0,
+    "description": "preuser Claude Code plugin marketplace — /preuser:setup drafts your .preuser/config.yml (private during preview)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "richierob62/claude-code-architect",
+    "stars": 0,
+    "description": "Personal study course for the Claude Certified Architect (Foundations) exam.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "LispEngineer/dotcl-package-generator",
+    "stars": 0,
+    "description": "Creates Lisp packages that reflect C# class (struct, enum, etc.) functionality from a given .Net assembly",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lukefitzg/tinysocs",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chittyos/ch1tty",
+    "stars": 0,
+    "description": "ChittyOS Universal MCP Gateway — one stdio server, all backends",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "VadymKolesnyk/OrientPyx",
+    "stars": 0,
+    "description": "Cross-platform Avalonia desktop app for managing orienteering competitions",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tanruoshan/popline",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "mvkrishna24/https-github.com-mvkrishna24-adcinfrastructure",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rgoshen/chronoledger",
+    "stars": 0,
+    "description": "ChronoLedger is an auditable timekeeping system with pay-period reporting and official exports. This repository contains the complete project, including application code, infrastructure, and documentation.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mihnin/Code_analiz",
+    "stars": 0,
+    "description": "анализатор кода",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Query-farm/vgi-feed",
+    "stars": 0,
+    "description": "Parse RSS/Atom/JSON feeds into rows in DuckDB (Go, gofeed)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "folzy1092/Shadow",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "kswodeck/job-scout",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "BCAppsLimited/BulkDelete",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "uname-n/pit.rust",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "GitUpSer/pawtato-app",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "snits/claude-files",
+    "stars": 0,
+    "description": "prompt files, and custom commands",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "iamenr0s/ansible-role-ssh-hardening",
+    "stars": 0,
+    "description": "A comprehensive Ansible role for hardening SSH daemon configuration with security best practices. This role implements industry-standard security measures to protect SSH services against common attacks and vulnerabilities.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Anras573/Yaeger",
+    "stars": 0,
+    "description": "YAEGER - Yet Another Experimental Game Engine Repository",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "shaoqian2001/vibe-zombie",
+    "stars": 0,
+    "description": "A vibe-coded zombie game ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "4444J99/peer-audited--behavioral-blockchain",
+    "stars": 0,
+    "description": "Prototype for behavioral commitments, peer-reviewed completion evidence, and test-money accounting. Not a verified public escrow product.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "theroyalwhee0/brik",
+    "stars": 0,
+    "description": "Brik HTML Parser",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dinooo13/fmeyer.dev",
+    "stars": 0,
+    "description": "My personal website 💎",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "wildcraft958/RADAgent_Research",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chenwei791129/ShadowDNS",
+    "stars": 0,
+    "description": "An authoritative DNS server with first-class zone aliasing for memory-efficient backup-domain serving.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "The-MC-Hub/MC_Voice_Training_Frontend",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "drew-gross/aipl",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "haleycarpenterarts-art/reach-app",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jlanej/high_priority_rare_variant",
+    "stars": 0,
+    "description": "Prototype rare variant screening for trio data",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lab255/Crystal",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "DaniyalAA1/kamionvision",
+    "stars": 0,
+    "description": "Computer vision model that prices used trucks from photos alone — no seller descriptions, no lies. Built for the Kamion (YC) track to bring trustworthy, image-based condition and valuation scoring to Turkey's fragmented B2B trucking market.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "klrab3490/relief-coordination-system",
+    "stars": 0,
+    "description": "A real-time disaster reporting and coordination platform where citizens can submit emergencies with photos and GPS location. Volunteers receive instant alerts, accept tasks, update statuses, and communicate via live chat. Admins verify reports and monitor activity through a centralized dashboard.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CynicDog/semantic-model-weaver",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "yiyangzha/slopbench_h4lcontext",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "JannikArndt/our-little-world",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "InnoSquadCorp/InnoNetwork",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joeedh/story-wiki",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "martinlie/chord-attractor",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "NickEngmann/luxopi-ros",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "CovertCloak06/divine-node-code-academy",
+    "stars": 0,
+    "description": "Interactive coding education platform for complete beginners. Learn HTML, CSS, JavaScript through hands-on lessons.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "edwardallanau-design/bitsandbytes",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jessels-vibe/stone-rock-studios",
+    "stars": 0,
+    "description": "Stone Rock Studios",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Sve-nnN/Audits-JuanTech",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "develop"
+  },
+  {
+    "repo": "AdeelMalik22/ClickUp",
+    "stars": 0,
+    "description": "Clickup Clone in restapi",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "deepakkumar1984/jsondemo",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Hariteja-CL/craftlayers",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "denkhaus/gollum",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mio011/star-reels",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "0xdeadd/imessage-mcp",
+    "stars": 0,
+    "description": "MCP server that lets Claude Code read your iMessages from chat.db (macOS), with a gated send tool",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AgamV01/SYNK-",
+    "stars": 0,
+    "description": "Open-source framework for intelligent, LLM-driven NPCs in web-based 3D worlds. Server-authoritative Python runtime, TypeScript SDK, Three.js demo. Hybrid brain keeps idle worlds at near-zero cost: cheap reactive layer per tick, LLM only on meaningful events.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "truedichotomy/GliderADCPanalysis",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "gbalke/merge_queue",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Cyphid-Academy/Snek-Centaur-Platform",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jtstoneman/template-builder",
+    "stars": 0,
+    "description": "Decompile precedent contracts into deterministic, sign-off-able templates — LLM upstream only; render/validate/approve are pure code. FastAPI web UI, matters + escalation inbox, read-only demo mode.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "deusyu/claude-md",
+    "stars": 0,
+    "description": "My global CLAUDE.md for Claude Code — first-principles thinking + dual-track responses",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "pampalodotcom/pampalo",
+    "stars": 0,
+    "description": "pampalo private money, powered by commbank.eth",
+    "defaultBranch": "dev"
+  },
+  {
+    "repo": "LukeEvansTech/openziti-azure-sentinel",
+    "stars": 0,
+    "description": "Ship OpenZiti events into Microsoft Sentinel via the native Service Bus event sink, an Azure Function, and the Logs Ingestion API",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "pawelmamcarz/procuracost",
+    "stars": 0,
+    "description": "Procurement cost calculator & path optimizer — academic research tool. Pipe vs. Field model, Random Forest path recommendation, PZP compliance.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sirtheta/budget",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dbetancurth/zencart-retry-engine",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tag1consulting/scolta-python",
+    "stars": 0,
+    "description": "Privacy-first AI search for Python, the pure-Python Scolta binding. Builds a static Pagefind index in-process; search runs entirely in the visitor's browser.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RyosukeMondo/zoom-caption-tap",
+    "stars": 0,
+    "description": "Research PoC: read Zoom Web Client live captions from the page's own Redux store (no meeting bot), and build a real-time meeting note with Chrome's on-device Gemini Nano.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "uaiblaine/moodle-availability_competency",
+    "stars": 0,
+    "description": "Moodle availability plugin, which lets users restrict resources, activities, and sections based on course competency.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "realworldbuilder/gooseApp",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "roccothefunnyman/solitaire_clone",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Smartdevs17/rootstock-token-inspector",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "harrymcdonagh/athena",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Query-farm/vgi-etf-spdr",
+    "stars": 0,
+    "description": "SPDR (State Street) US ETF data (catalog + holdings) as DuckDB tables over VGI",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kevinswiber/tapwire",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Mbehbahani/Tax-Authority-RAG",
+    "stars": 0,
+    "description": "Enterprise RAG architecture for a secure, citation-first Tax Authority assistant with RBAC, hybrid retrieval, and CRAG.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "FlyingWHR/tashan",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "MadsenDev/geyma-file-manager",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "datashaman/dispatch",
+    "stars": 0,
+    "description": "Self-hosted webhook server that dispatches events to AI agents — multi-source (GitHub, GitLab), rule-based matching, multi-agent pipelines, worktree isolation, conversation memory, and live streaming via Reverb.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Mimouni11/payload-cms-test",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rdgallagher/synthfinder",
+    "stars": 0,
+    "description": "Agentic system for finding bargain secondhand vintage synths",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "thatsfov1/rootcellar",
+    "stars": 0,
+    "description": "A self-hosted backup tool with deduplication and client-side encryption",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joshua-jd21/SMARTGUARD_AI",
+    "stars": 0,
+    "description": "IOT_DL_PROJECT",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "halmstraw/medtech-platform-docs",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "FarmaanElahi/terminal-data",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Codenico-Nicoflow/nicoflow-api",
+    "stars": 0,
+    "description": "Nicoflow Go backend",
+    "defaultBranch": "staging"
+  },
+  {
+    "repo": "ericxyz86/static_landng_page",
+    "stars": 0,
+    "description": "AI Labs apps launcher",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Ugbot/project-jupiter",
+    "stars": 0,
+    "description": "game experiements",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "celsojuniorsfs/medfusion-os-web",
+    "stars": 0,
+    "description": "Frontend (Angular)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "NexDevKRD/ElecVendors",
+    "stars": 0,
+    "description": "Electromall Vendors dashboard",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "baokhanhle123/HK251_ADS_ShoppersIntention",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jclement/owg-share",
+    "stars": 0,
+    "description": "My private sharing service.  Cloudflare-based.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RAHHULANN/Degree-7",
+    "stars": 0,
+    "description": "FYP",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AYHHamsuky/attendance_copy",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "LeaderbotX400/sait-schedule-builder",
+    "stars": 0,
+    "description": "Main is a readonly mirror. PR's and Issues will be accepted here.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mixelka75/pixiv-mix-app",
+    "stars": 0,
+    "description": "Clean native pixiv client — endless feed, multi-page swipe, likes & bookmarks. Android, Windows, macOS, Linux, and web (Wasm). No ads, no Electron.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zamoore/claude",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tractorjuice/wardley-openai-chatkit-starter-app",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "KomalsPoshan/RotiTales",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Life-Atlas/equestrai-registry",
+    "stars": 0,
+    "description": "EquestRai multi-tenant registry platform - IALHA Tenant 1",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mazzocchibrothers/new-site-test",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "joemc3/ship-log",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Ngoni-Sendama/Plastic-Recycling-Laravel-app-",
+    "stars": 0,
+    "description": "Plastic-Recycling-Laravel-app ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "amalbenny7/rsu-advice-support",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "amorimdub/docs",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Zireael26/akaushik.org",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "the-mace/aquarium-tracker",
+    "stars": 0,
+    "description": "Fathom - the aquarium tracking tool",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "yardenialon/simpliinew",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Radioheading/xingyangli.com",
+    "stars": 0,
+    "description": "Xingyang Li's personal homepage (xingyangli.com)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jiyoon113/Benchboard",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "roberteinsle/simmerbox",
+    "stars": 0,
+    "description": "Self-hosted recipe management app — recipes, meal planning, grocery lists, and household sharing. German UI.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hitcklife/yoryor-last",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "organvm-iv-taxis/meta-source--ledger-output",
+    "stars": 0,
+    "description": "Cross-domain creative-technical framework exploring identity systems, cipher visualization, mythology, and generative rendering pipelines",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "lovit/html-in-canvas",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "koeppelmann/eez-op-rollup-prover",
+    "stars": 0,
+    "description": "Standalone prover for the multi-prover sync-rollups-v2 demo on Gnosis Chiado. Adds an independent verifier that co-attests every postBatch alongside the settler operator's verifier.",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "MotionPhix/boardhub",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Attilae/pulsos",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HavenNetworkOperator/haven",
+    "stars": 0,
+    "description": "Haven — UK family MVNO. Safe mobile network for parents & teens.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "martinchukachinaka/story-teller-mcp",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "eliveutonsouza/techinidica",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Prostecki/my-portfolio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "error420notfound/HS108Website",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kronenz/content-forge-next",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "NateKeola/memo-phoenix",
+    "stars": 0,
+    "description": "This is the all encompassed memo, follow up, interview, context builder for a human. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "prekic/insurai-Tl3e",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "blueampersand/popebot",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "shamalman/curators",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "looprig/.github",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "m-itoi/claude-code-project",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "patmaddox/lab",
+    "stars": 0,
+    "description": "mirror of my code lab",
+    "defaultBranch": "trunk"
+  },
+  {
+    "repo": "isorobo/obsidian-agents",
+    "stars": 0,
+    "description": "An obsidian vault collating on a cron schedule all things interesting about AI Agents",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "diegoparma/gulp",
+    "stars": 0,
+    "description": "Fork from public-domain wakit-api, maintained by diegoparma",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "futurice/ai-learning-path-iac-with-ai",
+    "stars": 0,
+    "description": "Simple imaginary app + Claude skills. Can be used to generate cloud architecture documentation and Terraform IaC",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "koki-develop/setup-ghasec",
+    "stars": 0,
+    "description": "🛡️ A GitHub Action to install ghasec, a security linter for GitHub Actions workflows.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ljacks98/FairNest",
+    "stars": 0,
+    "description": "FairNest is an AI‑powered website designed to support Durham residents experiencing housing challenges, discrimination, or instability. The platform empowers users to recognize potential rights violations, document their experiences securely, and access step‑by‑step guidance on what to do next. ",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ryanmccormickdev/ramp",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kondanta/kansou",
+    "stars": 0,
+    "description": "Weighted anime & manga scoring CLI with AniList integration. Opinionated by default, configurable without recompiling.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "henrytran412/God-eye",
+    "stars": 0,
+    "description": "Does compressing a 3D perception model to run on automotive edge hardware make it lose more accuracy under dataset shift than the full-precision model does?",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "edgarwch/WebServer",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HeLinChooi/LeetCode",
+    "stars": 0,
+    "description": "My solutions for questions on LeetCode",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chironmind/ChironMind",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "seffyroff/dune-selfhost-linux",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Ave13/erg-onomics",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Aditya-Patil27/samvad",
+    "stars": 0,
+    "description": "Distributed multi-agent system: four peer agents on a LAN exchanging signed JSON. Same binary, different config.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sai3000pro/ScaleUp",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cywinski/cot-tampering",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kurobisu/menuvem-lojista",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Artemon-line/ogx-functional-tests",
+    "stars": 0,
+    "description": "Functional tests for OGX-AI — Bruno API collections + Jupyter notebooks. Provider-agnostic, version-per-branch.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Legionof7/RCSBot-ChartWork",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "zaghamarshad/dykm",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "AsoAfan/cpp-learning",
+    "stars": 0,
+    "description": "This is c++ course with cloude ai",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tark-ai/ce-starter-projects",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "robinmarin/ambassad-timer",
+    "stars": 0,
+    "description": "scrape and book/notify when new time come online",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "RedHatQE/ramendr-storage-ui-tests",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "philote/hollow-idol",
+    "stars": 0,
+    "description": "Parametric mold case generator for ceramic slip casting",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Skobyn/alexaLunchDad",
+    "stars": 0,
+    "description": "Alexa skill for lunch recommendations with automated CI/CD pipeline",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "mayu99/saferoute",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "swift-innovate/valor",
+    "stars": 0,
+    "description": "An AI Command framework",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "WolfSoko/pushup-stats-service",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "shonshon99/zclip",
+    "stars": 0,
+    "description": " Persistent clipboard history daemon for macOS, written in Zig. Local SQLite.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "krukkeniels/shopboard",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "shoaibrain/edforge",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "achintSatsangi/fifa-rankings",
+    "stars": 0,
+    "description": "Hobby project for displaying fifa rankings and more",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Krank3n/HansenDev",
+    "stars": 0,
+    "description": "Custom Web & AI Solutions in Cairns",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "finna/pmAPP",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "thetimfulton/confluenceohio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "doqendev/TrackingLite",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jimjamscott22/PySizer",
+    "stars": 0,
+    "description": "A local-first web application that scans software project directories, calculates storage sizes, and visualizes growth trends. The tool helps developers monitor their project's disk space usage over time.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "palinopr/metaads",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "fedeparrilla10/evachild",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ksteptoe/dof",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vivid-life-theme/vivid-life-vs-code",
+    "stars": 0,
+    "description": "A multi-flavor color scheme system for VS Code (Visual Studio Code). 4 flavors × 6 variants = 24 themes. WCAG AA verified.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "anushkasinghh/munich-intel",
+    "stars": 0,
+    "description": "Local RAG system for Munich startup intelligence — BGE-M3 + Qdrant + Groq + FastAPI",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "teovillanueva/code-runner",
+    "stars": 0,
+    "description": "Run untrusted code in a hardened, live sandbox.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rxshabN/distributed-job-scheduler",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "svetlinivelinov/padel-booking-app",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "rkoripalli/blog",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tao-Isaman/the-memory",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "basiliskus/speculative-decoding-copilot",
+    "stars": 0,
+    "description": "Local code completion via speculative decoding. 1.65× faster than verifier-alone on HumanEval. Final project for Flexion's LLMs in Production class.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "kelvinlim/llm_local_coding",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "HobanSearch/FinePrint",
+    "stars": 0,
+    "description": "FinePrint reads the T&Cs for you and keep track of changes in policy",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "alswp006/duotrack-1e6r",
+    "stars": 0,
+    "description": "국내 어학 앱 사용자의 최대 불만인 '광고 중단 + 학습 흐름 파괴' 문제와 Duolingo식 게임화의 낮은 실력 향상 효과에 지친 학습자들을 위해, 광고 없는 집중 학습 + 실제 시험(토익·오픽) 점수 연동 트래킹으로 '학습 ROI'를 증명해주는 영어 학습 성과 관리 앱",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "TomokiMatsubuchi/Flutter-invader",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "curtcox/terminals",
+    "stars": 0,
+    "description": "For using assorted hardware as network terminals",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "iam-nazmul/nazmul-portfolio",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "chedevlooper-creator/proje.ai",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "KaHooli/Libation-Web",
+    "stars": 0,
+    "description": "Dockerized web UI for the Libation audiobook manager",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nnunley/agent-sandbox",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "InternetMedicineMan/drivingfaith",
+    "stars": 0,
+    "description": "Church Backoffice",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "1mcreative/web-portfolio",
+    "stars": 0,
+    "description": "Website Portfolio for Neha Paul",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "matteof123/Unity",
+    "stars": 0,
+    "description": "Unity Partners — Client Brain (GTM playbook + M&M M&A outbound)",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Shock-Nin/MyTool",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "BrentBaccala/helium",
+    "stars": 0,
+    "description": "Sage code to solve Helium's ground state",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "dewakp/ALAFIAKALO",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "catatsumuri/inertia-x-bookmark",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ayushnair2/Teachly",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "tooppoo/reportage",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jkraemer/fera",
+    "stars": 0,
+    "description": "Personal AI Assistant based on the Claude Agent SDK. https://codeberg.org/jenskr/fera",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "777pxy/auLait",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "dilgerma/webinar20260218",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Zaegan/InfiniteCalc",
+    "stars": 0,
+    "description": "Android Calculator with Expression Parser and infinite history",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "maxvandenhoven/hive",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ksmuvva/Multi-Agent--Council",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "beauzone/surface-aeo-geo-engine",
+    "stars": 0,
+    "description": "Surface AEO/GEO Engine",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "wolfwdavid/checkin_app",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "plamen911/propcalc-api",
+    "stars": 0,
+    "description": "A Symfony-based RESTful API for calculating and managing real estate insurance policies.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "jpoutrin/portman-cli",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "SahajNanda/PktReplay",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "slabgorb/bicycle-repair-man",
+    "stars": 0,
+    "description": "claude plugin for agentic roles",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nadzbernardino/Chris-and-the-Jollibabees",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "cotto3/news-digest",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "LeahRCS/K.I.C.K",
+    "stars": 0,
+    "description": "Uma plataforma que funciona como arquivo digital que armazena o que você considera cultura!",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "pgsimpso/ralph-template",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "nbradshaw45/form-builder",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sonjaJolanda/zastermaster",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Vivek-Chaudhari30/Paged_Serve",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "akiernan/populate-volatile",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "hoxuanji/be-automation",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "sayoungestguy/sg-long-weekend-optimizer",
+    "stars": 0,
+    "description": "Find the optimal way to use your annual leave with Singapore public holidays. Astro static site.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "vik-srinivasan/my-team",
+    "stars": 0,
+    "description": "my-team: a multi-agent orchestration mechanism for Claude Code.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "quantumlayer-atlas/atlas",
+    "stars": 0,
+    "description": "ATLAS - Governance for Autonomous Systems. Deterministic policy gates, privacy transformations, human-in-the-loop approvals, and audit trails for AI agents.",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "Binamra7/dotfiles",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "master"
+  },
+  {
+    "repo": "aimfeld/claude-plugins",
+    "stars": 0,
+    "description": "Claude Code plugins for code quality and auditing",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "rsha0920/asx-statarb",
+    "stars": 0,
+    "description": "Cointegration-based pairs trading on ASX large-caps. Walk-forward backtest, 2014-2026. Honest negative result",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "BYU-Idaho-IT-AI-Architecture/Artificial-Intelligence-Website",
+    "stars": 0,
+    "description": "This a shared repository for managing the content published to the \"https://www.byui.edu/genai/\" website",
+    "defaultBranch": "main"
+  },
+  {
+    "repo": "ndellagrotte/worlium",
+    "stars": 0,
+    "description": "worley noise-based cave generation for fabric and neoforge",
+    "defaultBranch": "26.1.2"
+  },
+  {
+    "repo": "dev-wantap/turtlelove-frontend",
+    "stars": 0,
+    "description": "",
+    "defaultBranch": "main"
+  }
+]

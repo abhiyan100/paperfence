@@ -43,6 +43,17 @@ describe("Bash rules", () => {
     expect(ruleMatchesCall(r, bash("(cd x && rm -rf build)"))).toBeTruthy();
     expect(ruleMatchesCall(r, bash("ls\nrm -rf build"))).toBeTruthy();
   });
+  it("quoted text is data and wrappers are stripped", () => {
+    const r = parsePermissionRule("Bash(git push:*)");
+    expect(ruleMatchesCall(r, bash("echo 'safe; git push origin main'"))).toBeNull();
+    expect(ruleMatchesCall(r, bash("command git push origin main"))).toBeTruthy();
+    expect(ruleMatchesCall(r, bash("GIT_TRACE=1 git push origin main"))).toBeTruthy();
+  });
+  it("leading / anchors at the project, no any-depth", () => {
+    expect(pathSpecMatches("/infra/**", "/repo/infra/x.yml", R)).toBe(true);
+    expect(pathSpecMatches("/infra/**", "/repo/vendor/infra/x.yml", R)).toBe(false);
+    expect(pathSpecMatches("infra/**", "/repo/vendor/infra/x.yml", R)).toBe(true);
+  });
   it("does not match the program by path or under sh -c (documented gap)", () => {
     const r = parsePermissionRule("Bash(curl *)");
     expect(ruleMatchesCall(r, bash("curl https://x"))).toBeTruthy();

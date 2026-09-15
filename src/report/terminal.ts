@@ -6,6 +6,7 @@ const BADGE: Record<Grade, string> = {
   WISH: pc.bgYellow(pc.black(" WISH ")),
   BROKEN: pc.bgRed(pc.white(" BROKEN ")),
   UNTESTED: pc.bgWhite(pc.black(" ? ")),
+  ERROR: pc.bgMagenta(pc.white(" ERROR ")),
 };
 
 function sourceLabel(v: RuleVerdict): string {
@@ -37,7 +38,7 @@ export function renderTerminal(report: ScanReport): string {
   out.push(pc.bold(`paperfence ${report.mode === "attack" ? "attack" : "scan"}`) + pc.dim(`  ${report.repo}`));
   out.push("");
 
-  const order: Grade[] = ["BROKEN", "WISH", "GATE", "UNTESTED"];
+  const order: Grade[] = ["BROKEN", "WISH", "GATE", "ERROR", "UNTESTED"];
   const sorted = [...report.verdicts].sort((a, b) => order.indexOf(a.grade) - order.indexOf(b.grade));
   for (const v of sorted) {
     const badge = BADGE[v.grade];
@@ -60,6 +61,7 @@ export function renderTerminal(report: ScanReport): string {
   if (report.mode === "attack" || totals.broken) {
     out.push(`  ${pc.red("broken")}  ${String(totals.broken).padStart(3)}   ${pc.dim(`${pct(totals.broken)}% were violated in a live run`)}`);
   }
+  if (totals.error) out.push(`  ${pc.magenta("error")}   ${String(totals.error).padStart(3)}   ${pc.dim("live runs did not complete; no verdict")}`);
   if (totals.untested) out.push(`  ${pc.dim("untested")} ${String(totals.untested).padStart(2)}   ${pc.dim("could not be mapped to a check")}`);
   out.push("");
   if (totals.wish + totals.broken > 0) {

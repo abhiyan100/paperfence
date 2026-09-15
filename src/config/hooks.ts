@@ -35,7 +35,9 @@ function runCommand(command: string, payload: string, cwd: string, timeoutMs: nu
     const child = spawn("bash", ["-lc", command], {
       cwd,
       env: {
-        ...process.env,
+        PATH: process.env.PATH ?? "/usr/bin:/bin",
+        HOME: process.env.HOME ?? "/",
+        LANG: process.env.LANG ?? "C.UTF-8",
         CLAUDE_PROJECT_DIR: cwd,
         PAPERFENCE: "1",
       },
@@ -52,15 +54,26 @@ function runCommand(command: string, payload: string, cwd: string, timeoutMs: nu
     child.stderr.on("data", (d) => (stderr += d.toString()));
     child.on("close", (code) => {
       clearTimeout(timer);
+      // A timed-out hook never blocks; Claude Code lets the call continue.
+      if (timedOut) {
+        resolve({ blocked: false, command, exitCode: code, stdout, stderr, reason: "timed out", timedOut });
+        return;
+      }
       let blocked = code === 2;
       let reason: string | undefined = blocked ? stderr.trim() || "exit code 2" : undefined;
-      if (!blocked && stdout.trim().startsWith("{")) {
+      if (!blocked && code === 0 && stdout.trim().startsWith("{")) {
+        // Only exit 0 with well-formed JSON is honoured. hookSpecificOutput must name the event.
         try {
           const j = JSON.parse(stdout);
-          const decision = j?.hookSpecificOutput?.permissionDecision ?? j?.decision;
-          if (decision === "deny" || decision === "block") {
+          const hso = j?.hookSpecificOutput;
+          if (hso && hso.hookEventName === "PreToolUse" && hso.permissionDecision === "deny") {
             blocked = true;
-            reason = j?.hookSpecificOutput?.permissionDecisionReason ?? j?.reason ?? "hook returned deny";
+            reason = hso.permissionDecisionReason ?? "hook returned deny";
+          } else if (j?.continue === false) {
+            blocked = true;
+            reason = j?.stopReason ?? "hook returned continue: false";
+          } else if (hso && hso.permissionDecision === "deny" && hso.hookEventName !== "PreToolUse") {
+            reason = "hook printed a deny without hookEventName: PreToolUse, which Claude Code ignores";
           }
         } catch {
           // not JSON, fine
@@ -94,7 +107,9 @@ export async function firePreToolUseHooks(
     if (!matcherApplies(group.matcher, call.tool)) continue;
     for (const h of group.hooks) {
       if (h.type !== "command" || !h.command) continue;
-      const r = await runCommand(h.command, payload, cwd, opts.timeoutMs ?? 10_000);
+      // Respect the hook's own timeout (seconds; default 600). Cap at what the caller allows so scans stay fast.
+      const configured = typeof h.timeout === "number" ? h.timeout * 1000 : 600_000;
+      const r = await runCommand(h.command, payload, cwd, Math.min(configured, opts.timeoutMs ?? 30_000));
       results.push({ ...r, matcher: group.matcher });
     }
   }

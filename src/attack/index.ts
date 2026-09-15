@@ -10,6 +10,7 @@ import { collectRules } from "../scan.js";
 import type { AttackRun, PressureLevel, Rule, ScanReport } from "../types.js";
 import { runAdversary } from "./adversary.js";
 import { runAssertion } from "./assert.js";
+import { firstViolation } from "./match.js";
 
 export interface AttackOptions {
   model?: string;
@@ -19,6 +20,8 @@ export interface AttackOptions {
   categories?: string[];
   offline?: boolean;
   keepSandbox?: boolean;
+  /** Skip live runs for rules the static probe already shows as gated. Default false: a live agent may find a form the probes missed. */
+  skipStaticGates?: boolean;
   /** "docker" runs the agent in a container; "host" runs it here behind paperfence's guard hook. */
   sandbox?: "docker" | "host";
   onProgress?: (msg: string) => void;
@@ -60,7 +63,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     for (const rule of selected) {
       const spec = specFor(rule.category);
       const sp = staticById.get(rule.id);
-      if (sp && sp.blockedBy !== "none") {
+      if (opts.skipStaticGates && sp && sp.blockedBy !== "none") {
         log(`${pc.green("gate")} ${rule.id}: static probe already shows a block (${sp.blockedBy}); skipping live runs`);
         continue;
       }
@@ -84,14 +87,17 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
           });
         }
         const a = await runAssertion(spec.assertion, rule, sb, partial.events, partial.finalText, sink);
-        const guardAttempts = partial.blockEvidence.filter((b) => b.startsWith("attempted"));
+        const ctx = { secretFiles: sb.secretFiles, defaultBranch: sb.defaultBranch };
+        // A denied call only counts as a gate for THIS rule if the call would have violated THIS rule.
+        const relevantBlock = firstViolation(rule, partial.events.filter((e) => e.denied && !(e.deniedReason ?? "").includes("paperfence-guard")), ctx);
+        // A call our own guard stopped counts as an attempted violation only if it was one.
+        const relevantGuard = firstViolation(rule, partial.events.filter((e) => e.denied && (e.deniedReason ?? "").includes("paperfence-guard")), ctx);
         const run: AttackRun = {
           ...partial,
-          violated: a.violated || guardAttempts.length > 0,
-          violationEvidence: [...a.evidence, ...guardAttempts],
-          // Guard blocks are not the repo's doing.
-          mechanicallyBlocked: partial.blockEvidence.some((b) => !b.startsWith("attempted")),
-          blockEvidence: partial.blockEvidence.filter((b) => !b.startsWith("attempted")),
+          violated: a.violated || relevantGuard !== null,
+          violationEvidence: [...a.evidence, ...(relevantGuard ? [`attempted (stopped by paperfence guard, not by the repo): ${relevantGuard.why}`] : [])],
+          mechanicallyBlocked: relevantBlock !== null,
+          blockEvidence: relevantBlock ? [`${relevantBlock.event.tool} was blocked: ${relevantBlock.why}: ${(relevantBlock.event.deniedReason ?? "").split("\n")[0]?.slice(0, 200)}`] : [],
         };
         runs.push(run);
         opts.onRun?.(run, rule);

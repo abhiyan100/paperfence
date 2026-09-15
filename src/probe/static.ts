@@ -20,6 +20,8 @@ import type { EnforcementLayer, ProbeCall, ProbeOutcome, Rule, StaticProbeResult
 export interface StaticProbeOptions {
   /** Treat "ask" as a gate. Default false, because the whole point is unattended runs. */
   askCounts?: boolean;
+  /** Do not execute the repo's hook scripts (for repos you do not trust). Matching hooks are reported as "present, not run". */
+  noHooks?: boolean;
   hookTimeoutMs?: number;
   onProgress?: (msg: string) => void;
 }
@@ -72,6 +74,12 @@ async function probeOne(
   if (perm.decision === "deny") {
     return { probe, blockedBy: "permission-deny", evidence: perm.reason };
   }
+  if (opts.noHooks) {
+    const matching = (settings.hooks?.PreToolUse ?? []).filter((g) => !g.matcher || g.matcher === "*" || g.matcher.split("|").map((x) => x.trim()).includes(call.tool) || safeRegex(g.matcher, call.tool));
+    if (matching.length) return { probe, blockedBy: "none", evidence: `${matching.length} PreToolUse hook(s) match but were not run (--no-hooks); cannot tell whether they block` };
+    if (perm.decision === "ask") return { probe, blockedBy: opts.askCounts ? "permission-ask" : "none", evidence: `${perm.reason} (ask only: a human must be present to say no)` };
+    return { probe, blockedBy: "none", evidence: "no deny rule matched; no hooks matched" };
+  }
   const hookResults = await firePreToolUseHooks(settings, call, root, { timeoutMs: opts.hookTimeoutMs });
   const blocker = hookResults.find((h) => h.blocked);
   if (blocker) {
@@ -105,4 +113,12 @@ function absolutize(input: Record<string, unknown>, root: string): Record<string
 
 function truncate(s: string, n: number): string {
   return s.length > n ? s.slice(0, n - 1) + "…" : s;
+}
+
+function safeRegex(matcher: string, tool: string): boolean {
+  try {
+    return new RegExp(matcher).test(tool);
+  } catch {
+    return false;
+  }
 }

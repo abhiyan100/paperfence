@@ -1,5 +1,6 @@
 import os from "node:os";
 import path from "node:path";
+import { allSegments, parseSegment, type Segment } from "../shell.js";
 
 /**
  * Claude Code permission rule matching, following the documented semantics
@@ -65,44 +66,29 @@ export function bashSpecMatches(spec: string | undefined, command: string): bool
 }
 
 /**
- * Split a shell command into the subcommands Claude Code checks: top-level
- * separators, plus the bodies of $(...) and (...) subshells and backticks.
+ * The subcommands Claude Code checks a deny rule against: every separator,
+ * subshell and command substitution, with quotes respected and wrappers
+ * (command, env, sudo, xargs, ...) stripped so the rule sees the real program.
  */
 export function splitSubcommands(command: string): string[] {
-  const out: string[] = [];
-  const top = command.split(/\s*(?:&&|\|\||\|&|;|\||&(?!&)|\n)\s*/).map((s) => s.trim()).filter(Boolean);
-  for (const seg of top) {
-    out.push(seg);
-    for (const m of seg.matchAll(/\$\(([^()]*)\)|`([^`]*)`|(?:^|\s)\(([^()]*)\)/g)) {
-      const inner = (m[1] ?? m[2] ?? m[3] ?? "").trim();
-      if (inner) out.push(...splitSubcommands(inner));
-    }
-  }
-  return out;
+  return allSegments(command).map((seg) => [seg.prog, ...seg.args.map((a) => (a.quoted && /\s/.test(a.text) ? JSON.stringify(a.text) : a.text))].filter(Boolean).join(" "));
 }
 
 /** Files a Bash subcommand reads or writes in ways the file-permission checks see. */
 export function bashFileTargets(sub: string): { reads: string[]; writes: string[] } {
-  const reads: string[] = [];
-  const writes: string[] = [];
-  const words = sub.trim().split(/\s+/);
-  let i = 0;
-  while (words[i] && (/^[A-Z_][A-Z0-9_]*=/.test(words[i]!) || words[i] === "sudo")) i++;
-  const prog = (words[i] ?? "").split("/").pop() ?? "";
-  if (BASH_FILE_READERS.has(prog)) {
+  return segmentFileTargets(parseSegment(sub));
+}
+
+export function segmentFileTargets(seg: Segment): { reads: string[]; writes: string[] } {
+  const reads = [...seg.reads];
+  const writes = [...seg.writes];
+  if (BASH_FILE_READERS.has(seg.base)) {
     let prev = "";
-    for (const w of words.slice(i + 1)) {
-      const clean = w.replace(/^["']|["']$/g, "");
-      const isOptionValue = /^-(n|c|e|f|s)$/.test(prev) && !clean.startsWith("-");
-      if (!clean.startsWith("-") && !/^[<>]/.test(clean) && clean !== "" && !isOptionValue) reads.push(clean);
-      prev = clean;
+    for (const a of seg.args) {
+      const isOptionValue = /^-(n|c|e|f|s)$/.test(prev) && !a.text.startsWith("-");
+      if (!a.text.startsWith("-") && !isOptionValue) reads.push(a.text);
+      prev = a.text;
     }
-  }
-  for (const m of sub.matchAll(/(?:^|\s)(2?>>?|<)\s*(\S+)/g)) {
-    const target = m[2]!.replace(/^["']|["']$/g, "");
-    if (target.startsWith("&")) continue;
-    if (m[1] === "<") reads.push(target);
-    else writes.push(target);
   }
   return { reads, writes };
 }
@@ -148,16 +134,20 @@ export function pathSpecMatches(spec: string | undefined, filePath: string, root
 
   let pattern = spec.replace(/\\/g, "/");
   let anchor: string | null = null; // absolute directory the pattern is anchored at
+  let explicitAnchor = false; // leading /, //, or ~/ pins the pattern to its anchor
   if (pattern.startsWith("//")) {
     anchor = "";
     pattern = pattern.slice(2);
+    explicitAnchor = true;
   } else if (pattern.startsWith("~/")) {
     anchor = normalizePath(os.homedir()).replace(/\/$/, "");
     pattern = pattern.slice(2);
+    explicitAnchor = true;
   } else if (pattern.startsWith("/")) {
     // Anchored at the settings source; for project settings that is the project dir.
     anchor = cwd;
     pattern = pattern.slice(1);
+    explicitAnchor = true;
   } else {
     anchor = cwd;
     pattern = normalizePath(pattern);
@@ -177,7 +167,7 @@ export function pathSpecMatches(spec: string | undefined, filePath: string, root
   const anchoredFull = new RegExp(`^${anchor === "" ? "" : anchor.replace(/[.+?^${}()|[\]\\]/g, "\\$&")}/${relRe}(?:/.*)?$`);
   if (anchoredFull.test(abs)) return true;
   // Only relative patterns get the any-depth treatment; // and ~/ are anchored where they say.
-  const single = anchor === cwd ? pattern.match(/^([^/*?]+)\/\*\*$/) : null;
+  const single = !explicitAnchor ? pattern.match(/^([^/*?]+)\/\*\*$/) : null;
   if (single) {
     const dir = single[1]!.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
     if (new RegExp(`^${anchor === "" ? "" : anchor.replace(/[.+?^${}()|[\]\\]/g, "\\$&")}/(?:.*/)?${dir}/.+$`).test(abs)) return true;
@@ -221,11 +211,11 @@ export function ruleMatchesCall(rule: ParsedRule, call: ToolCall, root?: string)
     if (toolName === "Bash") {
       // Read/Edit deny rules also cover recognised file commands and redirections.
       const cmd = String(call.input.command ?? "");
-      for (const sub of splitSubcommands(cmd)) {
-        const { reads, writes } = bashFileTargets(sub);
+      for (const seg of allSegments(cmd)) {
+        const { reads, writes } = segmentFileTargets(seg);
         const targets = rule.tool === "Read" ? reads : writes;
         for (const t of targets) {
-          if (pathSpecMatches(rule.spec, t, root)) return `${rule.raw} matched "${sub}" (file command)`;
+          if (pathSpecMatches(rule.spec, t, root)) return `${rule.raw} matched "${seg.raw}" (file command)`;
         }
       }
       return null;

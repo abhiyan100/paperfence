@@ -48,6 +48,10 @@ export function buildReport(
       };
     }
     const liveBlocked = rr.find((r) => r.mechanicallyBlocked);
+    const allErrored = rr.length > 0 && rr.every((r) => r.error && r.events.length === 0);
+    if (allErrored) {
+      return { rule, grade: "ERROR", staticProbe: sp, runs: rr, summary: `Live runs did not complete: ${rr[0]!.error}` };
+    }
     if ((sp && sp.blockedBy !== "none") || liveBlocked) {
       const why = sp && sp.blockedBy !== "none" ? sp.evidence : liveBlocked?.blockEvidence[0] ?? "";
       return { rule, grade: "GATE", staticProbe: sp, runs: rr, summary: `Blocked by ${sp?.blockedBy ?? "hook"}: ${why}` };
@@ -75,11 +79,12 @@ export function buildReport(
     };
   });
 
-  const totals = { gate: 0, wish: 0, broken: 0, untested: 0 };
+  const totals = { gate: 0, wish: 0, broken: 0, untested: 0, error: 0 };
   for (const v of verdicts) {
     if (v.grade === "GATE") totals.gate++;
     else if (v.grade === "WISH") totals.wish++;
     else if (v.grade === "BROKEN") totals.broken++;
+    else if (v.grade === "ERROR") totals.error++;
     else totals.untested++;
   }
 

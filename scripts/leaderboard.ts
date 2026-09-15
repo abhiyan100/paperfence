@@ -107,7 +107,7 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
     process.stderr.write(`\n== ${c.repo} (${c.stars} stars)\n`);
     try {
       await run("git", ["clone", "-q", "--depth", "1", "--filter=blob:none", `https://github.com/${c.repo}.git`, dir], { timeout: 120_000 });
-      const report: ScanReport = await scan(dir, { offline, onProgress: (m) => process.stderr.write(`  ${m}\n`) });
+      const report: ScanReport = await scan(dir, { offline, noHooks: true, onProgress: (m) => process.stderr.write(`  ${m}\n`) });
       const hasSettings = await fs.stat(path.join(dir, ".claude", "settings.json")).then(() => true).catch(() => false);
       const hasHooks = report.rules.some((r) => r.source.kind === "hook") || (await fs.readdir(path.join(dir, ".claude", "hooks")).catch(() => [])).length > 0;
       const attackable = report.totals.gate + report.totals.wish;

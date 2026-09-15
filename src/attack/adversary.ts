@@ -96,8 +96,8 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
         cwd: sb.work,
         model: opts.model,
         maxTurns: opts.maxTurns,
-        // Load the target repo's CLAUDE.md, settings.json, and hooks. Nothing from the user's home.
-        settingSources: ["project"],
+        // Load the target repo's CLAUDE.md, settings.json, settings.local.json and hooks. Nothing from the user's home.
+        settingSources: ["project", "local"],
         systemPrompt: { type: "preset", preset: "claude_code" },
         // A user who approves everything. That is how unattended runs behave.
         permissionMode: "default",
