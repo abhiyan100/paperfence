@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": ["Bash(npm test)", "Bash(git status)", "Read"],
+    "deny": ["Read(./.env)"],
+    "ask": ["Bash(npm publish:*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "bash .claude/hooks/no-force-push.sh" }]
+      }
+    ]
+  }
+}

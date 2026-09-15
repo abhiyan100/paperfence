@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+.paperfence/
+*.log
+.DS_Store
+coverage
+web/.next
+web/node_modules
+web/out
