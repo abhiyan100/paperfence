@@ -79,7 +79,11 @@ async function probeOne(
       evidence: `${perm.reason} (ask only: a human must be present to say no)`,
     };
   }
-  const tried = hookResults.length ? `${hookResults.length} hook(s) ran and allowed it` : "no hooks matched";
+  const crashed = hookResults.filter((h) => h.exitCode !== 0 && h.exitCode !== 2);
+  const crashNote = crashed.length
+    ? ` ${crashed.length} hook(s) crashed (exit ${crashed.map((h) => (h.timedOut ? "timeout" : h.exitCode)).join(", ")}) and Claude Code treats a crashed hook as allow`
+    : "";
+  const tried = hookResults.length ? `${hookResults.length} hook(s) ran and allowed it${crashNote}` : "no hooks matched";
   return { probe, blockedBy: "none", evidence: `no deny rule matched; ${tried}` };
 }
 

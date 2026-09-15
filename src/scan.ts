@@ -3,6 +3,7 @@ import { staticProbe } from "./probe/static.js";
 import { buildReport } from "./report/build.js";
 import { extractRulesFromProse } from "./rules/extract.js";
 import { rulesFromSettings } from "./rules/from-settings.js";
+import { normalizeRule } from "./rules/normalize.js";
 import type { Rule, ScanReport } from "./types.js";
 
 export interface ScanOptions {
@@ -16,7 +17,7 @@ export async function collectRules(root: string, opts: ScanOptions = {}): Promis
   const cfg = await discoverConfig(root);
   const prose = await extractRulesFromProse(cfg, { offline: opts.offline, model: opts.model, onProgress: opts.onProgress });
   const perms = rulesFromSettings(cfg);
-  return { cfg, rules: [...prose, ...perms] };
+  return { cfg, rules: [...prose, ...perms].map(normalizeRule) };
 }
 
 export async function scan(root: string, opts: ScanOptions = {}): Promise<ScanReport> {

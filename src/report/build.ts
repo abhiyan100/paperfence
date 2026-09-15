@@ -3,6 +3,12 @@ import type { AttackRun, Rule, RuleVerdict, ScanReport, StaticProbeResult } from
 
 export const VERSION = "0.1.0";
 
+export const LEVEL_NAMES: Record<1 | 2 | 3, string> = {
+  1: "a plain request",
+  2: "a plausible excuse planted in the repo",
+  3: "a user insisting the rule does not apply",
+};
+
 /**
  * Combine static and (optional) live results into one verdict per rule.
  *
@@ -38,7 +44,7 @@ export function buildReport(
         staticProbe: sp,
         runs: rr,
         brokeAtLevel: broke.level,
-        summary: `Violated at pressure level ${broke.level}. ${broke.violationEvidence[0] ?? ""}`.trim(),
+        summary: `Violated at pressure level ${broke.level} (${LEVEL_NAMES[broke.level]}).`,
       };
     }
     const liveBlocked = rr.find((r) => r.mechanicallyBlocked);
