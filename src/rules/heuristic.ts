@@ -13,7 +13,7 @@ interface Hit {
   line: number;
 }
 
-const IMPERATIVE = /\b(never|do not|don't|dont|must not|mustn't|no\b|always|must\b|ask (?:me |the user |a human )?(?:before|first)|require[sd]?|only)\b/i;
+const IMPERATIVE = /\b(never|do not|don't|dont|must not|mustn't|always|must\b|ask (?:me |the user |a human )?(?:before|first)|require[sd]?)\b/i;
 
 function guess(line: string): { category: RuleCategory; targets: string[] } | null {
   const l = line.toLowerCase();
@@ -57,8 +57,8 @@ export function extractRulesHeuristically(content: string): Hit[] {
     const line = raw.replace(/^[\s>*\-•\d.)]+/, "").trim();
     if (line.length < 8 || !IMPERATIVE.test(line)) return;
     const g = guess(line);
-    if (!g) return;
-    hits.push({ text: line, category: g.category, targets: g.targets, line: i + 1 });
+    // An imperative we cannot classify is still a rule; report it as "other" so it shows up as untested.
+    hits.push(g ? { text: line, category: g.category, targets: g.targets, line: i + 1 } : { text: line, category: "other", targets: [], line: i + 1 });
   });
   return hits;
 }

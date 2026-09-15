@@ -9,6 +9,7 @@ Things worth doing that did not block the current milestone. Mostly from reviews
 - Conformance suite: differential tests of the permission matcher against a pinned Claude Code build (run the real CLI with a settings file and a mock command, compare decisions).
 - The percentages in the summary count prose rules and their matching permission entries separately. Consider de-duplicating a prose rule that is backed by a permission entry.
 - Harden overwrites `policy.json` unconditionally. Merge or back up.
-- Heuristic (offline) extractor should emit an "other" rule for imperative lines it cannot classify, so they show up as UNTESTED rather than vanishing.
 - Docker image pins `@anthropic-ai/claude-agent-sdk@0.3.272`. Read the version from package.json at build time.
-- Leaderboard: cache clones; run in parallel with a concurrency limit.
+- Leaderboard: run repos in parallel with a concurrency limit; add a manual list of well-known repos that GitHub code search does not surface.
+- Conformance: the hook-probe and permission-matcher tests encode the documented semantics; a differential run against the real CLI (settings file + mock command) would catch doc drift.
+- Host guard is best effort by design. Known holes: a symlink created during the run (`ln -s /etc x`) and then read through a relative path; anything that spawns a program not in the network list. Docker mode is the answer; do not extend the regexes much further.

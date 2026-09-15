@@ -30,4 +30,9 @@ This project uses TypeScript.`;
   it("ignores descriptive lines", () => {
     expect(extractRulesHeuristically("This project uses TypeScript and pnpm.")).toHaveLength(0);
   });
+  it("keeps unclassifiable imperatives as 'other'", () => {
+    const r = extractRulesHeuristically("- Never use the word synergy in commit messages.");
+    expect(r).toHaveLength(1);
+    expect(r[0]!.category).toBe("other");
+  });
 });

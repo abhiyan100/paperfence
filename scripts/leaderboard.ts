@@ -71,6 +71,53 @@ async function discover(): Promise<void> {
   process.stderr.write(`wrote ${candidates.length} candidates; top: ${candidates.slice(0, 5).map((c) => `${c.repo} (${c.stars})`).join(", ")}\n`);
 }
 
+/**
+ * Pull only the agent-config files through the API instead of cloning:
+ * CLAUDE.md, AGENTS.md, .claude/settings*.json, .claude/rules/*.md, and the
+ * names of .claude/hooks/*. A few requests per repo, no working tree.
+ */
+async function fetchConfig(repo: string, branch: string, dir: string): Promise<void> {
+  await fs.mkdir(dir, { recursive: true });
+  const raw = async (p: string): Promise<string | null> => {
+    try {
+      return await gh(["api", `repos/${repo}/contents/${p}?ref=${encodeURIComponent(branch)}`, "-H", "Accept: application/vnd.github.raw+json"]);
+    } catch {
+      return null;
+    }
+  };
+  const listDir = async (p: string): Promise<{ name: string; type: string }[]> => {
+    try {
+      const out = await gh(["api", `repos/${repo}/contents/${p}?ref=${encodeURIComponent(branch)}`]);
+      const j = JSON.parse(out);
+      return Array.isArray(j) ? j.map((e: { name: string; type: string }) => ({ name: e.name, type: e.type })) : [];
+    } catch {
+      return [];
+    }
+  };
+  let got = 0;
+  for (const f of ["CLAUDE.md", "AGENTS.md", ".claude/CLAUDE.md", ".claude/settings.json", ".claude/settings.local.json"]) {
+    const body = await raw(f);
+    if (body === null) continue;
+    await fs.mkdir(path.join(dir, path.dirname(f)), { recursive: true });
+    await fs.writeFile(path.join(dir, f), body);
+    got++;
+  }
+  for (const e of await listDir(".claude/rules")) {
+    if (e.type !== "file" || !e.name.endsWith(".md")) continue;
+    const body = await raw(`.claude/rules/${e.name}`);
+    if (body === null) continue;
+    await fs.mkdir(path.join(dir, ".claude", "rules"), { recursive: true });
+    await fs.writeFile(path.join(dir, ".claude", "rules", e.name), body);
+  }
+  for (const e of await listDir(".claude/hooks")) {
+    if (e.type !== "file") continue;
+    // Presence is enough; we never execute hooks from repos we do not own.
+    await fs.mkdir(path.join(dir, ".claude", "hooks"), { recursive: true });
+    await fs.writeFile(path.join(dir, ".claude", "hooks", e.name), "# not fetched\n");
+  }
+  if (!got) throw new Error("no CLAUDE.md or settings found on the default branch");
+}
+
 interface Row {
   repo: string;
   stars: number;
@@ -106,7 +153,7 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
     const dir = path.join(tmp, c.repo.replace("/", "__"));
     process.stderr.write(`\n== ${c.repo} (${c.stars} stars)\n`);
     try {
-      await run("git", ["clone", "-q", "--depth", "1", "--filter=blob:none", `https://github.com/${c.repo}.git`, dir], { timeout: 120_000 });
+      await fetchConfig(c.repo, c.defaultBranch, dir);
       const report: ScanReport = await scan(dir, { offline, noHooks: true, onProgress: (m) => process.stderr.write(`  ${m}\n`) });
       const hasSettings = await fs.stat(path.join(dir, ".claude", "settings.json")).then(() => true).catch(() => false);
       const hasHooks = report.rules.some((r) => r.source.kind === "hook") || (await fs.readdir(path.join(dir, ".claude", "hooks")).catch(() => [])).length > 0;

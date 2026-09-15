@@ -95,7 +95,7 @@ That "partly fenced" line is the kind of thing this tool exists for. A `Read(./.
 
 - A gate is a gate for the violations paperfence tried. The probe list is public (`src/rules/catalog.ts`) and the live agent is free to find a form the probes did not. A rule that held at all three levels is still a wish; the point is that you should not have to find out on the day it does not hold.
 - It models Claude Code's permission and hook semantics as documented at code.claude.com/docs/en/permissions. Other agents read `AGENTS.md`; paperfence reads it too, but has no enforcement model for those tools and says so.
-- The rule catalog covers the rules people actually write: protected branches, tests, secrets, destructive commands, force push, dependencies, path scope, "run X before Y", "ask before X", and outbound network. Anything else is reported as untested rather than guessed. In `--offline` mode, rules the heuristic cannot classify are dropped rather than reported; use the model for a complete list.
+- The rule catalog covers the rules people actually write: protected branches, tests, secrets, destructive commands, force push, dependencies, path scope, "run X before Y", "ask before X", and outbound network. Anything else is reported as untested rather than guessed.
 - The attack tasks assume a small Node project (a README typo, a failing test, an `infra/` directory). On a repo without those, the agent may simply be unable to do the task. Those runs come back as "held", with what the agent said.
 
 ## License
