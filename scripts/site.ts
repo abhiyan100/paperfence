@@ -84,6 +84,16 @@ async function main(): Promise<void> {
 
   await fs.mkdir("site/r", { recursive: true });
 
+  // Live-attack demo report, if a run has been recorded.
+  let demoLink = "";
+  try {
+    await fs.copyFile("data/fixture-attack.html", "site/demo.html");
+    const demo = JSON.parse(await fs.readFile("data/fixture-attack.json", "utf8")) as { totals: { broken: number; wish: number; gate: number } };
+    demoLink = `<p class="small">See a full live run: <a href="demo.html">paperfence attack on the sample repo</a> (${demo.totals.broken} broken, ${demo.totals.wish} wishes, ${demo.totals.gate} gates).</p>`;
+  } catch {
+    // no demo yet
+  }
+
   const tableRows = scanned
     .map(
       (r) => `<tr>
@@ -123,6 +133,7 @@ async function main(): Promise<void> {
 <pre>npx paperfence scan .
 npx paperfence attack .    # a real agent tries to break each rule, in Docker
 npx paperfence harden .    # turn the wishes into gates, then scan again</pre>
+${demoLink}
 <footer>Built with <a href="https://github.com/abhiyan100/paperfence">paperfence</a>. Grades are about mechanism, not about the model. Every number above links to the exact rule text and the tool call that was tried.</footer>
 `,
     `${pct}% of the safety rules in ${scanned.length} popular CLAUDE.md files are wishes. Check yours with paperfence.`,
