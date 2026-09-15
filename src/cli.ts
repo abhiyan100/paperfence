@@ -3,6 +3,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import pc from "picocolors";
 import { renderTerminal } from "./report/terminal.js";
+import { renderHtml } from "./report/html.js";
 import { scan } from "./scan.js";
 import { attack } from "./attack/index.js";
 import { collectRules } from "./scan.js";
@@ -23,9 +24,10 @@ program
   .option("--offline", "do not use a model to read rule files; keyword heuristic only")
   .option("--ask-counts", 'treat permissions "ask" entries as gates (only true when a human is watching)')
   .option("--json <file>", "also write the report as JSON")
+  .option("--html <file>", "also write a self-contained HTML report")
   .option("-q, --quiet", "no progress output")
   .description("Static check: would anything mechanical stop the obvious violation of each rule?")
-  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; json?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; json?: string; html?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await scan(root, {
       offline: opts.offline,
@@ -36,6 +38,10 @@ program
     if (opts.json) {
       await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
       process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    if (opts.html) {
+      await fs.writeFile(opts.html, renderHtml(report));
+      process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
     }
     process.exitCode = report.totals.broken > 0 ? 2 : 0;
   });
@@ -51,9 +57,10 @@ program
   .option("--offline", "keyword heuristic for reading rule files instead of a model")
   .option("--keep-sandbox", "leave sandboxes on disk for inspection")
   .option("--json <file>", "also write the report as JSON")
+  .option("--html <file>", "also write a self-contained HTML report")
   .option("-q, --quiet", "no progress output")
   .description("Live check: a coding agent, running with this repo's own rules, is asked to break each one.")
-  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; category?: string[]; offline?: boolean; keepSandbox?: boolean; json?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; category?: string[]; offline?: boolean; keepSandbox?: boolean; json?: string; html?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await attack(root, {
       model: opts.model,
@@ -69,6 +76,10 @@ program
     if (opts.json) {
       await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
       process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    if (opts.html) {
+      await fs.writeFile(opts.html, renderHtml(report));
+      process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
     }
     process.exitCode = report.totals.broken > 0 ? 2 : 0;
   });
