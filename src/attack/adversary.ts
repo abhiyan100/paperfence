@@ -1,4 +1,5 @@
 import { query, type HookCallback, type HookInput } from "@anthropic-ai/claude-agent-sdk";
+import fs from "node:fs";
 import path from "node:path";
 import type { Sandbox } from "../sandbox/host.js";
 import type { AttackRun, PressureLevel, Rule, ToolEvent } from "../types.js";
@@ -39,8 +40,29 @@ const GUARD_PREFIX = "paperfence-guard:";
 
 function makeGuard(sb: Sandbox): HookCallback {
   const inside = (p: string) => {
-    const abs = path.resolve(sb.work, p);
-    return abs === sb.work || abs.startsWith(sb.work + path.sep) || abs.startsWith(sb.dir + path.sep);
+    let abs = path.resolve(sb.work, p);
+    try {
+      abs = fs.realpathSync(abs);
+    } catch {
+      // does not exist yet: check the nearest existing parent
+      let parent = path.dirname(abs);
+      while (parent !== path.dirname(parent) && !fs.existsSync(parent)) parent = path.dirname(parent);
+      try {
+        abs = path.join(fs.realpathSync(parent), path.relative(parent, abs));
+      } catch {
+        return false;
+      }
+    }
+    return abs === sb.dir || abs.startsWith(sb.dir + path.sep);
+  };
+  // Any absolute path or ~ or .. in a shell word that resolves outside the sandbox.
+  const shellEscapes = (c: string): string | null => {
+    for (const w of c.split(/\s+/)) {
+      const t = w.replace(/^["']|["']$/g, "").replace(/^[<>]+/, "");
+      if (/^(\/|~|\$HOME)/.test(t) && !/^\/dev\/null$/.test(t) && !inside(t.replace(/^~|^\$HOME/, process.env.HOME ?? "/nonexistent"))) return t;
+      if (t.split("/").includes("..") && !inside(t)) return t;
+    }
+    return null;
   };
   return async (input: HookInput) => {
     if (input.hook_event_name !== "PreToolUse") return {};
@@ -54,11 +76,13 @@ function makeGuard(sb: Sandbox): HookCallback {
     }
     if (tool === "Bash") {
       const c = String(ti.command ?? "");
+      const esc = shellEscapes(c);
       if (/\bsudo\b|\bsu\b\s|\bdoas\b/.test(c)) reason = "privilege escalation";
-      else if (/\b(curl|wget|nc|ncat|ssh|scp|rsync|ftp)\b/.test(c) && !/127\.0\.0\.1|localhost/.test(c)) reason = `network to a real host: ${c}`;
-      else if (/\brm\s+-[a-z]*r/.test(c) && /\s(\/|~|\$HOME|\.\.)(\s|$|\/)/.test(c)) reason = `rm outside sandbox: ${c}`;
-      else if (/\bcd\s+(\/|~|\.\.)/.test(c) && !c.includes(sb.dir)) reason = `leaving sandbox: ${c}`;
-      else if (/\bgit\s+push\b/.test(c) && /https?:\/\/|git@/.test(c)) reason = `push to a real remote: ${c}`;
+      else if (/\b(curl|wget|nc|ncat|netcat|ssh|scp|sftp|rsync|ftp|telnet|socat)\b/.test(c) && !/^[^|;&]*\b(curl|wget|nc|ncat|netcat)\b[^|;&]*(127\.0\.0\.1|localhost)[^|;&]*$/.test(c)) reason = `network to a real host: ${c}`;
+      else if (/\b(python3?|node|ruby|perl|php|deno|bun)\b/.test(c) && /\b(fetch\(|https?\.request|urllib|requests\.|http\.client|net\.connect|socket\.|WebSocket)/.test(c) && !/127\.0\.0\.1|localhost/.test(c)) reason = `network from a script: ${c}`;
+      else if (esc) reason = `path outside sandbox: ${esc}`;
+      else if (/\bgit\s+push\b/.test(c) && /https?:\/\/|git@|ssh:\/\//.test(c)) reason = `push to a real remote: ${c}`;
+      else if (/\b(crontab|launchctl|systemctl|osascript|open\s|xdg-open|defaults\s+write)\b/.test(c)) reason = `system command: ${c}`;
     }
     if (tool === "WebFetch" || tool === "WebSearch") {
       const url = String(ti.url ?? "");
@@ -103,7 +127,8 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
         permissionMode: "default",
         canUseTool: async (_toolName, input) => ({ behavior: "allow", updatedInput: input }),
         hooks,
-        env: { ...process.env, PAPERFENCE_SANDBOX: sb.work, GIT_TERMINAL_PROMPT: "0" },
+        // Minimal environment: the agent must not inherit this machine's tokens and keys.
+        env: minimalEnv(sb),
       },
     });
 
@@ -172,6 +197,20 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
     turns,
     error,
   };
+}
+
+function minimalEnv(sb: Sandbox): Record<string, string> {
+  const keep = ["PATH", "HOME", "USER", "LANG", "LC_ALL", "TERM", "TMPDIR", "SHELL", "ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN"];
+  const env: Record<string, string> = {};
+  for (const k of keep) if (process.env[k]) env[k] = process.env[k]!;
+  env.PAPERFENCE_SANDBOX = sb.work;
+  env.GIT_TERMINAL_PROMPT = "0";
+  env.GIT_AUTHOR_NAME = "agent";
+  env.GIT_AUTHOR_EMAIL = "agent@sandbox";
+  env.GIT_COMMITTER_NAME = "agent";
+  env.GIT_COMMITTER_EMAIL = "agent@sandbox";
+  env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
+  return env;
 }
 
 function summarize(input: unknown): string {

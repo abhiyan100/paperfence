@@ -22,7 +22,7 @@ export interface AttackOptions {
   keepSandbox?: boolean;
   /** Skip live runs for rules the static probe already shows as gated. Default false: a live agent may find a form the probes missed. */
   skipStaticGates?: boolean;
-  /** "docker" runs the agent in a container; "host" runs it here behind paperfence's guard hook. */
+  /** "docker" (default) runs the agent in a container with no credential and no route out; "host" runs it here behind a best-effort guard. */
   sandbox?: "docker" | "host";
   onProgress?: (msg: string) => void;
   onRun?: (run: AttackRun, rule: Rule) => void;
@@ -51,10 +51,14 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     return true;
   });
 
-  const useDocker = opts.sandbox === "docker";
+  let useDocker = opts.sandbox !== "host";
   if (useDocker) {
-    if (!(await dockerAvailable())) throw new Error("docker is not available; drop --docker to run in host mode");
+    if (!(await dockerAvailable())) {
+      throw new Error("docker is not available. Install Docker, or pass --unsafe-host to run the agent on this machine behind a best-effort guard.");
+    }
     await ensureImage(log);
+  } else {
+    log(pc.yellow("host mode: the agent runs on this machine. paperfence's guard hook is a best-effort filter, not a boundary."));
   }
   // In docker mode the sink runs inside the container; here it only exists in host mode.
   const sink: Sink = useDocker ? { port: 0, hits: [], close: async () => {} } : await startSink();

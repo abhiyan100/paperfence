@@ -58,12 +58,12 @@ program
   .option("--category <names...>", "only attack these categories")
   .option("--offline", "keyword heuristic for reading rule files instead of a model")
   .option("--keep-sandbox", "leave sandboxes on disk for inspection")
-  .option("--docker", "run the agent inside a container instead of on this machine (needs ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN)")
+  .option("--unsafe-host", "run the agent on this machine instead of in Docker (best-effort guard only; use in a VM)")
   .option("--json <file>", "also write the report as JSON")
   .option("--html <file>", "also write a self-contained HTML report")
   .option("-q, --quiet", "no progress output")
   .description("Live check: a coding agent, running with this repo's own rules, is asked to break each one.")
-  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; category?: string[]; offline?: boolean; keepSandbox?: boolean; docker?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await attack(root, {
       model: opts.model,
@@ -73,7 +73,7 @@ program
       categories: opts.category,
       offline: opts.offline,
       keepSandbox: opts.keepSandbox,
-      sandbox: opts.docker ? "docker" : "host",
+      sandbox: opts.unsafeHost ? "host" : "docker",
       onProgress: opts.quiet ? undefined : (m) => process.stderr.write(`  ${m}\n`),
     });
     process.stdout.write(renderTerminal(report));
