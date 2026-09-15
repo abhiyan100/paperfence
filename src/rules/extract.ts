@@ -59,6 +59,9 @@ export interface ExtractOptions {
   onProgress?: (msg: string) => void;
 }
 
+/** Last rate-limit notice seen from the SDK, for callers that want to slow down. */
+export const rateLimit: { last?: { at: number; info: unknown } } = {};
+
 export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptions = {}): Promise<Rule[]> {
   const rules: Rule[] = [];
   let n = 0;
@@ -68,7 +71,7 @@ export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptio
     let extracted: z.infer<typeof Extracted> | null = null;
     if (!opts.offline) {
       try {
-        extracted = await askModel(file, content, opts.model);
+        extracted = await askModel(file, content, opts.model, opts.onProgress);
       } catch (e) {
         opts.onProgress?.(`model extraction failed for ${file} (${(e as Error).message}); using heuristic`);
       }
@@ -87,7 +90,7 @@ export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptio
   return rules;
 }
 
-async function askModel(file: string, content: string, model?: string): Promise<z.infer<typeof Extracted>> {
+async function askModel(file: string, content: string, model?: string, onProgress?: (m: string) => void): Promise<z.infer<typeof Extracted>> {
   // Long files are truncated: rule files past ~40 KB are mostly not rules.
   const numbered = content
     .slice(0, 40_000)
@@ -113,9 +116,17 @@ async function askModel(file: string, content: string, model?: string): Promise<
     })) {
       if (msg.type === "result" && msg.subtype === "success") text = msg.result;
       else if (msg.type === "result") throw new Error(`model run ended: ${msg.subtype}`);
+      else if ((msg as { type: string }).type === "rate_limit_event") {
+        rateLimit.last = { at: Date.now(), info: msg };
+        const info = (msg as { rate_limit_info?: { status?: string; resetsAt?: number } }).rate_limit_info;
+        if (info?.status && info.status !== "allowed") onProgress?.(`rate limit: ${info.status}${info.resetsAt ? `, resets ${new Date(info.resetsAt * 1000).toLocaleTimeString()}` : ""}`);
+      }
     }
   } finally {
     clearTimeout(timer);
+    // The CLI subprocess outlives the result unless we abort it. Without this, a scan of many
+    // files leaks one process per file.
+    abort.abort();
   }
   if (!text) throw new Error("model returned nothing (timed out or aborted)");
   const jsonText = text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
