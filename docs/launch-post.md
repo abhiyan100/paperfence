@@ -1,6 +1,6 @@
 # Launch post drafts (X)
 
-Fill {N} and {PCT} from data/leaderboard.json before posting. Keep post 1 under 280 chars.
+Numbers from data/leaderboard.json, scanned 2026-09-15. Keep post 1 under 280 chars.
 
 ## Post 1 (the hook)
 
@@ -25,11 +25,11 @@ npx paperfence scan .
 
 ## Post 3 (the leaderboard, reply to 2)
 
-I scanned {N} public repos that ship a CLAUDE.md, ranked by stars. {PCT}% of their action rules are wishes: no deny rule, no hook that matches.
+I scanned 80 public repos that ship a CLAUDE.md, ranked by stars. 593 rules that tell the agent what not to do. 2 of them are backed by a deny rule. 591 are wishes.
 
-Only {SETTINGS} of them have a .claude/settings.json at all. {HOOKS} ship a hook.
+Only 14 of the 80 have a .claude/settings.json at all. 6 ship a hook. 79 of 80 have zero gates.
 
-{VERCEL_URL}
+https://paperfence.vercel.app
 
 (Rules a present-but-unexecuted hook might cover are counted as unknown, not as wishes. I don't run hook scripts from repos I don't own.)
 

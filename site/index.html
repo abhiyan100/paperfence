@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>paperfence · the fence report</title><meta name="description" content="100% of the safety rules in 7 popular CLAUDE.md files are wishes. Check yours with paperfence.">
-<meta property="og:title" content="paperfence · the fence report"><meta property="og:description" content="100% of the safety rules in 7 popular CLAUDE.md files are wishes. Check yours with paperfence.">
+<title>paperfence · the fence report</title><meta name="description" content="99.7% of the safety rules in 80 popular CLAUDE.md files are wishes. Check yours with paperfence.">
+<meta property="og:title" content="paperfence · the fence report"><meta property="og:description" content="99.7% of the safety rules in 80 popular CLAUDE.md files are wishes. Check yours with paperfence.">
 <style>
 :root{--bg:#fbfaf7;--fg:#1c1b19;--muted:#6b6862;--line:#e6e2d9;--gate:#1f7a4d;--gate-bg:#e3f4ea;--wish:#a86a00;--wish-bg:#fff2d6;--broken:#b3261e;--broken-bg:#fde7e5;--untested-bg:#eeece7;--code:#f1efe9;--accent:#1c1b19}
 @media(prefers-color-scheme:dark){:root{--bg:#141311;--fg:#ece9e2;--muted:#9a968e;--line:#2b2925;--gate:#6fd39a;--gate-bg:#12301f;--wish:#f0b64a;--wish-bg:#3a2a08;--broken:#ff8a80;--broken-bg:#3d1512;--untested-bg:#24221f;--code:#1f1d1a;--accent:#ece9e2}}
@@ -34,15 +34,15 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 </style></head><body><main>
 <nav><a href="https://github.com/abhiyan100/paperfence">paperfence on GitHub</a></nav>
 <h1>The fence report</h1>
-<p class="lede">7 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
+<p class="lede">80 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
 <div class="big">
-  <div class="stat wish"><b>100%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
-  <div class="stat gate"><b>0%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
-  <div class="stat"><b>7</b><span>of 7 repos have zero gates</span></div>
-  <div class="stat"><b>1</b><span>repos ship any hook at all (1 have a settings.json)</span></div>
+  <div class="stat wish"><b>99.7%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
+  <div class="stat gate"><b>0.3%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
+  <div class="stat"><b>79</b><span>of 80 repos have zero gates</span></div>
+  <div class="stat"><b>6</b><span>repos ship any hook at all (14 have a settings.json)</span></div>
 </div>
-<div class="bar"><i class="w" style="width:100%"></i><i class="g" style="width:0%"></i></div>
-<p class="small">47 wishes, 0 gates across 47 action rules. Scanned 2026-09-15 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
+<div class="bar"><i class="w" style="width:99.7%"></i><i class="g" style="width:0.29999999999999716%"></i></div>
+<p class="small">591 wishes, 2 gates across 593 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-15 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
 <h2>Repos</h2>
 <table>
 <thead><tr><th>repo</th><th class="n">stars</th><th class="n">rules</th><th class="n">wishes</th><th class="hide-sm">settings</th><th class="hide-sm">hooks</th></tr></thead>
@@ -101,6 +101,590 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 <td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
 <td class="yesno hide-sm">no</td>
 <td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/siriwatknp__mui-treasury.html">siriwatknp/mui-treasury</a><span class="desc hide-sm">A collection of ready-to-use components based on Material-UI</span></td>
+<td class="n">2,441</td>
+<td class="n">19</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jbetancur__react-data-table-component.html">jbetancur/react-data-table-component</a><span class="desc hide-sm">A responsive table library with built-in sorting, pagination, selection, expandable rows, </span></td>
+<td class="n">2,232</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/kzahel__web-server-chrome.html">kzahel/web-server-chrome</a><span class="desc hide-sm">200 OK Web Server</span></td>
+<td class="n">1,288</td>
+<td class="n">15</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/MadAppGang__claudish.html">MadAppGang/claudish</a><span class="desc hide-sm">Claude Code. Any Model. The most powerful AI coding agent now speaks every language.</span></td>
+<td class="n">989</td>
+<td class="n">13</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/fedimint__fedimint.html">fedimint/fedimint</a><span class="desc hide-sm">Federated E-Cash Mint</span></td>
+<td class="n">696</td>
+<td class="n">8</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/modery__PowerDocu.html">modery/PowerDocu</a><span class="desc hide-sm">Generate technical documentation from your existing Power Platform solutions, including Fl</span></td>
+<td class="n">646</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/pktgen__Pktgen-DPDK.html">pktgen/Pktgen-DPDK</a><span class="desc hide-sm">DPDK based packet generator</span></td>
+<td class="n">496</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/umputun__cc-thingz.html">umputun/cc-thingz</a><span class="desc hide-sm">various things for claude code</span></td>
+<td class="n">472</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/ai-driven-dev__framework.html">ai-driven-dev/framework</a><span class="desc hide-sm">Marketplace Framework AI-Driven Dev : Context Engineering, Plugins, Agents, Skills, Hooks,</span></td>
+<td class="n">468</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">yes</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/zamesin__Next-Move-Theory-Canon-and-Skills.html">zamesin/Next-Move-Theory-Canon-and-Skills</a><span class="desc hide-sm">Claude Code skills for product market research, value props, PRDs, and go-to-market — plus</span></td>
+<td class="n">372</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/MGeurts__genealogy.html">MGeurts/genealogy</a><span class="desc hide-sm">Genealogy is a free and open-source family tree PHP application to record family members a</span></td>
+<td class="n">359</td>
+<td class="n">13</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/puikinsh__kiaalap.html">puikinsh/kiaalap</a><span class="desc hide-sm">Free admin dashboard template focused on education, online course and school management. B</span></td>
+<td class="n">327</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/generalui__s3p.html">generalui/s3p</a><span class="desc hide-sm">list/copy/sync/compare S3 buckets 5x-50x faster than aws-cli</span></td>
+<td class="n">323</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/SCTY-Inc__mirofish-cli.html">SCTY-Inc/mirofish-cli</a><span class="desc hide-sm">Multi-agent AI prediction engine - digital sandbox for scenario simulation (fork of 666ghj</span></td>
+<td class="n">310</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/TornLux__UnrealBridge.html">TornLux/UnrealBridge</a><span class="desc hide-sm">Typed control surface for Unreal Engine that lets AI agents introspect assets, author Blue</span></td>
+<td class="n">302</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/nkarasiak__qgis-mcp.html">nkarasiak/qgis-mcp</a><span class="desc hide-sm">Connect QGIS to AI agent through the Model Context Protocol (MCP)</span></td>
+<td class="n">300</td>
+<td class="n">9</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/tom-doerr__dotfiles.html">tom-doerr/dotfiles</a><span class="desc hide-sm">Contains my configuration files</span></td>
+<td class="n">280</td>
+<td class="n">19</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/haddocking__haddock3.html">haddocking/haddock3</a><span class="desc hide-sm">Official repo of the modular BioExcel version of HADDOCK</span></td>
+<td class="n">272</td>
+<td class="n">8</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/narnia-sh__layrr.html">narnia-sh/layrr</a><span class="desc hide-sm">A browser coding agent interface for selecting elements and sending instructions directly </span></td>
+<td class="n">266</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/semos-labs__attyx.html">semos-labs/attyx</a><span class="desc hide-sm">GPU accelerated terminal for agentic workflows</span></td>
+<td class="n">240</td>
+<td class="n">2<span class="small"> +3?</span></td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/GeiserX__Telegram-Archive.html">GeiserX/Telegram-Archive</a><span class="desc hide-sm">Own your Telegram history. Automated, incremental backups with a local web viewer that fee</span></td>
+<td class="n">205</td>
+<td class="n">18</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/vunguyentuan__vscode-css-variables.html">vunguyentuan/vscode-css-variables</a><span class="desc hide-sm">CSS variables autocomplete for vscode</span></td>
+<td class="n">191</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/rust-dd__stochastic-rs.html">rust-dd/stochastic-rs</a><span class="desc hide-sm">High-performance quantitative finance in Rust — 120+ stochastic processes, option pricing,</span></td>
+<td class="n">183</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/getredash__contrib-helm-chart.html">getredash/contrib-helm-chart</a><span class="desc hide-sm">Community maintained Redash Helm Chart</span></td>
+<td class="n">173</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/workersio__skills.html">workersio/skills</a><span class="desc hide-sm">Agent skills to find and fix software bugs</span></td>
+<td class="n">170</td>
+<td class="n">10</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jacopone__antigravity-nix.html">jacopone/antigravity-nix</a><span class="desc hide-sm">Auto-updating Nix package for Google Antigravity agentic IDE. Updates 3x/week. FHS environ</span></td>
+<td class="n">164</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/Shpigford__studio.html">Shpigford/studio</a><span class="desc hide-sm">A suite of random, mostly weird, generative art tools!</span></td>
+<td class="n">160</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/mwangli__stock-trading.html">mwangli/stock-trading</a><span class="desc hide-sm">AI小模型股票自动交易系统后端项目，使用DL4J框架实现LSTM模型实现股票价格预测和自动化股票交易，后端技术栈包含springboot，mysql，MongoDB，quartZ，</span></td>
+<td class="n">147</td>
+<td class="n">30</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/gaopengbin__cesium-mcp.html">gaopengbin/cesium-mcp</a><span class="desc hide-sm">Protocol-agnostic CesiumJS AI control runtime for MCP, WebMCP, function calling, and brows</span></td>
+<td class="n">136</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/bloxbean__cardano-client-lib.html">bloxbean/cardano-client-lib</a><span class="desc hide-sm">Cardano client library in Java</span></td>
+<td class="n">133</td>
+<td class="n">10</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/exa-labs__exa-js.html">exa-labs/exa-js</a><span class="desc hide-sm">The Official Exa Javascript SDK</span></td>
+<td class="n">130</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/Trystan-SA__rproc.html">Trystan-SA/rproc</a><span class="desc hide-sm"> A Linux resource &amp; process monitor inspired by Windows 11&#39;s Task Manager. Written in Rust</span></td>
+<td class="n">124</td>
+<td class="n">8</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/napjon__krisk.html">napjon/krisk</a><span class="desc hide-sm">Statistical Interactive Visualization with pandas+Jupyter integration on top of Echarts.</span></td>
+<td class="n">118</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/quarkiverse__quarkus-flow.html">quarkiverse/quarkus-flow</a><span class="desc hide-sm">Workflow Runtime Engine based on the Open Workflow Specification (CNCF Sandbox project) fo</span></td>
+<td class="n">116</td>
+<td class="n">20</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/NaverPayDev__pie.html">NaverPayDev/pie</a><span class="desc hide-sm">Project for managing packages produced by the naverpay frontend team</span></td>
+<td class="n">115</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/Endle__fireSeqSearch.html">Endle/fireSeqSearch</a><span class="desc hide-sm">When using search engine, it would also search local logseq notebook</span></td>
+<td class="n">108</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/PaulBratslavsky__astro-strapi-example-project.html">PaulBratslavsky/astro-strapi-example-project</a><span class="desc hide-sm"></span></td>
+<td class="n">103</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/1amageek__SwiftAgent.html">1amageek/SwiftAgent</a><span class="desc hide-sm">  A type-safe, declarative AI agent framework for Swift. Build composable AI pipelines wit</span></td>
+<td class="n">103</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/samuelloranger__labby.html">samuelloranger/labby</a><span class="desc hide-sm">Self-hosted homelab dashboard: Widgets, live Docker stats, and real-time SSE updates. Buil</span></td>
+<td class="n">93</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/khrnchn__sedekah-je.html">khrnchn/sedekah-je</a><span class="desc hide-sm">qr code directory of malaysian mosques, suraus, and islamic institutions.</span></td>
+<td class="n">93</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/Corvidae-Coding-Projects__OpenClaudia.html">Corvidae-Coding-Projects/OpenClaudia</a><span class="desc hide-sm">Open Source Agentic Coding Harness</span></td>
+<td class="n">93</td>
+<td class="n">1<span class="small"> +1?</span></td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">yes</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/dioptx__mcp-atom-of-thoughts.html">dioptx/mcp-atom-of-thoughts</a><span class="desc hide-sm">MCP server for structured AI reasoning — decompose problems into atomic thoughts with depe</span></td>
+<td class="n">90</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/openMF__kmp-project-template.html">openMF/kmp-project-template</a><span class="desc hide-sm">The Kotlin Multiplatform Multi-module Template generator simplifies cross-platform develop</span></td>
+<td class="n">87</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/HDFGroup__hdf5-json.html">HDFGroup/hdf5-json</a><span class="desc hide-sm">Specification and tools for representing HDF5 in JSON</span></td>
+<td class="n">81</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/mateonunez__website.html">mateonunez/website</a><span class="desc hide-sm">Personal website and blog made with Next.js and Tailwind. Fully SEO friendly, OpenGraph fi</span></td>
+<td class="n">80</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/ahtavarasmus__lightfriend.html">ahtavarasmus/lightfriend</a><span class="desc hide-sm">The first verifiably private cloud AI assistant. Runs in AWS Nitro Enclave with hardware a</span></td>
+<td class="n">78</td>
+<td class="n">18</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/ardriveapp__ardrive-web.html">ardriveapp/ardrive-web</a><span class="desc hide-sm">A permanent home for your files, sites and apps, built on Arweave.</span></td>
+<td class="n">74</td>
+<td class="n">12</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/drakulavich__kesha-voice-kit.html">drakulavich/kesha-voice-kit</a><span class="desc hide-sm">Give your tools a voice — speech to text and back, 25 languages, up to ~19× faster than Wh</span></td>
+<td class="n">73</td>
+<td class="n">27</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">yes</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/reactiveui__ReactiveUI.SourceGenerators.html">reactiveui/ReactiveUI.SourceGenerators</a><span class="desc hide-sm">Use source generators to generate objects. </span></td>
+<td class="n">71</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/Aurealibe__claude-config.html">Aurealibe/claude-config</a><span class="desc hide-sm">Comprehensive Claude Code framework: 6 specialized agents, 7 workflow commands, audio noti</span></td>
+<td class="n">67</td>
+<td class="n">10</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/alperhankendi__Ctxo.html">alperhankendi/Ctxo</a><span class="desc hide-sm">MCP server for AI coding agents. Instead of reading files one by one, your agent gets depe</span></td>
+<td class="n">67</td>
+<td class="n">9</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">yes</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jordanhindo__beadboard.html">jordanhindo/beadboard</a><span class="desc hide-sm">Multi-agent orchestration and communication system built on Beads.</span></td>
+<td class="n">66</td>
+<td class="n">18</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/altasoft__DomainPrimitives.html">altasoft/DomainPrimitives</a><span class="desc hide-sm">C# Domain Primitives generator</span></td>
+<td class="n">63</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/microsoft__Agent365-devTools.html">microsoft/Agent365-devTools</a><span class="desc hide-sm">The Microsoft Agent 365 DevTools CLI is a command-line interface tool designed to streamli</span></td>
+<td class="n">61</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/mlennie__hermes-mcp.html">mlennie/hermes-mcp</a><span class="desc hide-sm"> MCP server that lets any llm (i.e. Claude Desktop) delegate tasks to a local Hermes Agent</span></td>
+<td class="n">61</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/tjdrhs90__flutter-flame-harness.html">tjdrhs90/flutter-flame-harness</a><span class="desc hide-sm">Idea-to-store harness for Flutter/Flame games</span></td>
+<td class="n">60</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/sandudorogan__tmux-pane-tree.html">sandudorogan/tmux-pane-tree</a><span class="desc hide-sm">┣nteractive tmux pane tree with live agent badges and Vim-style navigation.</span></td>
+<td class="n">60</td>
+<td class="n">8</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/harvie256__midi-commander-custom.html">harvie256/midi-commander-custom</a><span class="desc hide-sm">Custom Firmware for the MeloAudio Midi Commander</span></td>
+<td class="n">60</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/axeII__home-ops.html">axeII/home-ops</a><span class="desc hide-sm">A repository for HomeOps where I perform Infrastructure as Code (IaC) and GitOps practices</span></td>
+<td class="n">59</td>
+<td class="n">10</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/confluentinc__agent-skills.html">confluentinc/agent-skills</a><span class="desc hide-sm">AI agent skills for stream processing and event streaming</span></td>
+<td class="n">58</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/yahiafarghaly__PrettyOS.html">yahiafarghaly/PrettyOS</a><span class="desc hide-sm">A Preemptive Hard Real Time kernel for embedded devices.</span></td>
+<td class="n">53</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/radekamirko__C.R.I.S.P.html">radekamirko/C.R.I.S.P</a><span class="desc hide-sm"> CRISP — The missing layer between vibe coding and building something people actually want</span></td>
+<td class="n">52</td>
+<td class="n">12</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/2ue__ccman.html">2ue/ccman</a><span class="desc hide-sm">一个管理Claude Code + Codex API+GEMINI CLI + OPENCODE服务商配置的工具</span></td>
+<td class="n">52</td>
+<td class="n">15</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/marc-shade__Ollama-Workbench.html">marc-shade/Ollama-Workbench</a><span class="desc hide-sm">A comprehensive platform for managing, testing, and leveraging Ollama AI models with advan</span></td>
+<td class="n">50</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jhaizhou-ops__pinrule.html">jhaizhou-ops/pinrule</a><span class="desc hide-sm">Universal AI behavior rule framework — pin your 5-10 rules so AI doesn&#39;t drift in long tas</span></td>
+<td class="n">47</td>
+<td class="n">7</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jrquick17__ionic4-auto-complete.html">jrquick17/ionic4-auto-complete</a><span class="desc hide-sm">An auto complete compatible with Ionic 2+ and Angular 2+.</span></td>
+<td class="n">47</td>
+<td class="n">7</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/zepdb__zeppelin.html">zepdb/zeppelin</a><span class="desc hide-sm">Open-source, S3-native vector and full-text search engine. Fast, cheap, self-hostable.</span></td>
+<td class="n">46</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/SoftOboros__rlvgl.html">SoftOboros/rlvgl</a><span class="desc hide-sm">A pure rusts port of LVGL for embedded use</span></td>
+<td class="n">46</td>
+<td class="n">23</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/darkroomengineering__cc-settings.html">darkroomengineering/cc-settings</a><span class="desc hide-sm">Claude Code configuration — agents, skills, hooks &amp; settings for Darkroom Engineering</span></td>
+<td class="n">45</td>
+<td class="n">9</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/en-dash-consulting__html-in-canvas-dot-dev.html">en-dash-consulting/html-in-canvas-dot-dev</a><span class="desc hide-sm"></span></td>
+<td class="n">42</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/badlogic__vs-claude.html">badlogic/vs-claude</a><span class="desc hide-sm">VS Code extension and MCP server so Claude Code can open files, diffs and manipulate VS Co</span></td>
+<td class="n">41</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/nirholas__universal-crypto-mcp.html">nirholas/universal-crypto-mcp</a><span class="desc hide-sm">Universal MCP server for AI agents to interact with any* blockchain via natural language a</span></td>
+<td class="n">41</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/cenconq25__claude-code-app-studio.html">cenconq25/claude-code-app-studio</a><span class="desc hide-sm">A coordinated team of 53 Claude Code subagents that build, ship, and operate mobile apps e</span></td>
+<td class="n">41</td>
+<td class="n">22<span class="small"> +36?</span></td>
+<td class="n"><span class="mini"><i style="width:91%"></i><i class="g" style="width:9%"></i></span>91%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">yes</td>
 </tr></tbody>
 </table>
 <h2>What this means</h2>

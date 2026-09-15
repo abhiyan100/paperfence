@@ -78,7 +78,7 @@ async function main(): Promise<void> {
   const totalRules = scanned.reduce((a, r) => a + r.gates + r.wishes, 0);
   const totalWish = scanned.reduce((a, r) => a + r.wishes, 0);
   const totalGate = totalRules - totalWish;
-  const pct = totalRules ? Math.round((100 * totalWish) / totalRules) : 0;
+  const pct = totalRules ? Math.round((1000 * totalWish) / totalRules) / 10 : 0;
   const withSettings = scanned.filter((r) => r.hasSettings).length;
   const withHooks = scanned.filter((r) => r.hasHooks).length;
   const allWish = scanned.filter((r) => r.gates === 0).length;
@@ -150,7 +150,7 @@ async function main(): Promise<void> {
 <p class="lede">${scanned.length} public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
 <div class="big">
   <div class="stat wish"><b>${pct}%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
-  <div class="stat gate"><b>${100 - pct}%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
+  <div class="stat gate"><b>${Math.round((100 - pct) * 10) / 10}%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
   <div class="stat"><b>${allWish}</b><span>of ${scanned.length} repos have zero gates</span></div>
   <div class="stat"><b>${withHooks}</b><span>repos ship any hook at all (${withSettings} have a settings.json)</span></div>
 </div>
