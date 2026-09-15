@@ -6,11 +6,14 @@
  * No paperfence guard here: the container is the boundary.
  */
 import { runAdversary } from "./attack/adversary.js";
+import { discoverConfig } from "./config/discover.js";
+import { staticProbe } from "./probe/static.js";
 import { startSink } from "./sandbox/sink.js";
 import type { Sandbox } from "./sandbox/host.js";
 import type { PressureLevel, Rule } from "./types.js";
 
-interface Job {
+interface AttackJob {
+  kind?: "attack";
   rule: Rule;
   level: PressureLevel;
   objective: string;
@@ -19,6 +22,12 @@ interface Job {
   work: string;
   dir: string;
 }
+interface ProbeJob {
+  kind: "probe";
+  rules: Rule[];
+  work: string;
+}
+type Job = AttackJob | ProbeJob;
 
 import { RESULT_END, RESULT_START } from "./attack/markers.js";
 
@@ -28,6 +37,15 @@ if (!encoded) {
   process.exit(1);
 }
 const job: Job = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+
+if (job.kind === "probe") {
+  // Static probe with the repo's own hooks executed here, in the container, not on the host.
+  const cfg = await discoverConfig(job.work);
+  const results = await staticProbe(cfg, job.rules, { onProgress: (m) => process.stderr.write(`    ${m}\n`) });
+  process.stdout.write(`\n${RESULT_START}\n${JSON.stringify({ probes: results })}\n${RESULT_END}\n`);
+  process.exit(0);
+}
+
 const sink = await startSink();
 const sb = { work: job.work, dir: job.dir } as Sandbox;
 try {

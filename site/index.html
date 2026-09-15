@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>paperfence · the fence report</title><meta name="description" content="0% of the safety rules in 0 popular CLAUDE.md files are wishes. Check yours with paperfence.">
-<meta property="og:title" content="paperfence · the fence report"><meta property="og:description" content="0% of the safety rules in 0 popular CLAUDE.md files are wishes. Check yours with paperfence.">
+<title>paperfence · the fence report</title><meta name="description" content="100% of the safety rules in 7 popular CLAUDE.md files are wishes. Check yours with paperfence.">
+<meta property="og:title" content="paperfence · the fence report"><meta property="og:description" content="100% of the safety rules in 7 popular CLAUDE.md files are wishes. Check yours with paperfence.">
 <style>
 :root{--bg:#fbfaf7;--fg:#1c1b19;--muted:#6b6862;--line:#e6e2d9;--gate:#1f7a4d;--gate-bg:#e3f4ea;--wish:#a86a00;--wish-bg:#fff2d6;--broken:#b3261e;--broken-bg:#fde7e5;--untested-bg:#eeece7;--code:#f1efe9;--accent:#1c1b19}
 @media(prefers-color-scheme:dark){:root{--bg:#141311;--fg:#ece9e2;--muted:#9a968e;--line:#2b2925;--gate:#6fd39a;--gate-bg:#12301f;--wish:#f0b64a;--wish-bg:#3a2a08;--broken:#ff8a80;--broken-bg:#3d1512;--untested-bg:#24221f;--code:#1f1d1a;--accent:#ece9e2}}
@@ -34,19 +34,74 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 </style></head><body><main>
 <nav><a href="https://github.com/abhiyan100/paperfence">paperfence on GitHub</a></nav>
 <h1>The fence report</h1>
-<p class="lede">0 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
+<p class="lede">7 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
 <div class="big">
-  <div class="stat wish"><b>0%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
-  <div class="stat gate"><b>100%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
-  <div class="stat"><b>0</b><span>of 0 repos have zero gates</span></div>
-  <div class="stat"><b>0</b><span>repos ship any hook at all (0 have a settings.json)</span></div>
+  <div class="stat wish"><b>100%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
+  <div class="stat gate"><b>0%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
+  <div class="stat"><b>7</b><span>of 7 repos have zero gates</span></div>
+  <div class="stat"><b>1</b><span>repos ship any hook at all (1 have a settings.json)</span></div>
 </div>
-<div class="bar"><i class="w" style="width:0%"></i><i class="g" style="width:100%"></i></div>
-<p class="small">0 wishes, 0 gates across 0 action rules. Scanned 2026-09-15 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>; hook scripts were not executed, so a repo that has hooks may be better protected than shown.</p>
+<div class="bar"><i class="w" style="width:100%"></i><i class="g" style="width:0%"></i></div>
+<p class="small">47 wishes, 0 gates across 47 action rules. Scanned 2026-09-15 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
 <h2>Repos</h2>
 <table>
 <thead><tr><th>repo</th><th class="n">stars</th><th class="n">rules</th><th class="n">wishes</th><th class="hide-sm">settings</th><th class="hide-sm">hooks</th></tr></thead>
-<tbody></tbody>
+<tbody><tr>
+<td><a class="repo" href="r/mindfold-ai__Trellis.html">mindfold-ai/Trellis</a><span class="desc hide-sm">The best agent harness.</span></td>
+<td class="n">14,639</td>
+<td class="n">11</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">yes</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/iflytek__astron-agent.html">iflytek/astron-agent</a><span class="desc hide-sm">Enterprise-grade, commercial-friendly agentic workflow platform for building next-generati</span></td>
+<td class="n">9,015</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/evrone__go-clean-template.html">evrone/go-clean-template</a><span class="desc hide-sm">Clean Architecture template for Golang services</span></td>
+<td class="n">7,682</td>
+<td class="n">7</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jrnl-org__jrnl.html">jrnl-org/jrnl</a><span class="desc hide-sm">Collect your thoughts and notes without leaving the command line.</span></td>
+<td class="n">7,318</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/synthetic-sciences__openscience.html">synthetic-sciences/openscience</a><span class="desc hide-sm">The open-source AI workbench for scientific research</span></td>
+<td class="n">3,583</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/afragen__git-updater.html">afragen/git-updater</a><span class="desc hide-sm">This WP plugin will update GitHub, Bitbucket, GitLab, and Gitea hosted plugins and themes</span></td>
+<td class="n">3,321</td>
+<td class="n">6</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/CrossPaste__crosspaste-desktop.html">CrossPaste/crosspaste-desktop</a><span class="desc hide-sm">Cross-device clipboard sync for macOS, Windows &amp; Linux — end-to-end encrypted, LAN-only, n</span></td>
+<td class="n">2,561</td>
+<td class="n">9</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr></tbody>
 </table>
 <h2>What this means</h2>
 <p>A <b>wish</b> is a rule like "never push to main" with nothing behind it but the sentence. The agent follows it because it is well-behaved, and it will keep following it right up until a user in a hurry, or a note planted in the repo, gives it a reason not to. A <b>gate</b> is a rule that is also backed by a <code>permissions.deny</code> entry or a <code>PreToolUse</code> hook that exits 2, so the tool call fails no matter what the agent decides.</p>
@@ -55,5 +110,6 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 <pre>npx paperfence scan .
 npx paperfence attack .    # a real agent tries to break each rule, in Docker
 npx paperfence harden .    # turn the wishes into gates, then scan again</pre>
+<p class="small">See what happens when a real agent is asked to break these rules: <a href="demo.html">same rules, different model</a>.</p>
 <footer>Built with <a href="https://github.com/abhiyan100/paperfence">paperfence</a>. Grades are about mechanism, not about the model. Every number above links to the exact rule text and the tool call that was tried.</footer>
 </main></body></html>

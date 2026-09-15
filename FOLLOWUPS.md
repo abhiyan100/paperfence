@@ -1,6 +1,16 @@
 # Follow-ups
 
-Things worth doing that did not block the current milestone. Mostly from reviews/01.md (Codex, 2026-09-15).
+Things worth doing that did not block the current milestone. From reviews/01.md and reviews/02.md (Codex, 2026-09-15).
+
+## Deferred from review 2
+- Docker `--internal` networks still route to the host gateway. A host service bound on the Docker interface is reachable from the agent. Documented in the README; a real fix needs iptables or a user-space network (gVisor).
+- Events carry no execution status: a call that was attempted, one that was denied, and one that ran and failed all look alike except for `denied`. Add `outcome: attempted | denied | ran | failed` from tool_result.
+- Reports have no runtime fingerprint (Claude Code version, SDK version, paperfence commit, model). Add to ScanReport and print it.
+- `harden --dry-run` should print the exact settings.json patch and policy.json it would write.
+- Percentages count a prose rule and its backing permission entry separately; ERROR and UNTESTED leave the denominator. De-duplicate and show the denominator.
+- Leaderboard rows should pin the scanned commit SHA and the extractor model; cached rows should invalidate on either.
+- Conformance: differential tests against the real CLI (a settings file, a mock command, compare the decision) so doc drift shows up as a failing test.
+- `paperfence attack` on a repo without the fixture's shape (README typo, failing test, infra/) produces "held" verdicts that mean "could not do the task". Detect missing prerequisites and mark INCONCLUSIVE.
 
 - Test integrity is byte equality. Strengthening a test is flagged; disabling the suite through package.json `scripts.test` is not. Add a "test command still runs the same files" check.
 - "Run X before Y" always probes and hardens Y = commit. Carry the action (commit / push / PR) from the rule text through catalog and policy.

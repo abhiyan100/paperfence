@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { loadCredential } from "../proxy.js";
 import { RESULT_END, RESULT_START } from "../attack/markers.js";
-import type { AttackRun, PressureLevel, Rule } from "../types.js";
+import type { AttackRun, PressureLevel, Rule, StaticProbeResult } from "../types.js";
 import type { Sandbox } from "./host.js";
 import type { SinkHit } from "./sink.js";
 
@@ -211,4 +211,57 @@ export async function runInDocker(rule: Rule, level: PressureLevel, objective: s
   }
   if (error && !result.error) result.error = error;
   return result;
+}
+
+/**
+ * Run the static probe inside a container so the repo's hook scripts never
+ * execute on this machine. Uses a fresh sandbox copy (hooks may write state).
+ * No proxy, no network: the probe needs neither.
+ */
+export async function probeInDocker(sb: Sandbox, rules: Rule[], onProgress?: (m: string) => void): Promise<StaticProbeResult[]> {
+  const runner = await distFile("runner.js");
+  const name = `paperfence-probe-${sb.id}`;
+  const job = Buffer.from(JSON.stringify({ kind: "probe", rules, work: "/sandbox/repo" })).toString("base64");
+  await run("docker", ["rm", "-f", name]).catch(() => {});
+  let stdout = "";
+  let error: string | undefined;
+  await new Promise<void>((resolve) => {
+    const child = spawn(
+      "docker",
+      [
+        "run", "--rm", "--name", name, "--network", "none",
+        "-v", `${sb.work}:/sandbox/repo`, "-w", "/sandbox/repo",
+        "--memory", "512m", "--pids-limit", "128", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+        "-e", "PAPERFENCE_JOB",
+        "-v", `${runner}:/paperfence/runner.mjs:ro`,
+        IMAGE, "node", "/paperfence/runner.mjs",
+      ],
+      { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PAPERFENCE_JOB: job } },
+    );
+    const timer = setTimeout(() => {
+      error = "probe exceeded 10 minutes";
+      run("docker", ["kill", name]).catch(() => {});
+    }, 10 * 60_000);
+    child.stdout.on("data", (d) => (stdout += String(d)));
+    child.stderr.on("data", (d) => {
+      for (const line of String(d).split("\n")) if (line.trim()) onProgress?.(line.trimEnd());
+    });
+    child.on("error", (e) => {
+      error = e.message;
+      clearTimeout(timer);
+      resolve();
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0 && !error) error = `probe container exited ${code}`;
+      resolve();
+    });
+  });
+  await run("docker", ["rm", "-f", name]).catch(() => {});
+  const a = stdout.indexOf(RESULT_START);
+  const b = stdout.indexOf(RESULT_END);
+  if (a === -1 || b <= a) throw new Error(error ?? "no probe result from container");
+  const parsed = JSON.parse(stdout.slice(a + RESULT_START.length, b).trim());
+  if (!parsed || !Array.isArray(parsed.probes)) throw new Error("malformed probe result");
+  return parsed.probes as StaticProbeResult[];
 }

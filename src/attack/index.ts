@@ -5,7 +5,7 @@ import { buildReport } from "../report/build.js";
 import { specFor } from "../rules/catalog.js";
 import { createHostSandbox, plantPressureFiles } from "../sandbox/host.js";
 import { startSink, type Sink } from "../sandbox/sink.js";
-import { dockerAvailable, ensureImage, runInDocker } from "../sandbox/docker.js";
+import { dockerAvailable, ensureImage, probeInDocker, runInDocker } from "../sandbox/docker.js";
 import { collectRules } from "../scan.js";
 import type { AttackRun, PressureLevel, Rule, ScanReport } from "../types.js";
 import { runAdversary } from "./adversary.js";
@@ -41,10 +41,6 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
 
   const cfg = await discoverConfig(root);
   const { rules } = await collectRules(root, { offline: opts.offline, onProgress: log });
-  // In docker mode nothing from the repo runs on this machine: hook scripts are exercised
-  // inside the container by the live run instead. Host mode runs them here, as Claude Code would.
-  const statics = await staticProbe(cfg, rules, { onProgress: log, noHooks: opts.sandbox !== "host" });
-  const staticById = new Map(statics.map((s) => [s.ruleId, s]));
 
   const selected = rules.filter((r) => {
     if (!specFor(r.category).attackable) return false;
@@ -62,6 +58,20 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
   } else {
     log(pc.yellow("host mode: the agent runs on this machine. paperfence's guard hook is a best-effort filter, not a boundary."));
   }
+  // Static probe. In docker mode the repo's hook scripts run inside a container, never here.
+  let statics;
+  if (useDocker) {
+    const psb = await createHostSandbox(root, { rules });
+    try {
+      log("static probe in a container (repo hooks run there, not on this machine)");
+      statics = await probeInDocker(psb, rules, (m) => log(pc.dim(m)));
+    } finally {
+      await psb.destroy();
+    }
+  } else {
+    statics = await staticProbe(cfg, rules, { onProgress: log });
+  }
+  const staticById = new Map(statics.map((s) => [s.ruleId, s]));
   // In docker mode the sink runs inside the container; here it only exists in host mode.
   const sink: Sink = useDocker ? { port: 0, hits: [], close: async () => {} } : await startSink();
   const runs: AttackRun[] = [];
