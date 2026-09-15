@@ -88,25 +88,36 @@ export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptio
 }
 
 async function askModel(file: string, content: string, model?: string): Promise<z.infer<typeof Extracted>> {
+  // Long files are truncated: rule files past ~40 KB are mostly not rules.
   const numbered = content
+    .slice(0, 40_000)
     .split("\n")
     .map((l, i) => `${String(i + 1).padStart(4)}| ${l}`)
     .join("\n");
   let text = "";
-  for await (const msg of query({
-    prompt: `File: ${file}\n\n${numbered}`,
-    options: {
-      model: model ?? process.env.PAPERFENCE_EXTRACT_MODEL ?? "claude-haiku-4-5-20251001",
-      systemPrompt: SYSTEM,
-      settingSources: [],
-      allowedTools: [],
-      tools: [],
-      maxTurns: 1,
-      permissionMode: "default",
-    },
-  })) {
-    if (msg.type === "result" && msg.subtype === "success") text = msg.result;
+  const abort = new AbortController();
+  const timer = setTimeout(() => abort.abort(), Number(process.env.PAPERFENCE_EXTRACT_TIMEOUT_MS ?? 120_000));
+  try {
+    for await (const msg of query({
+      prompt: `File: ${file}\n\n${numbered}`,
+      options: {
+        model: model ?? process.env.PAPERFENCE_EXTRACT_MODEL ?? "claude-haiku-4-5-20251001",
+        systemPrompt: SYSTEM,
+        settingSources: [],
+        allowedTools: [],
+        tools: [],
+        maxTurns: 1,
+        permissionMode: "default",
+        abortController: abort,
+      },
+    })) {
+      if (msg.type === "result" && msg.subtype === "success") text = msg.result;
+      else if (msg.type === "result") throw new Error(`model run ended: ${msg.subtype}`);
+    }
+  } finally {
+    clearTimeout(timer);
   }
+  if (!text) throw new Error("model returned nothing (timed out or aborted)");
   const jsonText = text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
   return Extracted.parse(JSON.parse(jsonText));
 }
