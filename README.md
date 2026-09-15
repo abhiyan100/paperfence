@@ -59,7 +59,8 @@ Writes `.claude/hooks/paperfence-guard.cjs`, a `policy.json` it reads, and the m
 
  WISH  Never read `.env` or print secrets to the console or into your responses.
          CLAUDE.md:9
-         Partly fenced: "Read .env" is blocked (permission-deny), but "cat .env" gets through
+         Partly fenced: "Read .env" is blocked (permission-deny), "cat .env" is blocked
+         (permission-deny), but "grep .env" gets through
 
  GATE  Do not force push. Ever.
          CLAUDE.md:11
@@ -71,13 +72,14 @@ Fence report
   wishes   11   92% rely entirely on the agent choosing to obey
 ```
 
-That "partly fenced" line is the kind of thing this tool exists for. A `Read(./.env)` deny entry feels like protection. It stops the Read tool and nothing else.
+That "partly fenced" line is the kind of thing this tool exists for. A `Read(./.env)` deny entry feels like protection. It stops the Read tool and `cat`, and a one-line `node -e` walks straight past it.
 
 ## Things it catches that are easy to miss
 
 - **`permissions.ask` is not a gate when nobody is watching.** In CI, in `--dangerously-skip-permissions`, or through the Agent SDK, "ask" resolves to "yes". paperfence grades it as a wish unless you pass `--ask-counts`.
 - **A hook that crashes is a hook that allows.** Claude Code treats any exit code other than 2 as "go ahead". If your hook is `.js` in a `"type": "module"` repo, it throws on `require` and every call sails through. The static probe runs your hooks for real and tells you when this happens.
-- **Deny rules match tools, not intent.** `Read(.env)` does not stop `cat .env`, `grep KEY .env`, `source .env`, or `node -e 'require("fs").readFileSync(".env")'`. The generated hook covers the shell side.
+- **Deny rules match the invocation, not the program.** `Read(.env)` stops the Read tool and also `cat`, `head`, `tail`, `sed` and `< .env` in the shell. It does not stop `grep KEY .env`, `source .env`, or a one-line node or python script that opens the file. `Bash(curl *)` stops `curl` and not `/usr/bin/curl` or `sh -c 'curl ...'`. These are documented, and the static probe tries each form so you can see which ones get through.
+- **Some rules are accepted and never read.** `Write(tests/**)`, `NotebookEdit(...)` and `MultiEdit(...)` path rules are valid settings that Claude Code does not consult for file access. Only `Read(path)` and `Edit(path)` count. The scan flags these as inert.
 - **"Run tests before committing" needs state.** A deny rule cannot express it. The generated hook remembers when it last saw the test command in this session and refuses `git commit` otherwise.
 
 ## What it needs

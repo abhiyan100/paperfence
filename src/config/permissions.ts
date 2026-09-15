@@ -1,21 +1,26 @@
+import os from "node:os";
+import path from "node:path";
+
 /**
- * Claude Code permission rule matching.
+ * Claude Code permission rule matching, following the documented semantics
+ * (code.claude.com/docs/en/permissions) as of Claude Code 2.1.27x:
  *
- * Rules look like:
- *   Bash                     any bash command
- *   Bash(git push:*)         bash commands starting with "git push"
- *   Bash(npm run test)       exactly that command
- *   Read(.env)               read of .env (relative to project)
- *   Read(./.env)             same
- *   Read(**\/*.env)          glob
- *   Edit(src/**)             glob
- *   WebFetch(domain:example.com)
- *   mcp__server__tool
+ *   Bash(rm *)          `*` matches any text, at any position. `Bash(ls:*)` == `Bash(ls *)`.
+ *                       Deny/ask rules apply when ANY subcommand matches: split on
+ *                       && || ; | |& & and newlines, and look inside $(...) and subshells.
+ *                       They do NOT match the same program by path (/usr/bin/curl) or
+ *                       inside sh -c '...'.
+ *   Read(path)          gitignore patterns. Bare filename => any depth. `//` absolute,
+ *   Edit(path)          `~/` home, `path` or `./path` relative to cwd. Deny rules on
+ *                       Read/Edit also cover cat/head/tail/sed in Bash and the targets
+ *                       of `< file` and `> file` redirections. They do not cover grep,
+ *                       or a node/python script that opens the file itself.
+ *   Write(path) etc.    Accepted, never consulted. Only Read(path) and Edit(path) are
+ *                       checked for file access. Tool-name-only rules still apply.
+ *   WebFetch(domain:x)  hostname match, `*` wildcard, case-insensitive.
  *
- * We implement the parts that matter for safety rules. Where Claude Code's
- * behaviour is subtle we stay conservative: if we are not sure a deny rule
- * would fire, we say it would not. Better to under-count gates than to
- * tell someone they are protected when they are not.
+ * Where the docs are silent we stay conservative: better to under-count gates
+ * than to tell someone they are protected when they are not.
  */
 
 export interface ParsedRule {
@@ -30,114 +35,226 @@ export function parsePermissionRule(raw: string): ParsedRule {
   return { raw, tool: m[1]!, spec: m[2] };
 }
 
-function globToRegExp(glob: string): RegExp {
-  // Minimal glob: ** matches across separators, * within a segment, ? one char.
+/** Path-scoped rules Claude Code accepts but never consults for file access. */
+export const IGNORED_PATH_RULE_TOOLS = new Set(["Write", "NotebookEdit", "MultiEdit", "Glob"]);
+
+/** Bash commands whose file arguments Read/Edit deny rules also cover. */
+const BASH_FILE_READERS = new Set(["cat", "head", "tail", "sed"]);
+
+// ---------- Bash ----------
+
+function bashPatternToRegExp(spec: string): RegExp {
+  // `:*` at the very end is the same as a trailing ` *`.
+  let p = spec.endsWith(":*") ? spec.slice(0, -2) + " *" : spec;
+  // A trailing " *" also matches the bare command with no arguments.
+  let optionalTail = false;
+  if (p.endsWith(" *")) {
+    p = p.slice(0, -2);
+    optionalTail = true;
+  }
+  const re = p
+    .split("*")
+    .map((s) => s.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+    .join(".*");
+  return new RegExp(`^${re}${optionalTail ? "(?:\\s.*)?" : ""}$`, "s");
+}
+
+export function bashSpecMatches(spec: string | undefined, command: string): boolean {
+  if (spec === undefined) return true;
+  return bashPatternToRegExp(spec).test(command.trim());
+}
+
+/**
+ * Split a shell command into the subcommands Claude Code checks: top-level
+ * separators, plus the bodies of $(...) and (...) subshells and backticks.
+ */
+export function splitSubcommands(command: string): string[] {
+  const out: string[] = [];
+  const top = command.split(/\s*(?:&&|\|\||\|&|;|\||&(?!&)|\n)\s*/).map((s) => s.trim()).filter(Boolean);
+  for (const seg of top) {
+    out.push(seg);
+    for (const m of seg.matchAll(/\$\(([^()]*)\)|`([^`]*)`|(?:^|\s)\(([^()]*)\)/g)) {
+      const inner = (m[1] ?? m[2] ?? m[3] ?? "").trim();
+      if (inner) out.push(...splitSubcommands(inner));
+    }
+  }
+  return out;
+}
+
+/** Files a Bash subcommand reads or writes in ways the file-permission checks see. */
+export function bashFileTargets(sub: string): { reads: string[]; writes: string[] } {
+  const reads: string[] = [];
+  const writes: string[] = [];
+  const words = sub.trim().split(/\s+/);
+  let i = 0;
+  while (words[i] && (/^[A-Z_][A-Z0-9_]*=/.test(words[i]!) || words[i] === "sudo")) i++;
+  const prog = (words[i] ?? "").split("/").pop() ?? "";
+  if (BASH_FILE_READERS.has(prog)) {
+    let prev = "";
+    for (const w of words.slice(i + 1)) {
+      const clean = w.replace(/^["']|["']$/g, "");
+      const isOptionValue = /^-(n|c|e|f|s)$/.test(prev) && !clean.startsWith("-");
+      if (!clean.startsWith("-") && !/^[<>]/.test(clean) && clean !== "" && !isOptionValue) reads.push(clean);
+      prev = clean;
+    }
+  }
+  for (const m of sub.matchAll(/(?:^|\s)(2?>>?|<)\s*(\S+)/g)) {
+    const target = m[2]!.replace(/^["']|["']$/g, "");
+    if (target.startsWith("&")) continue;
+    if (m[1] === "<") reads.push(target);
+    else writes.push(target);
+  }
+  return { reads, writes };
+}
+
+// ---------- Paths ----------
+
+function normalizePath(p: string): string {
+  let s = p.replace(/\\/g, "/");
+  s = s.replace(/\/\.\//g, "/");
+  while (s.startsWith("./")) s = s.slice(2);
+  return s;
+}
+
+function segmentGlobToRegExp(glob: string): string {
   let re = "";
   for (let i = 0; i < glob.length; i++) {
     const c = glob[i]!;
     if (c === "*") {
       if (glob[i + 1] === "*") {
-        re += ".*";
         i++;
-        if (glob[i + 1] === "/") i++;
+        if (glob[i + 1] === "/") {
+          i++;
+          re += "(?:.*/)?";
+        } else re += ".*";
       } else re += "[^/]*";
     } else if (c === "?") re += "[^/]";
     else if (/[.+^${}()|[\]\\]/.test(c)) re += "\\" + c;
     else re += c;
   }
-  return new RegExp(`^${re}$`);
+  return re;
 }
 
-function normalizePath(p: string): string {
-  let s = p.replace(/\\/g, "/");
-  s = s.replace(/\/\.\//g, "/"); // collapse /./
-  while (s.startsWith("./")) s = s.slice(2);
-  if (s.startsWith("//")) s = s.slice(1);
-  return s;
-}
-
-/** Does a Bash(spec) rule match this command? */
-export function bashSpecMatches(spec: string | undefined, command: string): boolean {
-  if (spec === undefined) return true;
-  const cmd = command.trim();
-  if (spec.endsWith(":*")) {
-    const prefix = spec.slice(0, -2);
-    // Claude Code treats "git push:*" as prefix match on the command string.
-    return cmd === prefix || cmd.startsWith(prefix + " ") || cmd.startsWith(prefix);
-  }
-  if (spec.endsWith("*")) {
-    return cmd.startsWith(spec.slice(0, -1));
-  }
-  return cmd === spec;
-}
-
-/** Does a Read/Edit/Write(spec) rule match this path (relative to project root)? */
+/**
+ * Does a Read/Edit(spec) rule match this absolute or cwd-relative path?
+ * `root` is the project directory the rule is relative to.
+ */
 export function pathSpecMatches(spec: string | undefined, filePath: string, root?: string): boolean {
   if (spec === undefined) return true;
-  let target = normalizePath(filePath);
-  if (root) {
-    const r = normalizePath(root).replace(/\/$/, "");
-    if (target.startsWith(r + "/")) target = target.slice(r.length + 1);
+  const cwd = normalizePath(root ?? process.cwd()).replace(/\/$/, "");
+  let abs = normalizePath(filePath);
+  if (!abs.startsWith("/")) abs = `${cwd}/${abs}`;
+  abs = path.posix.normalize(abs);
+
+  let pattern = spec.replace(/\\/g, "/");
+  let anchor: string | null = null; // absolute directory the pattern is anchored at
+  if (pattern.startsWith("//")) {
+    anchor = "";
+    pattern = pattern.slice(2);
+  } else if (pattern.startsWith("~/")) {
+    anchor = normalizePath(os.homedir()).replace(/\/$/, "");
+    pattern = pattern.slice(2);
+  } else if (pattern.startsWith("/")) {
+    // Anchored at the settings source; for project settings that is the project dir.
+    anchor = cwd;
+    pattern = pattern.slice(1);
+  } else {
+    anchor = cwd;
+    pattern = normalizePath(pattern);
   }
-  const pattern = normalizePath(spec);
-  if (pattern.includes("*") || pattern.includes("?")) {
-    return globToRegExp(pattern).test(target) || globToRegExp(pattern).test(target.split("/").pop() ?? "");
+  pattern = pattern.replace(/\/$/, "");
+  if (!pattern) return false;
+
+  // Bare filename (no slash): gitignore semantics, any depth under the anchor.
+  if (!pattern.includes("/")) {
+    if (!(abs === anchor || abs.startsWith(anchor + "/"))) return false;
+    const base = abs.split("/").pop() ?? "";
+    return new RegExp(`^${segmentGlobToRegExp(pattern)}$`).test(base);
   }
-  // Exact relative path, or a directory prefix.
-  return target === pattern || target.startsWith(pattern.replace(/\/$/, "") + "/");
+
+  // Deny/ask "dir/**" for a single directory segment matches that directory at any depth.
+  const relRe = segmentGlobToRegExp(pattern);
+  const anchoredFull = new RegExp(`^${anchor === "" ? "" : anchor.replace(/[.+?^${}()|[\]\\]/g, "\\$&")}/${relRe}(?:/.*)?$`);
+  if (anchoredFull.test(abs)) return true;
+  // Only relative patterns get the any-depth treatment; // and ~/ are anchored where they say.
+  const single = anchor === cwd ? pattern.match(/^([^/*?]+)\/\*\*$/) : null;
+  if (single) {
+    const dir = single[1]!.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    if (new RegExp(`^${anchor === "" ? "" : anchor.replace(/[.+?^${}()|[\]\\]/g, "\\$&")}/(?:.*/)?${dir}/.+$`).test(abs)) return true;
+  }
+  return false;
 }
+
+// ---------- Tool calls ----------
 
 export interface ToolCall {
   tool: string;
   input: Record<string, unknown>;
 }
 
+const EDIT_TOOLS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
+
 /**
- * Would this rule fire for this tool call?
- * Returns the reason string when it matches, null otherwise.
+ * Would this rule fire for this tool call? Returns the reason when it matches.
  */
 export function ruleMatchesCall(rule: ParsedRule, call: ToolCall, root?: string): string | null {
   const toolName = call.tool;
-  const toolAlias: Record<string, string[]> = {
-    Edit: ["Edit", "MultiEdit", "Write", "NotebookEdit"],
-    Write: ["Write"],
-    Read: ["Read"],
-  };
-  const applies = rule.tool === toolName || (toolAlias[rule.tool] ?? []).includes(toolName);
-  if (!applies) return null;
 
-  if (toolName === "Bash") {
+  if (rule.spec === undefined) {
+    // Tool-level rule. Edit-family aliases are not implied; a bare "Edit" deny only removes Edit.
+    return rule.tool === toolName ? `${rule.raw} matched tool ${toolName}` : null;
+  }
+
+  // Path rules on tools Claude Code never consults.
+  if (IGNORED_PATH_RULE_TOOLS.has(rule.tool)) return null;
+
+  if (rule.tool === "Bash") {
+    if (toolName !== "Bash") return null;
     const cmd = String(call.input.command ?? "");
-    // Compound commands: a deny on any segment counts. Claude Code checks the whole string
-    // and each segment split on && ; || |, so we do the same.
-    const segments = cmd.split(/\s*(?:&&|\|\||;|\|)\s*/).filter(Boolean);
-    for (const seg of [cmd, ...segments]) {
-      if (bashSpecMatches(rule.spec, seg)) return `${rule.raw} matched "${seg}"`;
+    for (const sub of splitSubcommands(cmd)) {
+      if (bashSpecMatches(rule.spec, sub)) return `${rule.raw} matched "${sub}"`;
     }
     return null;
   }
-  if (["Read", "Edit", "Write", "MultiEdit", "NotebookEdit"].includes(toolName)) {
-    const p = String(call.input.file_path ?? call.input.path ?? call.input.notebook_path ?? "");
-    if (pathSpecMatches(rule.spec, p, root)) return `${rule.raw} matched "${p}"`;
-    return null;
-  }
-  if (toolName === "WebFetch") {
-    const url = String(call.input.url ?? "");
-    if (rule.spec === undefined) return `${rule.raw} matched any WebFetch`;
-    const m = rule.spec.match(/^domain:(.+)$/);
-    if (m) {
-      try {
-        const host = new URL(url).hostname;
-        if (host === m[1] || host.endsWith("." + m[1])) return `${rule.raw} matched ${host}`;
-      } catch {
-        return null;
+
+  if (rule.tool === "Read" || rule.tool === "Edit") {
+    if (toolName === "Bash") {
+      // Read/Edit deny rules also cover recognised file commands and redirections.
+      const cmd = String(call.input.command ?? "");
+      for (const sub of splitSubcommands(cmd)) {
+        const { reads, writes } = bashFileTargets(sub);
+        const targets = rule.tool === "Read" ? reads : writes;
+        for (const t of targets) {
+          if (pathSpecMatches(rule.spec, t, root)) return `${rule.raw} matched "${sub}" (file command)`;
+        }
       }
+      return null;
     }
+    const applies = rule.tool === "Read" ? toolName === "Read" || toolName === "Grep" || toolName === "Glob" : EDIT_TOOLS.has(toolName);
+    if (!applies) return null;
+    const p = String(call.input.file_path ?? call.input.path ?? call.input.notebook_path ?? "");
+    if (p && pathSpecMatches(rule.spec, p, root)) return `${rule.raw} matched "${p}"`;
     return null;
   }
-  // Unknown tool with no spec: tool-wide rule.
-  if (rule.spec === undefined) return `${rule.raw} matched tool ${toolName}`;
-  return null;
+
+  if (rule.tool === "WebFetch") {
+    if (toolName !== "WebFetch") return null;
+    const url = String(call.input.url ?? "");
+    const m = rule.spec.match(/^domain:(.+)$/i);
+    if (!m) return null;
+    let host = "";
+    try {
+      host = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
+    } catch {
+      return null;
+    }
+    const pat = m[1]!.toLowerCase().replace(/\.$/, "");
+    const re = new RegExp(`^${pat.split("*").map((s) => s.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join(".*")}$`);
+    return re.test(host) ? `${rule.raw} matched ${host}` : null;
+  }
+
+  // Other tools with a spec (Agent(model:*), mcp tools): exact tool name match only.
+  return rule.tool === toolName ? `${rule.raw} matched tool ${toolName}` : null;
 }
 
 export interface PermissionDecision {
@@ -145,10 +262,7 @@ export interface PermissionDecision {
   reason: string;
 }
 
-/**
- * Evaluate a tool call against allow/deny/ask lists the way Claude Code does:
- * deny wins over everything, then ask, then allow.
- */
+/** deny wins, then ask, then allow. */
 export function evaluatePermissions(
   lists: { allow?: string[]; deny?: string[]; ask?: string[] },
   call: ToolCall,
@@ -167,4 +281,19 @@ export function evaluatePermissions(
     if (r) return { decision: "allow", reason: r };
   }
   return { decision: "none", reason: "no rule matched" };
+}
+
+/** Rules that look like protection but Claude Code never consults. Surfaced in reports. */
+export function inertRules(lists: { deny?: string[]; ask?: string[] }): { raw: string; why: string }[] {
+  const out: { raw: string; why: string }[] = [];
+  for (const raw of [...(lists.deny ?? []), ...(lists.ask ?? [])]) {
+    const r = parsePermissionRule(raw);
+    if (r.spec !== undefined && IGNORED_PATH_RULE_TOOLS.has(r.tool)) {
+      out.push({ raw, why: `Claude Code never consults ${r.tool}(path) rules for file access; write it as Edit(${r.spec}) or Read(${r.spec})` });
+    }
+    if (r.tool === "Bash" && /^command:/.test(r.spec ?? "")) {
+      out.push({ raw, why: "Bash(command:...) is ignored at startup with a warning; use Bash(rm *) form" });
+    }
+  }
+  return out;
 }

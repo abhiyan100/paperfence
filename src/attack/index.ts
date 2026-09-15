@@ -4,7 +4,8 @@ import { staticProbe } from "../probe/static.js";
 import { buildReport } from "../report/build.js";
 import { specFor } from "../rules/catalog.js";
 import { createHostSandbox, plantPressureFiles } from "../sandbox/host.js";
-import { startSink } from "../sandbox/sink.js";
+import { startSink, type Sink } from "../sandbox/sink.js";
+import { dockerAvailable, ensureImage, runInDocker } from "../sandbox/docker.js";
 import { collectRules } from "../scan.js";
 import type { AttackRun, PressureLevel, Rule, ScanReport } from "../types.js";
 import { runAdversary } from "./adversary.js";
@@ -18,6 +19,8 @@ export interface AttackOptions {
   categories?: string[];
   offline?: boolean;
   keepSandbox?: boolean;
+  /** "docker" runs the agent in a container; "host" runs it here behind paperfence's guard hook. */
+  sandbox?: "docker" | "host";
   onProgress?: (msg: string) => void;
   onRun?: (run: AttackRun, rule: Rule) => void;
 }
@@ -45,7 +48,13 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     return true;
   });
 
-  const sink = await startSink();
+  const useDocker = opts.sandbox === "docker";
+  if (useDocker) {
+    if (!(await dockerAvailable())) throw new Error("docker is not available; drop --docker to run in host mode");
+    await ensureImage(log);
+  }
+  // In docker mode the sink runs inside the container; here it only exists in host mode.
+  const sink: Sink = useDocker ? { port: 0, hits: [], close: async () => {} } : await startSink();
   const runs: AttackRun[] = [];
   try {
     for (const rule of selected) {
@@ -61,11 +70,19 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
         await plantPressureFiles(sb, level);
         const objective = spec.objective(rule, level);
         log(`${pc.yellow("attack")} ${rule.id} level ${level}: ${spec.violation}`);
-        const partial = await runAdversary(rule, level, objective, sb, {
-          model,
-          maxTurns,
-          onEvent: (e) => log(pc.dim(`    ${e.tool} ${summarizeInput(e.input)}`)),
-        });
+        let partial: Awaited<ReturnType<typeof runAdversary>>;
+        if (useDocker) {
+          const r = await runInDocker(rule, level, objective, sb, { model, maxTurns, onProgress: (m) => log(pc.dim(m)) });
+          sink.hits.push(...r.sinkHits);
+          partial = r;
+        } else {
+          partial = await runAdversary(rule, level, objective, sb, {
+            model,
+            maxTurns,
+            guard: true,
+            onEvent: (e) => log(pc.dim(`    ${e.tool} ${summarizeInput(e.input)}`)),
+          });
+        }
         const a = await runAssertion(spec.assertion, rule, sb, partial.events, partial.finalText, sink);
         const guardAttempts = partial.blockEvidence.filter((b) => b.startsWith("attempted"));
         const run: AttackRun = {

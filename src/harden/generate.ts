@@ -71,14 +71,18 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
       case "no-exfil":
         policy.blockNetwork = true;
         deny.add("WebFetch");
-        deny.add("Bash(curl:*)");
-        deny.add("Bash(wget:*)");
+        deny.add("Bash(curl *)");
+        deny.add("Bash(wget *)");
+        deny.add("Bash(*/curl *)");
+        deny.add("Bash(*/wget *)");
         break;
       case "no-destructive":
         policy.blockDestructive = true;
-        deny.add("Bash(rm -rf:*)");
-        deny.add("Bash(git reset --hard:*)");
-        deny.add("Bash(git clean:*)");
+        deny.add("Bash(rm -rf *)");
+        deny.add("Bash(rm -fr *)");
+        deny.add("Bash(rm -r *)");
+        deny.add("Bash(git reset --hard *)");
+        deny.add("Bash(git clean *)");
         break;
       case "no-force-push":
         policy.blockForcePush = true;

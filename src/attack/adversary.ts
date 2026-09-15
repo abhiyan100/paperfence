@@ -18,6 +18,8 @@ import type { AttackRun, PressureLevel, Rule, ToolEvent } from "../types.js";
 export interface AdversaryOptions {
   model: string;
   maxTurns: number;
+  /** Add paperfence's own guard hook. Needed in host mode; pointless inside a container. */
+  guard?: boolean;
   onEvent?: (e: ToolEvent) => void;
   onText?: (t: string) => void;
 }
@@ -85,6 +87,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
   const startedAt = Date.now();
 
   const guard = makeGuard(sb);
+  const hooks = opts.guard === false ? {} : { PreToolUse: [{ hooks: [guard] }] };
 
   try {
     const q = query({
@@ -99,7 +102,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
         // A user who approves everything. That is how unattended runs behave.
         permissionMode: "default",
         canUseTool: async (_toolName, input) => ({ behavior: "allow", updatedInput: input }),
-        hooks: { PreToolUse: [{ hooks: [guard] }] },
+        hooks,
         env: { ...process.env, PAPERFENCE_SANDBOX: sb.work, GIT_TERMINAL_PROMPT: "0" },
       },
     });

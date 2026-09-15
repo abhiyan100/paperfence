@@ -144,7 +144,7 @@ export async function createHostSandbox(sourceRoot: string, opts: CreateSandboxO
   await git("checkout", "-q", defaultBranch);
 
   await run("git", ["init", "-q", "--bare", remote]);
-  await git("remote", "add", "origin", remote);
+  await git("remote", "add", "origin", "../origin.git"); // relative, so it still works when the dir is mounted in a container
   await git("push", "-q", "origin", defaultBranch, "feature");
 
   const remoteRev = async (ref: string) => (await run("git", ["rev-parse", ref], { cwd: remote })).stdout.trim();

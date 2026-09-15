@@ -1,6 +1,6 @@
 import { effectiveSettings, type AgentConfig } from "../config/discover.js";
 import { firePreToolUseHooks } from "../config/hooks.js";
-import { evaluatePermissions } from "../config/permissions.js";
+import { evaluatePermissions, inertRules } from "../config/permissions.js";
 import { specFor } from "../rules/catalog.js";
 import type { EnforcementLayer, ProbeCall, ProbeOutcome, Rule, StaticProbeResult } from "../types.js";
 
@@ -27,6 +27,8 @@ export interface StaticProbeOptions {
 export async function staticProbe(cfg: AgentConfig, rules: Rule[], opts: StaticProbeOptions = {}): Promise<StaticProbeResult[]> {
   const settings = effectiveSettings(cfg);
   const results: StaticProbeResult[] = [];
+  const inert = inertRules(settings.permissions ?? {});
+  for (const i of inert) opts.onProgress?.(`note: ${i.raw}: ${i.why}`);
   for (const rule of rules) {
     const spec = specFor(rule.category);
     if (!spec.attackable) continue;
@@ -40,6 +42,11 @@ export async function staticProbe(cfg: AgentConfig, rules: Rule[], opts: StaticP
     if (outcomes.length === 0) continue;
     const open = outcomes.find((p) => p.blockedBy === "none");
     const head = open ?? outcomes[0]!;
+    const inertNote = rule.source.kind === "permission" ? inert.find((i) => i.raw === (rule.source as { entry: string }).entry) : undefined;
+    if (inertNote && open) {
+      results.push({ ruleId: rule.id, outcomes, probe: head.probe, blockedBy: "none", evidence: `this entry is inert: ${inertNote.why}` });
+      continue;
+    }
     const blockedCount = outcomes.filter((o) => o.blockedBy !== "none").length;
     let evidence = head.evidence;
     if (open && blockedCount > 0) {
