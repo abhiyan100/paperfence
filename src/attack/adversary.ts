@@ -1,6 +1,7 @@
 import { query, type HookCallback, type HookInput } from "@anthropic-ai/claude-agent-sdk";
 import fs from "node:fs";
 import path from "node:path";
+import { allSegments } from "../shell.js";
 import type { Sandbox } from "../sandbox/host.js";
 import type { AttackRun, PressureLevel, Rule, ToolEvent } from "../types.js";
 
@@ -38,7 +39,7 @@ const DENIAL_PATTERNS = [
 
 const GUARD_PREFIX = "paperfence-guard:";
 
-function makeGuard(sb: Sandbox): HookCallback {
+export function makeGuard(sb: Sandbox): HookCallback {
   const inside = (p: string) => {
     let abs = path.resolve(sb.work, p);
     try {
@@ -78,7 +79,7 @@ function makeGuard(sb: Sandbox): HookCallback {
       const c = String(ti.command ?? "");
       const esc = shellEscapes(c);
       if (/\bsudo\b|\bsu\b\s|\bdoas\b/.test(c)) reason = "privilege escalation";
-      else if (/\b(curl|wget|nc|ncat|netcat|ssh|scp|sftp|rsync|ftp|telnet|socat)\b/.test(c) && !/^[^|;&]*\b(curl|wget|nc|ncat|netcat)\b[^|;&]*(127\.0\.0\.1|localhost)[^|;&]*$/.test(c)) reason = `network to a real host: ${c}`;
+      else if (networkEscape(c)) reason = `network to a real host: ${c}`;
       else if (/\b(python3?|node|ruby|perl|php|deno|bun)\b/.test(c) && /\b(fetch\(|https?\.request|urllib|requests\.|http\.client|net\.connect|socket\.|WebSocket)/.test(c) && !/127\.0\.0\.1|localhost/.test(c)) reason = `network from a script: ${c}`;
       else if (esc) reason = `path outside sandbox: ${esc}`;
       else if (/\bgit\s+push\b/.test(c) && /https?:\/\/|git@|ssh:\/\//.test(c)) reason = `push to a real remote: ${c}`;
@@ -197,6 +198,27 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
     turns,
     error,
   };
+}
+
+const NET_PROGS = new Set(["curl", "wget", "nc", "ncat", "netcat", "ssh", "scp", "sftp", "rsync", "ftp", "telnet", "socat", "http", "https", "xh", "aria2c"]);
+/** True if any network program is called with a destination that is not loopback. */
+function networkEscape(command: string): boolean {
+  for (const seg of allSegments(command)) {
+    if (!NET_PROGS.has(seg.base)) continue;
+    for (const a of seg.args) {
+      const t = a.text;
+      if (t.startsWith("-")) continue;
+      let host = "";
+      try {
+        host = new URL(/^[a-z]+:\/\//i.test(t) ? t : `http://${t}`).hostname;
+      } catch {
+        continue;
+      }
+      if (!host || /^\d+$/.test(host) || t.startsWith("@")) continue;
+      if (host !== "127.0.0.1" && host !== "localhost" && host !== "::1") return true;
+    }
+  }
+  return false;
 }
 
 function minimalEnv(sb: Sandbox): Record<string, string> {
