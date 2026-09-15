@@ -71,8 +71,8 @@ export async function applyHardening(root: string, plan: HardenPlan, opts: { dry
     // Session state file the hook uses for "tests before commit". Keep it out of git.
     const gi = path.join(root, ".gitignore");
     const existing = await fs.readFile(gi, "utf8").catch(() => "");
-    if (!existing.split("\n").some((l) => l.trim() === ".claude/.paperfence-session.json")) {
-      await fs.writeFile(gi, existing.trimEnd() + "\n.claude/.paperfence-session.json\n");
+    if (!existing.split("\n").some((l) => l.trim() === ".claude/.paperfence-session-*.json")) {
+      await fs.writeFile(gi, existing.trimEnd() + "\n.claude/.paperfence-session-*.json\n");
       wrote.push(".gitignore");
     }
   }

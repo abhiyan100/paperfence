@@ -14,6 +14,7 @@ interface Row {
   gates: number;
   wishes: number;
   untested: number;
+  unknown: number;
   wishPct: number;
   hasSettings: boolean;
   hasHooks: boolean;
@@ -72,7 +73,8 @@ function mini(r: Row): string {
 
 async function main(): Promise<void> {
   const rows: Row[] = JSON.parse(await fs.readFile("data/leaderboard.json", "utf8"));
-  const scanned = rows.filter((r) => !r.error && r.gates + r.wishes > 0).sort((a, b) => b.stars - a.stars);
+  const scanned = rows.filter((r) => !r.error && r.gates + r.wishes + (r.unknown ?? 0) > 0).sort((a, b) => b.stars - a.stars);
+  const totalUnknown = scanned.reduce((a, r) => a + (r.unknown ?? 0), 0);
   const totalRules = scanned.reduce((a, r) => a + r.gates + r.wishes, 0);
   const totalWish = scanned.reduce((a, r) => a + r.wishes, 0);
   const totalGate = totalRules - totalWish;
@@ -99,7 +101,7 @@ async function main(): Promise<void> {
       (r) => `<tr>
 <td><a class="repo" href="r/${slug(r.repo)}.html">${esc(r.repo)}</a><span class="desc hide-sm">${esc(r.description.slice(0, 90))}</span></td>
 <td class="n">${r.stars.toLocaleString()}</td>
-<td class="n">${r.gates + r.wishes}</td>
+<td class="n">${r.gates + r.wishes}${r.unknown ? `<span class="small"> +${r.unknown}?</span>` : ""}</td>
 <td class="n">${mini(r)}${r.wishPct}%</td>
 <td class="yesno hide-sm">${r.hasSettings ? "yes" : "no"}</td>
 <td class="yesno hide-sm">${r.hasHooks ? "yes" : "no"}</td>
@@ -120,7 +122,7 @@ async function main(): Promise<void> {
   <div class="stat"><b>${withHooks}</b><span>repos ship any hook at all (${withSettings} have a settings.json)</span></div>
 </div>
 <div class="bar"><i class="w" style="width:${pct}%"></i><i class="g" style="width:${100 - pct}%"></i></div>
-<p class="small">${totalWish} wishes, ${totalGate} gates across ${totalRules} action rules. Scanned ${date} with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>; hook scripts were not executed, so a repo that has hooks may be better protected than shown.</p>
+<p class="small">${totalWish} wishes, ${totalGate} gates across ${totalRules} action rules${totalUnknown ? `, plus ${totalUnknown} rules where a hook is present but was not executed (counted as unknown, not as wishes)` : ""}. Scanned ${date} with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
 <h2>Repos</h2>
 <table>
 <thead><tr><th>repo</th><th class="n">stars</th><th class="n">rules</th><th class="n">wishes</th><th class="hide-sm">settings</th><th class="hide-sm">hooks</th></tr></thead>
@@ -156,7 +158,7 @@ ${demoLink}
   <div class="stat gate"><b>${r.gates}</b><span>gates</span></div>
 </div>
 <div class="bar"><i class="w" style="width:${r.wishPct}%"></i><i class="g" style="width:${100 - r.wishPct}%"></i></div>
-<p class="small">settings.json: ${r.hasSettings ? "yes" : "no"} · hooks: ${r.hasHooks ? "yes (not executed in this scan)" : "no"} · scanned ${r.scannedAt.slice(0, 10)}</p>
+<p class="small">settings.json: ${r.hasSettings ? "yes" : "no"} · hooks: ${r.hasHooks ? `yes (not executed in this scan${r.unknown ? `; ${r.unknown} rule${r.unknown > 1 ? "s" : ""} marked unknown because a hook matches` : ""})` : "no"} · scanned ${r.scannedAt.slice(0, 10)}</p>
 <h2>Rules, as written</h2>
 ${rules || "<p class='small'>No action rules found.</p>"}
 ${r.sample.length < r.gates + r.wishes ? `<p class="small">Showing ${r.sample.length} of ${r.gates + r.wishes}. Run <code>npx paperfence scan</code> on the repo for the full list.</p>` : ""}

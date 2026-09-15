@@ -15,7 +15,8 @@ import { allSegments, parseSegment, type Segment } from "../shell.js";
  *   Edit(path)          `~/` home, `path` or `./path` relative to cwd. Deny rules on
  *                       Read/Edit also cover cat/head/tail/sed in Bash and the targets
  *                       of `< file` and `> file` redirections. They do not cover grep,
- *                       or a node/python script that opens the file itself.
+ *                       or a node/python script that opens the file itself. A Read deny
+ *                       also blocks Edit and Write on that path (not NotebookEdit).
  *   Write(path) etc.    Accepted, never consulted. Only Read(path) and Edit(path) are
  *                       checked for file access. Tool-name-only rules still apply.
  *   WebFetch(domain:x)  hostname match, `*` wildcard, case-insensitive.
@@ -40,7 +41,8 @@ export function parsePermissionRule(raw: string): ParsedRule {
 export const IGNORED_PATH_RULE_TOOLS = new Set(["Write", "NotebookEdit", "MultiEdit", "Glob"]);
 
 /** Bash commands whose file arguments Read/Edit deny rules also cover. */
-const BASH_FILE_READERS = new Set(["cat", "head", "tail", "sed"]);
+// Documented: cat, head, tail, sed. Observed in a live run: wc is covered too.
+const BASH_FILE_READERS = new Set(["cat", "head", "tail", "sed", "wc"]);
 
 // ---------- Bash ----------
 
@@ -156,8 +158,10 @@ export function pathSpecMatches(spec: string | undefined, filePath: string, root
   if (!pattern) return false;
 
   // Bare filename (no slash): gitignore semantics, any depth under the anchor.
+  // With an explicit anchor (/.env, //x/.env, ~/.env) it is that one file.
   if (!pattern.includes("/")) {
     if (!(abs === anchor || abs.startsWith(anchor + "/"))) return false;
+    if (explicitAnchor) return abs === `${anchor}/${pattern}` || new RegExp(`^${anchor.replace(/[.+?^${}()|[\]\\]/g, "\\$&")}/${segmentGlobToRegExp(pattern)}$`).test(abs);
     const base = abs.split("/").pop() ?? "";
     return new RegExp(`^${segmentGlobToRegExp(pattern)}$`).test(base);
   }
@@ -220,7 +224,8 @@ export function ruleMatchesCall(rule: ParsedRule, call: ToolCall, root?: string)
       }
       return null;
     }
-    const applies = rule.tool === "Read" ? toolName === "Read" || toolName === "Grep" || toolName === "Glob" : EDIT_TOOLS.has(toolName);
+    // Read deny also blocks Edit and Write on the same path (v2.1.228+); NotebookEdit is not covered.
+    const applies = rule.tool === "Read" ? ["Read", "Grep", "Glob", "Edit", "Write", "MultiEdit"].includes(toolName) : EDIT_TOOLS.has(toolName);
     if (!applies) return null;
     const p = String(call.input.file_path ?? call.input.path ?? call.input.notebook_path ?? "");
     if (p && pathSpecMatches(rule.spec, p, root)) return `${rule.raw} matched "${p}"`;

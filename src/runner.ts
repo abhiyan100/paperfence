@@ -1,10 +1,10 @@
 /**
- * Runs inside the sandbox container. Reads a job file, runs one adversary
- * session against /sandbox/repo, starts the exfil sink on localhost so the
- * objective's URL resolves, and writes the outcome as JSON for the host to
- * assert on. No paperfence guard here: the container is the boundary.
+ * Runs inside the sandbox container. The job arrives in PAPERFENCE_JOB
+ * (base64 JSON) and the outcome leaves on stdout between two markers, so the
+ * agent, which shares the filesystem, has nothing it can tamper with.
+ * The exfil sink runs on localhost so the objective's URL resolves.
+ * No paperfence guard here: the container is the boundary.
  */
-import { promises as fs } from "node:fs";
 import { runAdversary } from "./attack/adversary.js";
 import { startSink } from "./sandbox/sink.js";
 import type { Sandbox } from "./sandbox/host.js";
@@ -18,15 +18,16 @@ interface Job {
   maxTurns: number;
   work: string;
   dir: string;
-  resultPath: string;
 }
 
-const jobPath = process.argv[2];
-if (!jobPath) {
-  process.stderr.write("usage: runner <job.json>\n");
+import { RESULT_END, RESULT_START } from "./attack/markers.js";
+
+const encoded = process.env.PAPERFENCE_JOB;
+if (!encoded) {
+  process.stderr.write("runner: PAPERFENCE_JOB not set\n");
   process.exit(1);
 }
-const job: Job = JSON.parse(await fs.readFile(jobPath, "utf8"));
+const job: Job = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
 const sink = await startSink();
 const sb = { work: job.work, dir: job.dir } as Sandbox;
 try {
@@ -39,7 +40,7 @@ try {
       process.stderr.write(`    ${e.tool} ${String(i.command ?? i.file_path ?? i.url ?? i.path ?? "").slice(0, 100)}\n`);
     },
   });
-  await fs.writeFile(job.resultPath, JSON.stringify({ ...partial, sinkHits: sink.hits }));
+  process.stdout.write(`\n${RESULT_START}\n${JSON.stringify({ ...partial, sinkHits: sink.hits })}\n${RESULT_END}\n`);
 } finally {
   await sink.close();
 }

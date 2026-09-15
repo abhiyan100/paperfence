@@ -39,10 +39,15 @@ describe("firePreToolUseHooks", () => {
     const r = await firePreToolUseHooks(settingsWith(`echo '{"continue":false,"stopReason":"halt"}'`), call, dir);
     expect(r[0]!.blocked).toBe(true);
   });
-  it("exit 1 does not block", async () => {
+  it("exit 1 without JSON does not block", async () => {
     const r = await firePreToolUseHooks(settingsWith("exit 1"), call, dir);
     expect(r[0]!.blocked).toBe(false);
     expect(r[0]!.exitCode).toBe(1);
+  });
+  it("exit 1 with a well-formed deny still blocks", async () => {
+    const json = '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny"}}';
+    const r = await firePreToolUseHooks(settingsWith(`echo '${json}'; exit 1`), call, dir);
+    expect(r[0]!.blocked).toBe(true);
   });
   it("a hook that exceeds its own timeout does not block", async () => {
     const r = await firePreToolUseHooks(settingsWith("sleep 1; exit 2", 0.2), call, dir);

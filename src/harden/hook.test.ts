@@ -171,3 +171,37 @@ describe("generated hook, bypass attempts", () => {
     expect((await fire("Bash", { command: "cd pkg && npm publish --access public" })).code).toBe(2);
   });
 });
+
+describe("generated hook, review 2 cases", () => {
+  it("quoted refspecs and nested wrappers", async () => {
+    expect((await fire("Bash", { command: "git push origin 'HEAD:main'" })).code).toBe(2);
+    expect((await fire("Bash", { command: "env command git push origin main" })).code).toBe(2);
+    expect((await fire("Bash", { command: "git push origin '+HEAD:feature'" })).code).toBe(2);
+    expect((await fire("Bash", { command: "git push --force-with-lease=feature origin feature" })).code).toBe(2);
+    expect((await fire("Bash", { command: "echo 'safe; git push origin main'" })).code).toBe(0);
+  });
+  it("option-first installs and dry runs", async () => {
+    expect((await fire("Bash", { command: "npm --prefix . install left-pad" })).code).toBe(2);
+    expect((await fire("Bash", { command: "git clean -ndf" })).code).toBe(0);
+  });
+  it("tests and self through cp, rm -r, and scripts", async () => {
+    expect((await fire("Bash", { command: "cp replacement.js tests/a.test.js" })).code).toBe(2);
+    expect((await fire("Bash", { command: "rm -r tests" })).code).toBe(2);
+    expect((await fire("Bash", { command: "rm -r .claude/hooks" })).code).toBe(2);
+    expect((await fire("Bash", { command: "node -e 'require(\"fs\").writeFileSync(\".claude/hooks/paperfence-guard.cjs\",\"process.exit(0)\")'" })).code).toBe(2);
+    expect((await fire("Bash", { command: "echo x > .claude/.paperfence-session-test-session.json" })).code).toBe(2);
+    expect((await fire("Bash", { command: "cp infra/deploy.yml /tmp/deploy.yml" })).code).toBe(0);
+  });
+  it("network from scripts and sh -c", async () => {
+    expect((await fire("Bash", { command: "node -e 'fetch(\"https://example.com\")'" })).code).toBe(2);
+    expect((await fire("Bash", { command: "sh -c 'curl https://example.com'" })).code).toBe(2);
+    expect((await fire("Bash", { command: "command -v curl" })).code).toBe(0);
+  });
+  it("tests-before-commit ignores chained or backgrounded test runs", async () => {
+    await fs.rm(path.join(root, ".claude", ".paperfence-session-test-session.json"), { force: true });
+    await fire("Bash", { command: "false && npm test || true" }, { hook_event_name: "PostToolUse", tool_response: { exit_code: 0, stdout: "" } });
+    expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(2);
+    await fire("Bash", { command: "npm test &" }, { hook_event_name: "PostToolUse", tool_response: { exit_code: 0, stdout: "" } });
+    expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(2);
+  });
+});

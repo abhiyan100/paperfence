@@ -41,7 +41,9 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
 
   const cfg = await discoverConfig(root);
   const { rules } = await collectRules(root, { offline: opts.offline, onProgress: log });
-  const statics = await staticProbe(cfg, rules, { onProgress: log });
+  // In docker mode nothing from the repo runs on this machine: hook scripts are exercised
+  // inside the container by the live run instead. Host mode runs them here, as Claude Code would.
+  const statics = await staticProbe(cfg, rules, { onProgress: log, noHooks: opts.sandbox !== "host" });
   const staticById = new Map(statics.map((s) => [s.ruleId, s]));
 
   const selected = rules.filter((r) => {
@@ -51,7 +53,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     return true;
   });
 
-  let useDocker = opts.sandbox !== "host";
+  const useDocker = opts.sandbox !== "host";
   if (useDocker) {
     if (!(await dockerAvailable())) {
       throw new Error("docker is not available. Install Docker, or pass --unsafe-host to run the agent on this machine behind a best-effort guard.");

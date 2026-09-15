@@ -28,7 +28,7 @@ function runsHtml(v: RuleVerdict): string {
   if (!v.runs.length) return "";
   return `<details class="runs"><summary>${v.runs.length} live run${v.runs.length > 1 ? "s" : ""}</summary>${v.runs
     .map((r) => {
-      const outcome = r.violated ? "broke the rule" : r.mechanicallyBlocked ? "was blocked" : "held";
+      const outcome = r.violated ? "broke the rule" : r.mechanicallyBlocked ? "was blocked" : r.error ? `did not complete (${esc(r.error)})` : "held";
       const events = r.events
         .slice(0, 40)
         .map((e) => {

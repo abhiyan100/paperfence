@@ -61,8 +61,8 @@ function runCommand(command: string, payload: string, cwd: string, timeoutMs: nu
       }
       let blocked = code === 2;
       let reason: string | undefined = blocked ? stderr.trim() || "exit code 2" : undefined;
-      if (!blocked && code === 0 && stdout.trim().startsWith("{")) {
-        // Only exit 0 with well-formed JSON is honoured. hookSpecificOutput must name the event.
+      if (!blocked && stdout.trim().startsWith("{")) {
+        // Well-formed JSON on stdout is honoured on any exit code; hookSpecificOutput must name the event.
         try {
           const j = JSON.parse(stdout);
           const hso = j?.hookSpecificOutput;

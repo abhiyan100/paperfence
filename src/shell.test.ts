@@ -40,6 +40,26 @@ describe("words / parseSegment", () => {
   });
 });
 
+describe("edge cases from review", () => {
+  it("apostrophe inside double quotes is not a quote", () => {
+    expect(subshells('echo "it\'s $(cat .env)"')).toEqual(["cat .env"]);
+    expect(subshells('printf \'%s\' "literal (cat .env)"')).toEqual([]);
+  });
+  it("quoted env assignment and wrapper option values", () => {
+    expect(parseSegment("VAR='safe' cat .env").base).toBe("cat");
+    expect(parseSegment("nice -n 10 cat .env").base).toBe("cat");
+    expect(parseSegment("env -i cat .env").base).toBe("cat");
+  });
+  it("attached and quoted redirects", () => {
+    expect(parseSegment("cat<.env").reads).toEqual([".env"]);
+    expect(parseSegment('printf x >"tests/a.test.js"').writes).toEqual(["tests/a.test.js"]);
+    expect(parseSegment("cmd 2>&1").writes).toEqual([]);
+  });
+  it("command -v is a lookup, not a wrapper", () => {
+    expect(parseSegment("command -v curl").base).toBe("command");
+  });
+});
+
 describe("allSegments", () => {
   it("includes subshell bodies", () => {
     const bases = allSegments("ls && echo $(rm -rf build)").map((s) => s.base);

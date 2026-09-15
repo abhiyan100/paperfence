@@ -50,42 +50,147 @@ function currentBranch() {
 }
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// Split the way Claude Code does: every separator, plus subshells and command substitutions.
-function segments(cmd) {
+// Split the way Claude Code does: every separator outside quotes, plus subshells,
+// command substitutions, and the bodies of sh -c / bash -c.
+function splitTop(cmd) {
   const out = [];
-  for (const seg of cmd.split(/\s*(?:&&|\|\||\|&|;|\||&(?!&)|\n)\s*/)) {
-    if (!seg.trim()) continue;
-    out.push(seg.trim());
-    for (const m of seg.matchAll(/\$\(([^()]*)\)|`([^`]*)`|(?:^|\s)\(([^()]*)\)/g)) {
-      const inner = (m[1] || m[2] || m[3] || "").trim();
-      if (inner) out.push(...segments(inner));
+  let cur = "", inS = false, inD = false, depth = 0;
+  for (let i = 0; i < cmd.length; i++) {
+    const c = cmd[i];
+    if (inS) { cur += c; if (c === "'") inS = false; continue; }
+    if (inD) { cur += c; if (c === "\\") { cur += cmd[++i] || ""; continue; } if (c === '"') inD = false; continue; }
+    if (c === "\\") { cur += c + (cmd[++i] || ""); continue; }
+    if (c === "'") { inS = true; cur += c; continue; }
+    if (c === '"') { inD = true; cur += c; continue; }
+    if (c === "(" || c === "{") depth++;
+    if (c === ")" || c === "}") depth = Math.max(0, depth - 1);
+    if (depth === 0) {
+      const m = /^(\|\||&&|\|&|;;|;|\||&|\n)/.exec(cmd.slice(i));
+      if (m) { if (cur.trim()) out.push(cur.trim()); cur = ""; i += m[0].length - 1; continue; }
+    }
+    cur += c;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+function subshellBodies(seg) {
+  const out = [];
+  let inS = false, inD = false;
+  for (let i = 0; i < seg.length; i++) {
+    const c = seg[i];
+    if (!inD && c === "'") { inS = !inS; continue; }
+    if (inS) continue;
+    if (c === "\\") { i++; continue; }
+    if (c === '"') { inD = !inD; continue; }
+    if (seg.startsWith("$(", i) || (!inD && c === "(" && (i === 0 || /\s/.test(seg[i - 1])))) {
+      const start = c === "$" ? i + 2 : i + 1;
+      let depth = 1, j = start, s2 = false, d2 = false;
+      while (j < seg.length && depth > 0) {
+        const ch = seg[j];
+        if (s2) { if (ch === "'") s2 = false; }
+        else if (d2) { if (ch === "\\") j++; else if (ch === '"') d2 = false; }
+        else if (ch === "'") s2 = true; else if (ch === '"') d2 = true;
+        else if (ch === "(") depth++; else if (ch === ")") depth--;
+        j++;
+      }
+      const inner = seg.slice(start, j - 1).trim();
+      if (inner) out.push(inner);
+      i = j - 1;
+      continue;
+    }
+    if (c === "`") {
+      const j = seg.indexOf("`", i + 1);
+      if (j > i) { const inner = seg.slice(i + 1, j).trim(); if (inner) out.push(inner); i = j; }
+    }
+  }
+  return out;
+}
+function segments(cmd, depth = 0) {
+  if (depth > 6) return [];
+  const out = [];
+  for (const seg of splitTop(cmd)) {
+    out.push(seg);
+    for (const inner of subshellBodies(seg)) out.push(...segments(inner, depth + 1));
+    // sh -c '...' / bash -c "..." : the body is a command too
+    const p = parseProg(seg);
+    if (/^(sh|bash|zsh|dash)$/.test(p.prog)) {
+      const ci = p.argv.indexOf("-c");
+      if (ci !== -1 && p.argv[ci + 1]) out.push(...segments(p.argv[ci + 1], depth + 1));
     }
   }
   return out;
 }
 
-// "VAR=1 command env sudo /usr/bin/prog args" -> { prog: "prog", args: "args" }
+// Quote-stripped words of one segment.
+function wordsOf(seg) {
+  const out = [];
+  let cur = "";
+  let started = false;
+  for (let i = 0; i < seg.length; i++) {
+    const c = seg[i];
+    if (c === "'") {
+      const j = seg.indexOf("'", i + 1);
+      cur += seg.slice(i + 1, j === -1 ? seg.length : j);
+      started = true;
+      i = j === -1 ? seg.length : j;
+    } else if (c === '"') {
+      let j = i + 1;
+      while (j < seg.length && seg[j] !== '"') {
+        if (seg[j] === "\\" && j + 1 < seg.length) j++;
+        cur += seg[j++];
+      }
+      started = true;
+      i = j;
+    } else if (c === "\\" && i + 1 < seg.length) {
+      cur += seg[++i];
+      started = true;
+    } else if (/\s/.test(c)) {
+      if (started) out.push(cur);
+      cur = "";
+      started = false;
+    } else {
+      cur += c;
+      started = true;
+    }
+  }
+  if (started) out.push(cur);
+  return out;
+}
+
+// "VAR=1 command env sudo /usr/bin/prog args" -> { prog: "prog", args: "args", argv: [...] }
+const WRAPPERS = new Set(["command", "env", "sudo", "nice", "nohup", "time", "exec", "xargs", "doas", "stdbuf", "timeout"]);
+const OPT_WITH_VALUE = { nice: /^-n$/, env: /^-[uCS]$/, sudo: /^-[ugh]$/, timeout: /^-[sk]$/, stdbuf: /^-[oei]$/ };
 function parseProg(seg) {
-  let s = seg.replace(/^(?:[A-Z_][A-Z0-9_]*=\S*\s+)+/, "");
-  s = s.replace(/^(?:command|env|sudo|nice|nohup|time|exec)\s+(?:-\S+\s+)*/, "");
-  const m = /^(\S+)(?:\s+([\s\S]*))?$/.exec(s);
-  if (!m) return { prog: "", args: "" };
-  return { prog: m[1].split("/").pop(), args: m[2] || "" };
+  const w = wordsOf(seg);
+  let k = 0;
+  while (k < w.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(w[k])) k++;
+  for (;;) {
+    const name = (w[k] || "").split("/").pop();
+    if (!WRAPPERS.has(name)) break;
+    if (name === "command" && (w[k + 1] || "").startsWith("-")) break; // command -v: a lookup
+    k++;
+    while (k < w.length && (w[k].startsWith("-") || (name === "timeout" && /^\d/.test(w[k])))) {
+      const opt = w[k++];
+      if (OPT_WITH_VALUE[name] && OPT_WITH_VALUE[name].test(opt)) k++;
+    }
+  }
+  const argv = w.slice(k + 1);
+  return { prog: (w[k] || "").split("/").pop(), args: argv.join(" "), argv };
 }
 
 // git with global options stripped: "git -C . -c x=y push origin main" -> { sub: "push", args: "origin main" }
 function parseGit(seg) {
-  const { prog, args } = parseProg(seg);
+  const { prog, argv } = parseProg(seg);
   if (prog !== "git") return null;
-  let rest = args;
-  for (;;) {
-    const m = /^(?:-C\s+\S+|-c\s+\S+|--git-dir=\S+|--work-tree=\S+|--no-pager|-p|--paginate|--literal-pathspecs)\s*/.exec(rest);
-    if (!m) break;
-    rest = rest.slice(m[0].length);
+  let i = 0;
+  while (i < argv.length) {
+    const t = argv[i];
+    if (t === "-C" || t === "-c") i += 2;
+    else if (/^(--git-dir=|--work-tree=|--no-pager$|-p$|--paginate$|--literal-pathspecs$)/.test(t)) i += 1;
+    else break;
   }
-  const m = /^(\S+)(?:\s+([\s\S]*))?$/.exec(rest);
-  if (!m) return null;
-  return { sub: m[1], args: m[2] || "" };
+  if (!argv[i]) return null;
+  return { sub: argv[i], args: argv.slice(i + 1).join(" "), argv: argv.slice(i + 1) };
 }
 
 const secretFileRe = (f) => "(?:\\./|\\S*/)?" + escapeRe(f);
@@ -97,14 +202,15 @@ if (event === "PostToolUse") {
     const resp = input.tool_response;
     const text = typeof resp === "string" ? resp : JSON.stringify(resp || "");
     const failed = /"exit_code":\s*[1-9]|"interrupted":\s*true|command failed|exit code [1-9]/i.test(text) || (resp && typeof resp === "object" && resp.exit_code && resp.exit_code !== 0);
-    if (!failed) {
+    const backgrounded = /(^|\s)&\s*$/.test(cmd) || (resp && typeof resp === "object" && resp.backgroundTaskId);
+    // Only the whole command counts. "false && npm test || true" proves nothing.
+    const top = splitTop(cmd);
+    if (!failed && !backgrounded && top.length === 1) {
       const state = readState();
-      for (const s of segments(cmd)) {
-        const { prog, args } = parseProg(s);
-        const normalized = (prog + (args ? " " + args : "")).trim();
-        for (const req of policy.requireBeforeCommit) {
-          if (normalized === req || normalized.startsWith(req + " ")) state["ran:" + req] = Date.now();
-        }
+      const { prog, args } = parseProg(top[0]);
+      const normalized = (prog + (args ? " " + args : "")).trim();
+      for (const req of policy.requireBeforeCommit) {
+        if (normalized === req || normalized.startsWith(req + " ")) state["ran:" + req] = Date.now();
       }
       writeState(state);
     }
@@ -113,9 +219,10 @@ if (event === "PostToolUse") {
 }
 
 // ---------- the hook and its policy are off limits ----------
-const SELF = [".claude/hooks/", ".claude/settings.json", ".claude/settings.local.json"];
+const SELF = [".claude/hooks/", ".claude/settings.json", ".claude/settings.local.json", ".claude/.paperfence-session"];
 function touchesSelf(p) {
-  return SELF.some((x) => p === x || p.startsWith(x) || p.endsWith("/" + x));
+  const n = p.replace(/\/+$/, "");
+  return n === ".claude" || n === ".claude/hooks" || SELF.some((x) => n === x || n.startsWith(x) || n.endsWith("/" + x) || n.includes("/" + x));
 }
 
 // ---------- file tools ----------
@@ -145,39 +252,36 @@ if (tool === "Bash") {
   const branch = policy.protectedBranches.length ? currentBranch() : "";
 
   for (const s of segments(cmd)) {
-    const { prog, args } = parseProg(s);
+    const { prog, args, argv } = parseProg(s);
     const git = parseGit(s);
+    const scripty = /^(python3?|node|ruby|perl|php|deno|bun)$/.test(prog);
+    const scriptText = scripty ? argv.join(" ") : "";
 
     // protected branches
     for (const b of policy.protectedBranches) {
       const bRe = escapeRe(b);
       if (git && git.sub === "push") {
-        const a = git.args;
-        if (new RegExp("(^|\\s|:|\\+)(refs/heads/)?" + bRe + "(\\s|$)").test(a)) block("pushing to " + b + " is not allowed; push a branch and open a pull request");
+        if (git.argv.some((a) => new RegExp("(^|:|\\+)(refs/heads/)?" + bRe + "$").test(a))) block("pushing to " + b + " is not allowed; push a branch and open a pull request");
         // bare "git push", "git push origin", "git push -u origin HEAD": whatever is checked out
-        const positional = a
-          .replace(/(^|\s)-{1,2}[\w-]+(=\S+)?/g, " ")
-          .trim()
-          .split(/\s+/)
-          .filter(Boolean);
+        const positional = git.argv.filter((a) => !a.startsWith("-"));
         const refspec = positional[1];
         if ((positional.length <= 1 || refspec === "HEAD") && branch === b) block("pushing " + b + " is not allowed; push a branch and open a pull request");
       }
       if (git && git.sub === "commit" && branch === b) block("committing on " + b + " is not allowed; create a branch first");
-      if (git && (git.sub === "checkout" || git.sub === "switch") && new RegExp("(^|\\s)" + bRe + "(\\s|$)").test(git.args) && /\bgit\b[^|;&]*\bcommit\b/.test(cmd)) block("committing on " + b + " is not allowed");
+      if (git && (git.sub === "checkout" || git.sub === "switch") && git.argv.includes(b) && /\bgit\b[^|;&]*\bcommit\b/.test(cmd)) block("committing on " + b + " is not allowed");
       if (git && (git.sub === "merge" || git.sub === "rebase") && branch === b) block("changing " + b + " locally is not allowed; work on a branch");
     }
 
     // force push
     if (policy.blockForcePush && git && git.sub === "push") {
-      if (/(^|\s)(--force\b|--force-with-lease\b|--force-if-includes\b|-[a-zA-Z]*f[a-zA-Z]*(\s|$)|\+\S)/.test(git.args)) block("force push is not allowed");
+      if (git.argv.some((a) => /^(--force|--force-with-lease(=.*)?|--force-if-includes|-[a-zA-Z]*f[a-zA-Z]*)$/.test(a) || a.startsWith("+"))) block("force push is not allowed");
     }
 
     // destructive
     if (policy.blockDestructive) {
-      if (prog === "rm" && /(^|\s)(-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)(\s|$)/.test(args)) block("rm -r is not allowed");
-      if (git && git.sub === "reset" && /--hard/.test(git.args)) block("git reset --hard is not allowed");
-      if (git && git.sub === "clean" && /(^|\s)(-[a-zA-Z]*f[a-zA-Z]*|--force)(\s|$)/.test(git.args)) block("git clean -f is not allowed");
+      if (prog === "rm" && argv.some((a) => /^-[a-zA-Z]*[rR]/.test(a) || a === "--recursive")) block("rm -r is not allowed");
+      if (git && git.sub === "reset" && git.argv.includes("--hard")) block("git reset --hard is not allowed");
+      if (git && git.sub === "clean" && git.argv.some((a) => /^-[a-zA-Z]*f/.test(a) || a === "--force") && !git.argv.some((a) => /^-[a-zA-Z]*n/.test(a) || a === "--dry-run")) block("git clean -f is not allowed");
       if (git && (git.sub === "checkout" || git.sub === "restore") && /(^|\s)(--\s+)?\.\s*$|(^|\s)--\s+\./.test(git.args)) block("discarding all changes is not allowed");
       if (git && git.sub === "branch" && /(^|\s)-[a-zA-Z]*D/.test(git.args)) block("force-deleting branches is not allowed");
       if (prog === "find" && /(^|\s)-delete(\s|$)/.test(args)) block("find -delete is not allowed");
@@ -189,11 +293,11 @@ if (tool === "Bash") {
     if (policy.blockInstall) {
       const pm = /^(npm|pnpm|yarn|bun)$/.test(prog) ? prog : null;
       if (pm) {
-        const m = /^(install|i|add)\b([\s\S]*)$/.exec(args.trim());
-        if (m) {
-          const rest = m[2].replace(/(^|\s)-{1,2}[\w-]+(=\S+)?/g, " ").trim();
-          if (rest) block("adding dependencies requires approval");
-        }
+        const positional = argv.filter((a) => !a.startsWith("-"));
+        const optValues = new Set();
+        argv.forEach((a, i) => { if (/^--prefix$|^-C$|^--cwd$|^-w$|^--workspace$|^--filter$/.test(a) && argv[i + 1]) optValues.add(argv[i + 1]); });
+        const pos = positional.filter((a) => !optValues.has(a));
+        if (/^(install|i|add)$/.test(pos[0] || "") && pos.length > 1) block("adding dependencies requires approval");
       }
       if (/^pip3?$/.test(prog)) {
         const m = /^install\b([\s\S]*)$/.exec(args.trim());
@@ -209,7 +313,8 @@ if (tool === "Bash") {
     // network
     if (policy.blockNetwork) {
       if (/^(curl|wget|nc|ncat|netcat|ssh|scp|sftp|rsync|ftp|telnet|socat|http|https|xh|aria2c)$/.test(prog) && !/127\.0\.0\.1|localhost/.test(args)) block("outbound network commands are not allowed");
-      if (/^(python3?|node|ruby|perl|php|deno|bun)$/.test(prog) && /\b(urllib|requests|http\.client|fetch\(|https?\.request|net\.connect|socket)\b/.test(args) && !/127\.0\.0\.1|localhost/.test(args)) block("outbound network from scripts is not allowed");
+      if (scripty && /(urllib|requests\.|http\.client|\bfetch\s*\(|https?\.(request|get)|net\.connect|socket\.|WebSocket|XMLHttpRequest|axios|got\()/.test(scriptText) && !/127\.0\.0\.1|localhost/.test(scriptText)) block("outbound network from scripts is not allowed");
+      if (scripty && /https?:\/\//.test(scriptText) && !/127\.0\.0\.1|localhost/.test(scriptText)) block("outbound network from scripts is not allowed");
     }
 
     // secrets
@@ -225,13 +330,17 @@ if (tool === "Bash") {
     const shellWriters = /^(rm|mv|cp|unlink|tee|touch|truncate|install|ln|chmod)$/;
     const editsInPlace = /^(sed|perl)$/.test(prog) && /(^|\s)-i/.test(args);
     const writeTargets = [...(s.match(/(?:^|\s)\d?>>?\s*(\S+)/g) || []).map((m) => m.replace(/^\s*\d?>>?\s*/, ""))];
-    const argPaths = args.split(/\s+/).filter((a) => a && !a.startsWith("-")).map((a) => a.replace(/^['"]|['"]$/g, ""));
+    let argPaths = argv.filter((a) => a && !a.startsWith("-"));
+    if ((prog === "cp" || prog === "mv" || prog === "install" || prog === "ln") && argPaths.length > 1) argPaths = argPaths.slice(-1); // destination only
     const shellTouches = (pred) => (shellWriters.test(prog) || editsInPlace) && argPaths.some(pred) || writeTargets.some(pred);
     if (shellTouches((a) => touchesSelf(rel(a)))) block("the paperfence hook, its policy and settings.json are not editable by the agent");
+    if (prog === "rm" && argv.some((a) => !a.startsWith("-") && touchesSelf(rel(a)))) block("the paperfence hook, its policy and settings.json are not editable by the agent");
+    if (scripty && /\.claude\/(hooks|settings|\.paperfence)/.test(scriptText) && /(writeFile|appendFile|unlink|rm|rename|open\([^)]*['"][wa]|chmod)/.test(scriptText)) block("the paperfence hook, its policy and settings.json are not editable by the agent");
 
     // scope
     for (const d of policy.forbiddenPaths) {
       if (shellTouches((a) => under(rel(a), d))) block("editing " + d + "/ is not allowed");
+      if (scripty && new RegExp("(writeFile|appendFile|unlink|rm|rename|open\\([^)]*['\"][wa])[^;]*" + escapeRe(d) + "/").test(scriptText)) block("editing " + d + "/ from a script is not allowed");
     }
     if (policy.allowedPaths.length) {
       if (shellTouches((a) => { const r = rel(a); return r && !r.startsWith("..") && !policy.allowedPaths.some((d) => under(r, d)) && !r.startsWith(".claude/"); })) block("edits are only allowed under " + policy.allowedPaths.join(", "));
@@ -239,7 +348,9 @@ if (tool === "Bash") {
 
     // tests
     for (const d of policy.protectedTestPaths) {
-      if ((prog === "rm" || prog === "mv" || prog === "unlink") && new RegExp("(^|\\s)(\\./)?" + escapeRe(d) + "/").test(args)) block("removing tests under " + d + "/ is not allowed");
+      const inTests = (a) => { const r = rel(a); return r === d || r.startsWith(d + "/") || /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$/.test(r); };
+      if (/^(rm|mv|unlink|cp|tee|truncate|install|ln)$/.test(prog) && argv.some((a) => !a.startsWith("-") && inTests(a))) block("changing tests under " + d + "/ is not allowed; fix the code instead");
+      if (scripty && new RegExp("(writeFile|unlink|rm|rename|open\\([^)]*['\"][wa])[^;]*" + escapeRe(d) + "/").test(scriptText)) block("changing tests from a script is not allowed");
       if (git && git.sub === "rm" && new RegExp("(^|\\s)(\\./)?" + escapeRe(d) + "/").test(git.args)) block("removing tests under " + d + "/ is not allowed");
       if (/^(sed|perl)$/.test(prog) && /(^|\s)-i\b/.test(args) && new RegExp("(^|\\s)(\\./)?" + escapeRe(d) + "/").test(args)) block("editing tests under " + d + "/ is not allowed");
       if (new RegExp(">\\s*(\\./)?" + escapeRe(d) + "/").test(s)) block("writing into " + d + "/ from the shell is not allowed");

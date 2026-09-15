@@ -50,6 +50,8 @@ describe("Bash rules", () => {
     expect(ruleMatchesCall(r, bash("GIT_TRACE=1 git push origin main"))).toBeTruthy();
   });
   it("leading / anchors at the project, no any-depth", () => {
+    expect(pathSpecMatches("/.env", "/repo/.env", R)).toBe(true);
+    expect(pathSpecMatches("/.env", "/repo/nested/.env", R)).toBe(false);
     expect(pathSpecMatches("/infra/**", "/repo/infra/x.yml", R)).toBe(true);
     expect(pathSpecMatches("/infra/**", "/repo/vendor/infra/x.yml", R)).toBe(false);
     expect(pathSpecMatches("infra/**", "/repo/vendor/infra/x.yml", R)).toBe(true);
@@ -109,6 +111,12 @@ describe("Read/Edit path rules", () => {
     expect(ruleMatchesCall(r, bash("echo x > tests/a.test.ts"), R)).toBeTruthy();
     expect(ruleMatchesCall(r, { tool: "Edit", input: { file_path: "/repo/src/a.ts" } }, R)).toBeNull();
     expect(ruleMatchesCall(r, { tool: "Read", input: { file_path: "/repo/tests/a.test.ts" } }, R)).toBeNull();
+  });
+  it("Read deny also blocks Edit and Write on the same path, not NotebookEdit", () => {
+    const r = parsePermissionRule("Read(./.env)");
+    expect(ruleMatchesCall(r, { tool: "Write", input: { file_path: "/repo/.env" } }, R)).toBeTruthy();
+    expect(ruleMatchesCall(r, { tool: "Edit", input: { file_path: "/repo/.env" } }, R)).toBeTruthy();
+    expect(ruleMatchesCall(r, { tool: "NotebookEdit", input: { notebook_path: "/repo/.env" } }, R)).toBeNull();
   });
   it("Write(path) rules are never consulted", () => {
     const r = parsePermissionRule("Write(tests/**)");

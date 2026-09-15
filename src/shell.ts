@@ -95,8 +95,10 @@ export function subshells(seg: string): string[] {
   // $( ... ) with nesting. Single-quoted text is literal; double-quoted text still expands $( ).
   let i = 0;
   let inSingle = false;
+  let inDouble = false;
   while (i < seg.length) {
-    if (seg[i] === "'" ) {
+    const c = seg[i]!;
+    if (!inDouble && c === "'") {
       inSingle = !inSingle;
       i++;
       continue;
@@ -105,7 +107,17 @@ export function subshells(seg: string): string[] {
       i++;
       continue;
     }
-    if (seg.startsWith("$(", i) || (seg[i] === "(" && (i === 0 || /\s/.test(seg[i - 1]!)))) {
+    if (c === "\\") {
+      i += 2;
+      continue;
+    }
+    if (c === '"') {
+      inDouble = !inDouble;
+      i++;
+      continue;
+    }
+    // Inside double quotes only $( ) and backticks expand; a bare ( is literal.
+    if (seg.startsWith("$(", i) || (!inDouble && c === "(" && (i === 0 || /\s/.test(seg[i - 1]!)))) {
       const start = seg[i] === "$" ? i + 2 : i + 1;
       let depth = 1;
       let j = start;
@@ -194,6 +206,34 @@ export function words(seg: string): Word[] {
       i++;
       continue;
     }
+    // Unquoted redirect operators are their own tokens: "cat<.env" -> cat, <, .env
+    if (c === "<" || c === ">") {
+      if (started && !/^\d$/.test(cur) && !quoted) push();
+      else if (started && /^\d$/.test(cur) && !quoted) {
+        // "2>" keeps the fd digit with the operator
+      }
+      let op = c;
+      if (seg[i + 1] === c) {
+        op += c;
+        i++;
+      }
+      if (seg[i + 1] === "&") {
+        op += "&";
+        i++;
+      }
+      cur = (started && /^\d$/.test(cur) ? cur : "") + op;
+      started = true;
+      quoted = false;
+      i++;
+      // "<(" process substitution stays attached
+      if (seg[i] === "(") {
+        cur += "(";
+        i++;
+        continue;
+      }
+      push();
+      continue;
+    }
     cur += c;
     started = true;
     i++;
@@ -215,26 +255,46 @@ export function parseSegment(raw: string): Segment {
       continue;
     }
     const m = /^(\d?>>?|<)(.*)$/.exec(w.text);
-    if (m && !w.text.startsWith("<(")) {
+    if (m && !w.text.startsWith("<(") && !m[0].endsWith("&")) {
       let target = m[2];
       if (!target) target = ws[++i]?.text ?? "";
       if (target && !target.startsWith("&")) (m[1] === "<" ? reads : writes).push(target);
       continue;
     }
+    if (m) {
+      // "2>&1": the fd number rides in the next token when the operator ended with &
+      if (m[0].endsWith("&") && /^\d+$/.test(ws[i + 1]?.text ?? "")) i++;
+      continue;
+    }
     rest.push(w);
   }
-  // Skip env assignments and wrappers.
+  // Skip env assignments and wrappers. Wrapper options that take a value are skipped with it.
+  const OPTION_WITH_VALUE: Record<string, RegExp> = { nice: /^-n$/, env: /^-[uCS]$/, sudo: /^-[ugh]$/, timeout: /^-[sk]$/, stdbuf: /^-[oei]$/ };
   let k = 0;
   while (k < rest.length) {
     const t = rest[k]!;
-    if (!t.quoted && /^[A-Za-z_][A-Za-z0-9_]*=/.test(t.text)) {
+    if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(t.text) && !(t.quoted && !/^[A-Za-z_][A-Za-z0-9_]*=/.test(raw.trim().split(/\s+/)[k] ?? ""))) {
       k++;
       continue;
     }
-    if (!t.quoted && WRAPPERS.has(t.text.split("/").pop() ?? "")) {
+    const wname = t.text.split("/").pop() ?? "";
+    if (!t.quoted && WRAPPERS.has(wname)) {
+      // "command -v prog" is a lookup, not a wrapper; leave it as the program.
+      if (wname === "command" && rest[k + 1]?.text.startsWith("-")) break;
       k++;
-      // skip the wrapper's own short options (env -i, timeout 5, nice -n 10)
-      while (k < rest.length && (rest[k]!.text.startsWith("-") || (t.text === "timeout" && /^\d/.test(rest[k]!.text)))) k++;
+      while (k < rest.length) {
+        const a = rest[k]!.text;
+        if (a.startsWith("-")) {
+          k++;
+          if (OPTION_WITH_VALUE[wname]?.test(a)) k++;
+          continue;
+        }
+        if (wname === "timeout" && /^\d/.test(a)) {
+          k++;
+          continue;
+        }
+        break;
+      }
       continue;
     }
     break;

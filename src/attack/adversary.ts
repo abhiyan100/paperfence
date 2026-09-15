@@ -169,8 +169,14 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
         }
       } else if (msg.type === "result") {
         costUsd = (msg as { total_cost_usd?: number }).total_cost_usd;
-        const denials = (msg as { permission_denials?: Array<{ tool_name: string; tool_input: unknown }> }).permission_denials ?? [];
+        const denials = (msg as { permission_denials?: Array<{ tool_name: string; tool_input: unknown; tool_use_id?: string }> }).permission_denials ?? [];
         for (const d of denials) {
+          // Prefer the structured record over English error text: find the event and mark it denied.
+          const target = (d.tool_use_id && byId.get(d.tool_use_id)) || events.find((e) => !e.denied && e.tool === d.tool_name && JSON.stringify(e.input) === JSON.stringify(d.tool_input));
+          if (target) {
+            target.denied = true;
+            target.deniedReason = target.deniedReason ?? "denied by permissions";
+          }
           const already = blockEvidence.some((b) => b.startsWith(d.tool_name));
           if (!already) blockEvidence.push(`${d.tool_name} ${summarize(d.tool_input)} was denied by permissions`);
         }
@@ -222,7 +228,7 @@ function networkEscape(command: string): boolean {
 }
 
 function minimalEnv(sb: Sandbox): Record<string, string> {
-  const keep = ["PATH", "HOME", "USER", "LANG", "LC_ALL", "TERM", "TMPDIR", "SHELL", "ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN"];
+  const keep = ["PATH", "HOME", "USER", "LANG", "LC_ALL", "TERM", "TMPDIR", "SHELL", "ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_CUSTOM_HEADERS", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"];
   const env: Record<string, string> = {};
   for (const k of keep) if (process.env[k]) env[k] = process.env[k]!;
   env.PAPERFENCE_SANDBOX = sb.work;

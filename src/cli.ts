@@ -45,7 +45,7 @@ program
       await fs.writeFile(opts.html, renderHtml(report));
       process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
     }
-    process.exitCode = report.totals.broken > 0 ? 2 : 0;
+    process.exitCode = report.totals.broken > 0 ? 2 : report.totals.error > 0 ? 3 : 0;
   });
 
 program
@@ -85,7 +85,7 @@ program
       await fs.writeFile(opts.html, renderHtml(report));
       process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
     }
-    process.exitCode = report.totals.broken > 0 ? 2 : 0;
+    process.exitCode = report.totals.broken > 0 ? 2 : report.totals.error > 0 ? 3 : 0;
   });
 
 program

@@ -126,6 +126,8 @@ interface Row {
   gates: number;
   wishes: number;
   untested: number;
+  /** Rules a present-but-not-executed hook might cover. Excluded from the percentage. */
+  unknown: number;
   wishPct: number;
   hasSettings: boolean;
   hasHooks: boolean;
@@ -146,7 +148,7 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
 
   for (const c of candidates.slice(0, n)) {
     const prev = done.get(c.repo);
-    if (prev && !prev.error) {
+    if (prev && !prev.error && typeof prev.unknown === "number") {
       rows.push(prev);
       continue;
     }
@@ -157,16 +159,19 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
       const report: ScanReport = await scan(dir, { offline, noHooks: true, onProgress: (m) => process.stderr.write(`  ${m}\n`) });
       const hasSettings = await fs.stat(path.join(dir, ".claude", "settings.json")).then(() => true).catch(() => false);
       const hasHooks = report.rules.some((r) => r.source.kind === "hook") || (await fs.readdir(path.join(dir, ".claude", "hooks")).catch(() => [])).length > 0;
-      const attackable = report.totals.gate + report.totals.wish;
+      const unknown = report.verdicts.filter((v) => v.grade === "WISH" && /not run \(--no-hooks\)/.test(v.staticProbe?.evidence ?? "")).length;
+      const wishes = report.totals.wish - unknown;
+      const attackable = report.totals.gate + wishes;
       rows.push({
         repo: c.repo,
         stars: c.stars,
         description: c.description,
         rules: report.rules.length,
         gates: report.totals.gate,
-        wishes: report.totals.wish,
+        wishes,
         untested: report.totals.untested,
-        wishPct: attackable ? Math.round((100 * report.totals.wish) / attackable) : 0,
+        unknown,
+        wishPct: attackable ? Math.round((100 * wishes) / attackable) : 0,
         hasSettings,
         hasHooks,
         sample: report.verdicts
@@ -176,7 +181,7 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
         scannedAt: report.scannedAt,
       });
     } catch (e) {
-      rows.push({ repo: c.repo, stars: c.stars, description: c.description, rules: 0, gates: 0, wishes: 0, untested: 0, wishPct: 0, hasSettings: false, hasHooks: false, sample: [], scannedAt: new Date().toISOString(), error: (e as Error).message.split("\n")[0] });
+      rows.push({ repo: c.repo, stars: c.stars, description: c.description, rules: 0, gates: 0, wishes: 0, untested: 0, unknown: 0, wishPct: 0, hasSettings: false, hasHooks: false, sample: [], scannedAt: new Date().toISOString(), error: (e as Error).message.split("\n")[0] });
     } finally {
       await fs.rm(dir, { recursive: true, force: true });
     }
@@ -192,9 +197,9 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
   md.push("");
   md.push(`${scanned.length} repos, ${totalRules} action rules, ${Math.round((100 * totalWish) / Math.max(1, totalRules))}% of them wishes. Scanned ${new Date().toISOString().slice(0, 10)} with \`paperfence scan\`.`);
   md.push("");
-  md.push("| repo | stars | rules | gates | wishes | wishes % | settings.json | hooks |");
-  md.push("|---|---:|---:|---:|---:|---:|:-:|:-:|");
-  for (const r of scanned) md.push(`| [${r.repo}](https://github.com/${r.repo}) | ${r.stars.toLocaleString()} | ${r.gates + r.wishes} | ${r.gates} | ${r.wishes} | ${r.wishPct}% | ${r.hasSettings ? "yes" : "no"} | ${r.hasHooks ? "yes" : "no"} |`);
+  md.push("| repo | stars | rules | gates | wishes | unknown (hook not run) | wishes % | settings.json | hooks |");
+  md.push("|---|---:|---:|---:|---:|---:|---:|:-:|:-:|");
+  for (const r of scanned) md.push(`| [${r.repo}](https://github.com/${r.repo}) | ${r.stars.toLocaleString()} | ${r.gates + r.wishes + r.unknown} | ${r.gates} | ${r.wishes} | ${r.unknown} | ${r.wishPct}% | ${r.hasSettings ? "yes" : "no"} | ${r.hasHooks ? "yes" : "no"} |`);
   await fs.writeFile(path.join(DATA, "leaderboard.md"), md.join("\n") + "\n");
   process.stderr.write(`\nwrote data/leaderboard.json and data/leaderboard.md (${scanned.length} repos, ${Math.round((100 * totalWish) / Math.max(1, totalRules))}% wishes)\n`);
 }

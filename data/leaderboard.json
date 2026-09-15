@@ -1,0 +1,48 @@
+[
+  {
+    "repo": "mindfold-ai/Trellis",
+    "stars": 14639,
+    "description": "The best agent harness.",
+    "rules": 14,
+    "gates": 0,
+    "wishes": 11,
+    "untested": 3,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": true,
+    "hasHooks": true,
+    "sample": [
+      {
+        "text": "MUST run impact analysis before editing any symbol. Before modifying a function, class, or method, run `impact({target: \"symbolName\", direct",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "MUST run `detect_changes()` before committing to verify your changes only affect expected symbols and execution flows.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "MUST warn the user if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"impact analysis with HIGH or CRITICAL risk\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "NEVER edit a function, class, or method without first running `impact` on it.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"HIGH or CRITICAL risk warnings\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "NEVER commit changes without running `detect_changes()` to check affected scope.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-15T14:35:06.734Z"
+  }
+]

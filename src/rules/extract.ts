@@ -98,6 +98,7 @@ async function askModel(file: string, content: string, model?: string, onProgres
     .map((l, i) => `${String(i + 1).padStart(4)}| ${l}`)
     .join("\n");
   let text = "";
+  let failure: Error | undefined;
   const abort = new AbortController();
   const timer = setTimeout(() => abort.abort(), Number(process.env.PAPERFENCE_EXTRACT_TIMEOUT_MS ?? 120_000));
   try {
@@ -112,23 +113,34 @@ async function askModel(file: string, content: string, model?: string, onProgres
         maxTurns: 1,
         permissionMode: "default",
         abortController: abort,
+        // Classification, not reasoning: extended thinking turned an 8-second call into 80.
+        thinking: { type: "disabled" },
+        maxThinkingTokens: 0,
       },
     })) {
-      if (msg.type === "result" && msg.subtype === "success") text = msg.result;
-      else if (msg.type === "result") throw new Error(`model run ended: ${msg.subtype}`);
+      if (msg.type === "result" && msg.subtype === "success") {
+        text = msg.result;
+        break; // do not wait for the stream to close; the subprocess is aborted below
+      } else if (msg.type === "result") throw new Error(`model run ended: ${msg.subtype}`);
       else if ((msg as { type: string }).type === "rate_limit_event") {
         rateLimit.last = { at: Date.now(), info: msg };
         const info = (msg as { rate_limit_info?: { status?: string; resetsAt?: number } }).rate_limit_info;
         if (info?.status && info.status !== "allowed") onProgress?.(`rate limit: ${info.status}${info.resetsAt ? `, resets ${new Date(info.resetsAt * 1000).toLocaleTimeString()}` : ""}`);
       }
     }
+  } catch (e) {
+    failure = e as Error;
   } finally {
     clearTimeout(timer);
     // The CLI subprocess outlives the result unless we abort it. Without this, a scan of many
-    // files leaks one process per file.
-    abort.abort();
+    // files leaks one process per file. Errors from tearing it down are irrelevant once we have text.
+    try {
+      abort.abort();
+    } catch {
+      // ignore
+    }
   }
-  if (!text) throw new Error("model returned nothing (timed out or aborted)");
+  if (!text) throw failure ?? new Error("model returned nothing (timed out or aborted)");
   const jsonText = text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
   return Extracted.parse(JSON.parse(jsonText));
 }
