@@ -10,3 +10,4 @@ coverage
 web/.next
 web/node_modules
 web/out
+site/
