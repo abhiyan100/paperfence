@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>paperfence · the fence report</title><meta name="description" content="99.7% of the safety rules in 80 popular CLAUDE.md files are wishes. Check yours with paperfence.">
-<meta property="og:title" content="paperfence · the fence report"><meta property="og:description" content="99.7% of the safety rules in 80 popular CLAUDE.md files are wishes. Check yours with paperfence.">
+<title>paperfence · the fence report</title><meta name="description" content="99.7% of the safety rules in 96 popular CLAUDE.md files are wishes. Check yours with paperfence.">
+<meta property="og:title" content="paperfence · the fence report"><meta property="og:description" content="99.7% of the safety rules in 96 popular CLAUDE.md files are wishes. Check yours with paperfence.">
 <style>
 :root{--bg:#fbfaf7;--fg:#1c1b19;--muted:#6b6862;--line:#e6e2d9;--gate:#1f7a4d;--gate-bg:#e3f4ea;--wish:#a86a00;--wish-bg:#fff2d6;--broken:#b3261e;--broken-bg:#fde7e5;--untested-bg:#eeece7;--code:#f1efe9;--accent:#1c1b19}
 @media(prefers-color-scheme:dark){:root{--bg:#141311;--fg:#ece9e2;--muted:#9a968e;--line:#2b2925;--gate:#6fd39a;--gate-bg:#12301f;--wish:#f0b64a;--wish-bg:#3a2a08;--broken:#ff8a80;--broken-bg:#3d1512;--untested-bg:#24221f;--code:#1f1d1a;--accent:#ece9e2}}
@@ -34,15 +34,15 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 </style></head><body><main>
 <nav><a href="https://github.com/abhiyan100/paperfence">paperfence on GitHub</a></nav>
 <h1>The fence report</h1>
-<p class="lede">80 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether a <code>permissions.deny</code> entry checked into the repo would stop the obvious violation. This is a survey of what is in the repo, not a measure of how well these projects are protected: hook scripts were not executed, and user-level settings, managed policy and remote branch protection are invisible from outside.</p>
+<p class="lede">96 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether a <code>permissions.deny</code> entry checked into the repo would stop the obvious violation. This is a survey of what is in the repo, not a measure of how well these projects are protected: hook scripts were not executed, and user-level settings, managed policy and remote branch protection are invisible from outside.</p>
 <div class="big">
-  <div class="stat wish"><b>99.7%</b><span>of the 593 mappable rules have no deny entry behind them in the repo</span></div>
+  <div class="stat wish"><b>99.7%</b><span>of the 702 mappable rules have no deny entry behind them in the repo</span></div>
   <div class="stat gate"><b>0.3%</b><span>have a deny entry that would stop the obvious violation</span></div>
-  <div class="stat"><b>79</b><span>of 80 repos have zero gates</span></div>
-  <div class="stat"><b>6</b><span>repos ship any hook at all (14 have a settings.json)</span></div>
+  <div class="stat"><b>95</b><span>of 96 repos have zero gates</span></div>
+  <div class="stat"><b>6</b><span>repos ship any hook at all (15 have a settings.json)</span></div>
 </div>
 <div class="bar"><i class="w" style="width:99.7%"></i><i class="g" style="width:0.29999999999999716%"></i></div>
-<p class="small">591 wishes, 2 gates across 593 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-18 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
+<p class="small">700 wishes, 2 gates across 702 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-18 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
 <h2>Repos</h2>
 <table>
 <thead><tr><th>repo</th><th class="n">stars</th><th class="n">rules</th><th class="n">wishes</th><th class="hide-sm">settings</th><th class="hide-sm">hooks</th></tr></thead>
@@ -685,6 +685,134 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 <td class="n"><span class="mini"><i style="width:91%"></i><i class="g" style="width:9%"></i></span>91%</td>
 <td class="yesno hide-sm">yes</td>
 <td class="yesno hide-sm">yes</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/nostrord__nostrord.html">nostrord/nostrord</a><span class="desc hide-sm"></span></td>
+<td class="n">41</td>
+<td class="n">5</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">yes</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/techsenger__shellfx.html">techsenger/shellfx</a><span class="desc hide-sm">Techsenger ShellFX  – A platform for building JavaFX applications using an extended MVP pa</span></td>
+<td class="n">39</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/seastan__ringsdb.html">seastan/ringsdb</a><span class="desc hide-sm">RingsDB code base</span></td>
+<td class="n">39</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/geneontology__go-annotation.html">geneontology/go-annotation</a><span class="desc hide-sm">This repository hosts the tracker for issues pertaining to GO annotations.</span></td>
+<td class="n">38</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/f-o-o-g-s__nokkvi.html">f-o-o-g-s/nokkvi</a><span class="desc hide-sm">A rust based navidrome client for linux built using iced-rs</span></td>
+<td class="n">38</td>
+<td class="n">19</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/airwaylab-app__airwaylab.html">airwaylab-app/airwaylab</a><span class="desc hide-sm">Free, open-source airway analysis for ResMed CPAP/BiPAP data</span></td>
+<td class="n">38</td>
+<td class="n">10</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/ericrosenberg1__CityBot2.html">ericrosenberg1/CityBot2</a><span class="desc hide-sm">Bot to Share News and Relevant Information for a City or Geographic Area</span></td>
+<td class="n">37</td>
+<td class="n">2</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/alfred1994__alpha-pilot.html">alfred1994/alpha-pilot</a><span class="desc hide-sm">AI 驾驶的自愈式 A 股模拟盘交易赛车 · Self-healing paper-trading race car driven by AI agents</span></td>
+<td class="n">37</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/BeardedBear__beardify.html">BeardedBear/beardify</a><span class="desc hide-sm">Experimental Spotify client, with album catalog feature</span></td>
+<td class="n">36</td>
+<td class="n">7</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/replikativ__dvergr.html">replikativ/dvergr</a><span class="desc hide-sm">FRP-based LLM agent framework with git-like memory model.</span></td>
+<td class="n">35</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/chetstriker__LLMtary.html">chetstriker/LLMtary</a><span class="desc hide-sm">Autonomous AI-powered penetration testing platform. LLM-driven recon, vulnerability analys</span></td>
+<td class="n">35</td>
+<td class="n">3</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/manhinhang__futu-opend-docker.html">manhinhang/futu-opend-docker</a><span class="desc hide-sm">lightweight futu opend docker</span></td>
+<td class="n">34</td>
+<td class="n">8</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/janderswag__docuchat.app.html">janderswag/docuchat.app</a><span class="desc hide-sm">Private, self-hosted document chat for attorneys: parse legal PDFs and query them with loc</span></td>
+<td class="n">33</td>
+<td class="n">4</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/jaccen__AIRoute.html">jaccen/AIRoute</a><span class="desc hide-sm">面向国内合规增强的 AI 网关</span></td>
+<td class="n">33</td>
+<td class="n">31</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/FigmaAI__KleverDesktop.html">FigmaAI/KleverDesktop</a><span class="desc hide-sm">AI-Powered UI/UX Auto Research for Android &amp; Web</span></td>
+<td class="n">33</td>
+<td class="n">1</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
+</tr>
+<tr>
+<td><a class="repo" href="r/slntopp__nocloud.html">slntopp/nocloud</a><span class="desc hide-sm">Cloud-native Open-Source Cloud Management Framework</span></td>
+<td class="n">33</td>
+<td class="n">8</td>
+<td class="n"><span class="mini"><i style="width:100%"></i><i class="g" style="width:0%"></i></span>100%</td>
+<td class="yesno hide-sm">no</td>
+<td class="yesno hide-sm">no</td>
 </tr></tbody>
 </table>
 <h2>What this means</h2>
