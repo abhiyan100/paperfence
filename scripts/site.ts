@@ -147,10 +147,10 @@ async function main(): Promise<void> {
     `
 <nav><a href="https://github.com/abhiyan100/paperfence">paperfence on GitHub</a></nav>
 <h1>The fence report</h1>
-<p class="lede">${scanned.length} public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
+<p class="lede">${scanned.length} public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether a <code>permissions.deny</code> entry checked into the repo would stop the obvious violation. This is a survey of what is in the repo, not a measure of how well these projects are protected: hook scripts were not executed, and user-level settings, managed policy and remote branch protection are invisible from outside.</p>
 <div class="big">
-  <div class="stat wish"><b>${pct}%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
-  <div class="stat gate"><b>${Math.round((100 - pct) * 10) / 10}%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
+  <div class="stat wish"><b>${pct}%</b><span>of the ${totalRules} mappable rules have no deny entry behind them in the repo</span></div>
+  <div class="stat gate"><b>${Math.round((100 - pct) * 10) / 10}%</b><span>have a deny entry that would stop the obvious violation</span></div>
   <div class="stat"><b>${allWish}</b><span>of ${scanned.length} repos have zero gates</span></div>
   <div class="stat"><b>${withHooks}</b><span>repos ship any hook at all (${withSettings} have a settings.json)</span></div>
 </div>

@@ -195,7 +195,9 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
   const md: string[] = [];
   md.push(`# The fence report: popular repos with a CLAUDE.md`);
   md.push("");
-  md.push(`${scanned.length} repos, ${totalRules} action rules, ${Math.round((100 * totalWish) / Math.max(1, totalRules))}% of them wishes. Scanned ${new Date().toISOString().slice(0, 10)} with \`paperfence scan\`.`);
+  const totalUnknown = scanned.reduce((a, r) => a + r.unknown, 0);
+  const totalUntested = scanned.reduce((a, r) => a + r.untested, 0);
+  md.push(`${scanned.length} repos. Of ${totalRules} action rules the static probe could map, ${totalWish} have no deny entry behind them and ${totalRules - totalWish} do (${(Math.round((1000 * totalWish) / Math.max(1, totalRules)) / 10).toFixed(1)}%). Not in that denominator: ${totalUnknown} rules a present-but-unexecuted hook may cover, and ${totalUntested} rules that could not be mapped to a check. Hook scripts were not run, and user-level settings, managed policy and remote branch protection are invisible to a repo scan, so this is a survey of what is checked into the repo, not of how well these projects are protected. Scanned ${new Date().toISOString().slice(0, 10)} with \`paperfence scan --no-hooks\`.`);
   md.push("");
   md.push("| repo | stars | rules | gates | wishes | unknown (hook not run) | wishes % | settings.json | hooks |");
   md.push("|---|---:|---:|---:|---:|---:|---:|:-:|:-:|");

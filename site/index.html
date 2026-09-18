@@ -34,15 +34,15 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 </style></head><body><main>
 <nav><a href="https://github.com/abhiyan100/paperfence">paperfence on GitHub</a></nav>
 <h1>The fence report</h1>
-<p class="lede">80 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether anything mechanical would actually stop it.</p>
+<p class="lede">80 public repos with a <code>CLAUDE.md</code>, ranked by stars. For every rule that tells the coding agent what not to do, we checked whether a <code>permissions.deny</code> entry checked into the repo would stop the obvious violation. This is a survey of what is in the repo, not a measure of how well these projects are protected: hook scripts were not executed, and user-level settings, managed policy and remote branch protection are invisible from outside.</p>
 <div class="big">
-  <div class="stat wish"><b>99.7%</b><span>of rules are wishes: nothing but the agent's good behaviour enforces them</span></div>
-  <div class="stat gate"><b>0.3%</b><span>are gates: a deny rule or a blocking hook would stop the obvious violation</span></div>
+  <div class="stat wish"><b>99.7%</b><span>of the 593 mappable rules have no deny entry behind them in the repo</span></div>
+  <div class="stat gate"><b>0.3%</b><span>have a deny entry that would stop the obvious violation</span></div>
   <div class="stat"><b>79</b><span>of 80 repos have zero gates</span></div>
   <div class="stat"><b>6</b><span>repos ship any hook at all (14 have a settings.json)</span></div>
 </div>
 <div class="bar"><i class="w" style="width:99.7%"></i><i class="g" style="width:0.29999999999999716%"></i></div>
-<p class="small">591 wishes, 2 gates across 593 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-15 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
+<p class="small">591 wishes, 2 gates across 593 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-18 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
 <h2>Repos</h2>
 <table>
 <thead><tr><th>repo</th><th class="n">stars</th><th class="n">rules</th><th class="n">wishes</th><th class="hide-sm">settings</th><th class="hide-sm">hooks</th></tr></thead>
