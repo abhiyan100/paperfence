@@ -2281,7 +2281,7 @@
     "hasSettings": false,
     "hasHooks": false,
     "sample": [],
-    "scannedAt": "2026-09-15T14:48:36.675Z",
+    "scannedAt": "2026-09-18T19:28:04.802Z",
     "error": "no CLAUDE.md or settings found on the default branch"
   },
   {
@@ -3089,288 +3089,596 @@
     "repo": "nostrord/nostrord",
     "stars": 41,
     "description": "",
-    "rules": 0,
+    "rules": 31,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 5,
+    "untested": 26,
     "unknown": 0,
-    "wishPct": 0,
-    "hasSettings": false,
+    "wishPct": 100,
+    "hasSettings": true,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:16.093Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "`compileKotlinJs`. Do NOT routinely add `--rerun-tasks` or `--no-build-cache` (they force slow",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "// Don't add a wasmJs target or *.wasmjs.kt files — web is Kotlin/JS only",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Rule:** If a feature requires platform code, add `expect` in `commonMain` and implement `actual` on **all four targets** (android, jvm, js, ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "native screen does NOT add the web one, and vice versa. Never \"I'll do the web later\" —",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Stage files by name; never `git add -A` (the working tree often has untracked screenshots and planning docs that must not be versioned).",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:28:13.617Z"
   },
   {
     "repo": "techsenger/shellfx",
     "stars": 39,
     "description": "Techsenger ShellFX  – A platform for building JavaFX applications using an extended MVP pattern.",
-    "rules": 0,
+    "rules": 19,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 1,
+    "untested": 18,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:16.455Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "build. Don't add new ones; open a tracked issue or just do the work instead.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:28:23.618Z"
   },
   {
     "repo": "seastan/ringsdb",
     "stars": 39,
     "description": "RingsDB code base",
-    "rules": 0,
+    "rules": 1,
     "gates": 0,
-    "wishes": 0,
+    "wishes": 1,
     "untested": 0,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:16.831Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "vendor/**: rsync from server (do NOT run `composer install` — lock is Composer-1 era,",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:28:32.715Z"
   },
   {
     "repo": "geneontology/go-annotation",
     "stars": 38,
     "description": "This repository hosts the tracker for issues pertaining to GO annotations.",
-    "rules": 0,
+    "rules": 10,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 4,
+    "untested": 6,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:17.222Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "`specs/` — human-authored GPAD/GPI format specs (`gpad-gpi-1_0.md`, `gpad-gpi-1_2.md`, `gpad-gpi-2-0.md`) plus UML PNGs. Curator-owned; don'",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"specs/\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "`reports/` — archive of auto-committed TSV outputs, one subdirectory per issue number (655+ entries). Treated as immutable output. **Do not ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git push --force\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Script runtime deps: `requests`, `pytz`, stdlib. Stay within that unless the task requires more — and if it does, install in the workflow st",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "No test suite, no linter config. Scripts are standalone and copy-paste-evolved — don't introduce a package structure or shared-utils module ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:28:46.563Z"
   },
   {
     "repo": "nikomatsakis/babysteps",
     "stars": 38,
     "description": "Babysteps blog",
-    "rules": 0,
+    "rules": 1,
     "gates": 0,
     "wishes": 0,
-    "untested": 0,
+    "untested": 1,
     "unknown": 0,
     "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [],
-    "scannedAt": "2026-09-15T15:42:17.586Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "scannedAt": "2026-09-18T19:28:55.925Z"
   },
   {
     "repo": "f-o-o-g-s/nokkvi",
     "stars": 38,
     "description": "A rust based navidrome client for linux built using iced-rs",
-    "rules": 0,
+    "rules": 106,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 19,
+    "untested": 87,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:17.914Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "`reference-*/` directories are external repos cloned for reference (iced, symphonia, feishin, rmpc, navidrome, lucide icons, pipewire, rodio",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "├── DecodeLoopChannels (engine, `engine.rs`) — bundles the lock-free atomics the primary decode loop reads/writes (`source_generation`, `dec",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"rm tests/pricing.test.js\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Codec registry**: every Symphonia decoder/lookup MUST go through `audio::symphonia_registry::codecs()`, never `symphonia::default::get_codec",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "A per-fade **generation token** discards stale completions; an interrupting ramp seeds `from` off the stream's last-written `volume` atomic ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Manual-skip crossfade** (\"Fade on Skip\" = Crossfade): three phases across the lock boundary (invariant: no engine lock held across decoder c",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Stall watchdog**: `tick_crossfade`'s completion gate at `progress ≥ 1.0` is empty-ring **OR** liveness-stalled. `crossfade_liveness::Incomin",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:29:59.738Z"
   },
   {
     "repo": "airwaylab-app/airwaylab",
     "stars": 38,
     "description": "Free, open-source airway analysis for ResMed CPAP/BiPAP data",
-    "rules": 0,
+    "rules": 65,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 10,
+    "untested": 55,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:18.254Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Tier 2 — Server-enhanced (opt-in):** Users can explicitly opt in to features that require server communication: AI-powered insights (sends m",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Branch per feature (`feat/`, `fix/`, `chore/`), never commit directly to main",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git push origin main\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "All 5 checks must pass before PR:** `npx tsc --noEmit` + `npm run lint` + `npm test` + `npm run build` + `npx playwright test` (for UI chang",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Migrations are additive and forward-only.** Never write a destructive down-migration to roll back. If a migration is wrong, the fix is a new",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Destructive change (drop/rename/backfill).** Stop and escalate. Not revertible by `git revert`. Recover from a backup or point-in-time resto",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Never send health data without consent.** No analytics on waveform data, no silent uploads, no background syncing. If data leaves the browse",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:30:19.030Z"
   },
   {
     "repo": "eiskrenkov/fino",
     "stars": 37,
     "description": "Plug & play distributed settings engine for Ruby and Rails",
-    "rules": 0,
+    "rules": 2,
     "gates": 0,
     "wishes": 0,
-    "untested": 0,
+    "untested": 2,
     "unknown": 0,
     "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [],
-    "scannedAt": "2026-09-15T15:42:18.588Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "scannedAt": "2026-09-18T19:30:27.715Z"
   },
   {
     "repo": "ericrosenberg1/CityBot2",
     "stars": 37,
     "description": "Bot to Share News and Relevant Information for a City or Geographic Area",
-    "rules": 0,
+    "rules": 2,
     "gates": 0,
-    "wishes": 0,
+    "wishes": 2,
     "untested": 0,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:18.947Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Do not modify `config/cities/*.json` for code bugs",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"edit config/cities/\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Env vars from `config/credentials.env.example` pattern (never hardcode)",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env.example\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:30:34.339Z"
   },
   {
     "repo": "alfred1994/alpha-pilot",
     "stars": 37,
     "description": "AI 驾驶的自愈式 A 股模拟盘交易赛车 · Self-healing paper-trading race car driven by AI agents",
-    "rules": 0,
+    "rules": 12,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 4,
+    "untested": 8,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:19.325Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Do not commit secrets, runtime databases, logs, private server details, or account",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Do not remove safety checks or redaction layers to make a test pass.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"rm tests/pricing.test.js\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Do not commit secrets, runtime databases, logs, private server details, or account",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Do not remove safety checks or redaction layers to make a test pass.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"rm tests/pricing.test.js\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:30:49.428Z"
   },
   {
     "repo": "BeardedBear/beardify",
     "stars": 36,
     "description": "Experimental Spotify client, with album catalog feature",
-    "rules": 0,
+    "rules": 16,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 7,
+    "untested": 9,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:19.692Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "changes, add/edit it in `../bearded-ui`, not locally in Beardify. Do not",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Don't publish or bump the dependency version yourself unless asked.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Always run `bun run lint` before committing changes.** `bun run build` runs",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Always run `bun run lint` and fix reported issues before committing.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Use the `instance()` helper from `src/api.ts` for all Spotify Web API calls (do not call `ky` directly). Exception: `discogs.ts` and externa",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Do not commit secrets, credentials, or environment variables into the repository.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:31:06.847Z"
   },
   {
     "repo": "replikativ/dvergr",
     "stars": 35,
     "description": "FRP-based LLM agent framework with git-like memory model.",
-    "rules": 0,
+    "rules": 18,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 1,
+    "untested": 17,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:20.057Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Signals for external world, sync primitives for internal** - Don't use signals for agent coordination",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:31:21.402Z"
   },
   {
     "repo": "chetstriker/LLMtary",
     "stars": 35,
     "description": "Autonomous AI-powered penetration testing platform. LLM-driven recon, vulnerability analysis, and exploit validation for internal & external targets. Supports local AI (Ollama, LM Studio) and cloud models (Claude, GPT-4, Gemini). Linux · macOS · Windows",
-    "rules": 0,
+    "rules": 9,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 3,
+    "untested": 6,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:20.453Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "No specific tool names in analysis prompts.** Say \"enumerate SMB shares\" not \"run enum4linux\". The LLM picks the best tool available on the ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "File path construction must use `path` package helpers (`join`, `dirname`, etc.) — never hardcode `/` separators.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Flutter desktop builds require `flutter config --enable-<platform>-desktop` and platform-specific build commands (`flutter build linux/macos",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:31:29.918Z"
   },
   {
     "repo": "manhinhang/futu-opend-docker",
     "stars": 34,
     "description": "lightweight futu opend docker",
-    "rules": 0,
+    "rules": 17,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 8,
+    "untested": 9,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:20.832Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Host network is mandatory.** Bridge networking produces `>>>登录失败,网络异常` ~45 s after login attempt with healthy creds. Both `network_mode: hos",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "`futu.pem` must be mode `0644`, not `0600`.** The container runs as the `futu` UID, distinct from the host user that owns the bind-mounted f",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Named volume `futu-opend-data`** at `/home/futu/.com.futunn.FutuOpenD` persists the login session (device-whitelist token, captcha PNG). The",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "ESM boundary**: e2e code is `.mjs` (ESM); `check_version.test.js` stays CJS. Don't add `\"type\": \"module\"` to `package.json` until that migra",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "NEVER** hardcode credentials — use env vars or your local (gitignored) `.env` file. The tracked `.env.example` template must stay credential",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "NEVER** swap `network_mode: host` for bridge — silent login failure (`>>>登录失败,网络异常` ~45 s in). See [CLAUDE.md](CLAUDE.md) gotchas.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:31:45.002Z"
   },
   {
     "repo": "janderswag/docuchat.app",
     "stars": 33,
     "description": "Private, self-hosted document chat for attorneys: parse legal PDFs and query them with local open-source LLMs (Ollama) + verifiable page citations. One-click desktop app at docuchat.app.",
-    "rules": 0,
+    "rules": 15,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 4,
+    "untested": 11,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:21.217Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "It is NOT an autonomous agent.** It never acts, sends, files, or changes anything in the",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Secrets are never committed.** `.env` is git-ignored; only `.env.example` with placeholders.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Do not install anything or run setup steps without confirming the task calls for it.** When a",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "task does require installs, say exactly what will be installed and why first.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:31:53.745Z"
   },
   {
     "repo": "jaccen/AIRoute",
     "stars": 33,
     "description": "面向国内合规增强的 AI 网关",
-    "rules": 0,
+    "rules": 86,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 31,
+    "untested": 55,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:21.589Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "read path that refreshes expired state. Permanent statuses require manual credential",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Never** add logic to `src/lib/localDb.ts` (re-export layer only)",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Public upstream credentials** (Gemini/Antigravity/Windsurf-style OAuth client_id/secret + Firebase Web keys extracted from public CLIs): **M",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Error responses** (HTTP / SSE / executor / MCP handler): **MUST** route through `buildErrorBody()` or `sanitizeErrorMessage()` from `open-ss",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Shell commands built from variables**: when calling `exec()`/`spawn()` with a script that needs runtime values, pass them via the `env` opti",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Add OAuth config in `src/lib/oauth/constants/oauth.ts` if OAuth-based — if the upstream CLI ships a public client_id/secret, embed via `reso",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:32:08.383Z"
   },
   {
     "repo": "FigmaAI/KleverDesktop",
     "stars": 33,
     "description": "AI-Powered UI/UX Auto Research for Android & Web",
-    "rules": 0,
+    "rules": 3,
     "gates": 0,
-    "wishes": 0,
-    "untested": 0,
+    "wishes": 1,
+    "untested": 2,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:21.945Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Types**: Never use `any`, update types when adding handlers",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:32:16.068Z"
   },
   {
     "repo": "slntopp/nocloud",
     "stars": 33,
     "description": "Cloud-native Open-Source Cloud Management Framework",
-    "rules": 0,
+    "rules": 8,
     "gates": 0,
-    "wishes": 0,
+    "wishes": 8,
     "untested": 0,
     "unknown": 0,
-    "wishPct": 0,
+    "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [],
-    "scannedAt": "2026-09-15T15:42:22.331Z",
-    "error": "no CLAUDE.md or settings found on the default branch"
+    "sample": [
+      {
+        "text": "Keep changes scoped to this repository.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Do not commit changes unless explicitly requested.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"commit\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Keep `go.mod` and `go.sum` in sync with Go dependency changes.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Use existing build files and package scripts before adding new tooling.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Ask before using or changing secrets, credentials, or `.env` files.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Ask before broad regeneration or formatting that changes unrelated files.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"broad regeneration\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-18T19:32:25.393Z"
   }
 ]
