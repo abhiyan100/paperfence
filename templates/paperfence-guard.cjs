@@ -195,6 +195,26 @@ function parseGit(seg) {
 
 const secretFileRe = (f) => "(?:\\./|\\S*/)?" + escapeRe(f);
 
+// A test is "existing" if it is committed in HEAD. Files the agent created this
+// session (untracked or staged-but-uncommitted) are its own to fix or remove.
+// Outside a git repo, fall back to "exists on disk".
+const committedCache = new Map();
+function committed(relPath) {
+  if (!relPath) return false;
+  if (committedCache.has(relPath)) return committedCache.get(relPath);
+  let result;
+  try {
+    execSync("git cat-file -e HEAD:" + JSON.stringify(relPath), { cwd, stdio: ["ignore", "ignore", "ignore"] });
+    result = true;
+  } catch (e) {
+    let inRepo = true;
+    try { execSync("git rev-parse --is-inside-work-tree", { cwd, stdio: ["ignore", "ignore", "ignore"] }); } catch { inRepo = false; }
+    result = inRepo ? false : fs.existsSync(path.join(cwd, relPath));
+  }
+  committedCache.set(relPath, result);
+  return result;
+}
+
 // ---------- PostToolUse: remember that a required step actually ran ----------
 if (event === "PostToolUse") {
   if (tool === "Bash" && policy.requireBeforeCommit.length) {
@@ -233,8 +253,9 @@ if (["Read", "Edit", "Write", "MultiEdit", "NotebookEdit"].includes(tool)) {
   }
   if (tool !== "Read") {
     if (touchesSelf(p)) block("the paperfence hook, its policy and settings.json are not editable by the agent");
-    // "Do not weaken tests" is about existing tests. Adding a new test file is ordinary work.
-    if (fs.existsSync(path.join(cwd, p))) {
+    // "Do not weaken tests" is about tests that were already committed. A test the agent
+    // created this session is its own to fix; adding a new test file is ordinary work.
+    if (committed(p)) {
       for (const d of policy.protectedTestPaths) {
         if (under(p, d)) block("editing existing tests under " + d + "/ is not allowed; fix the code instead (new test files are fine)");
       }
@@ -352,7 +373,7 @@ if (tool === "Bash") {
     // tests
     for (const d of policy.protectedTestPaths) {
       const isTestPath = (r) => r === d || r.startsWith(d + "/") || /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$/.test(r);
-      const existing = (a) => { const r = rel(a); return isTestPath(r) && fs.existsSync(path.join(cwd, r)); };
+      const existing = (a) => { const r = rel(a); return isTestPath(r) && committed(r); };
       // Removing, moving or overwriting an existing test is blocked. Creating a new one is not.
       if (/^(rm|unlink|truncate)$/.test(prog) && argv.some((a) => !a.startsWith("-") && (rel(a) === d || existing(a)))) block("removing tests under " + d + "/ is not allowed; fix the code instead");
       if (/^(mv|cp|install|ln|tee)$/.test(prog)) {

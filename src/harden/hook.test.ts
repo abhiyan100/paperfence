@@ -66,9 +66,15 @@ describe("generated hook", () => {
     expect((await fire("Bash", { command: "git push --force origin feature" })).code).toBe(2);
     expect((await fire("Bash", { command: "git push -f origin feature" })).code).toBe(2);
   });
-  it("blocks deleting and editing existing tests, allows new test files", async () => {
+  it("blocks deleting and editing committed tests, allows new and uncommitted test files", async () => {
     await fs.mkdir(path.join(root, "tests"), { recursive: true });
     await fs.writeFile(path.join(root, "tests/a.test.js"), "test('x', () => {});");
+    await run("git", ["add", "tests/a.test.js"], { cwd: root });
+    await run("git", ["-c", "user.email=a@b", "-c", "user.name=a", "commit", "-q", "-m", "add test"], { cwd: root });
+    // a test the agent just created (untracked) is editable and removable
+    await fs.writeFile(path.join(root, "tests/mine.test.js"), "test('mine', () => {});");
+    expect((await fire("Edit", { file_path: path.join(root, "tests/mine.test.js") })).code).toBe(0);
+    expect((await fire("Bash", { command: "rm tests/mine.test.js" })).code).toBe(0);
     expect((await fire("Bash", { command: "rm tests/a.test.js" })).code).toBe(2);
     expect((await fire("Edit", { file_path: path.join(root, "tests/a.test.js") })).code).toBe(2);
     expect((await fire("Bash", { command: "echo x > tests/a.test.js" })).code).toBe(2);
