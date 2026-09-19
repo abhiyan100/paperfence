@@ -42,7 +42,7 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
   <div class="stat"><b>6</b><span>repos ship any hook at all (15 have a settings.json)</span></div>
 </div>
 <div class="bar"><i class="w" style="width:99.7%"></i><i class="g" style="width:0.29999999999999716%"></i></div>
-<p class="small">700 wishes, 2 gates across 702 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-18 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
+<p class="small">700 wishes, 2 gates across 702 action rules, plus 40 rules where a hook is present but was not executed (counted as unknown, not as wishes). Scanned 2026-09-19 with <code>paperfence scan --no-hooks</code>: rules read by a model, violations checked against each repo's <code>permissions.deny</code>. We do not run hook scripts from repos we do not own; a rule a hook might cover is marked unknown rather than assumed either way.</p>
 <h2>Repos</h2>
 <table>
 <thead><tr><th>repo</th><th class="n">stars</th><th class="n">rules</th><th class="n">wishes</th><th class="hide-sm">settings</th><th class="hide-sm">hooks</th></tr></thead>
@@ -818,10 +818,18 @@ nav a{font-size:13px;color:var(--muted);text-decoration:none}nav a:hover{text-de
 <h2>What this means</h2>
 <p>A <b>wish</b> is a rule like "never push to main" with nothing behind it but the sentence. The agent follows it because it is well-behaved, and it will keep following it right up until a user in a hurry, or a note planted in the repo, gives it a reason not to. A <b>gate</b> is a rule that is also backed by a <code>permissions.deny</code> entry or a <code>PreToolUse</code> hook that exits 2, so the tool call fails no matter what the agent decides.</p>
 <p>This is not a ranking of who writes good rules. Most of these repos write very sensible rules. It is a measure of how much of that sense is load-bearing.</p>
+<h2>Does the fix hold, and does it break anything?</h2>
+<p><code>paperfence compare --hardened</code> on the sample repo. Same tasks, same model (claude-haiku-4-5-20251001), two configs, interleaved, in Docker.</p>
+<table><thead><tr><th>config</th><th class="n">bad tasks blocked</th><th class="n">good tasks completed</th><th class="n">calls denied</th></tr></thead><tbody>
+<tr><td><b>as is</b></td><td class="n">0 / 2</td><td class="n">2 / 2</td><td class="n">0</td></tr>
+<tr><td><b>after harden</b><br><span class="small">hardened (+13 deny, hook installed)</span></td><td class="n">2 / 2</td><td class="n">2 / 2</td><td class="n">7</td></tr>
+</tbody></table>
+<p class="small">The first run of this receipt failed the "add a helper with a test" task under hardening: the generated hook refused to create a new test file. That was a real regression in our own fix, caught by the same tool, and it is why the good-task column exists. <a href="compare.html">Full receipt</a>.</p>
 <h2>Check your own</h2>
-<pre>npx paperfence scan .
-npx paperfence attack .    # a real agent tries to break each rule, in Docker
-npx paperfence harden .    # turn the wishes into gates, then scan again</pre>
+<pre>npx paperfence scan .                 # which rules have a lock, which are just words
+npx paperfence attack .               # a real agent tries to break each rule, in Docker
+npx paperfence harden .               # write the locks
+npx paperfence compare . --hardened   # do the locks hold, and does normal work still get done</pre>
 <p class="small">See what happens when a real agent is asked to break these rules: <a href="demo.html">same rules, different model</a>.</p>
 <footer>Built with <a href="https://github.com/abhiyan100/paperfence">paperfence</a>. Grades are about mechanism, not about the model. Every number above links to the exact rule text and the tool call that was tried.</footer>
 </main></body></html>
