@@ -21,7 +21,7 @@ paperfence checks, per rule, what you actually have:
 | **wish** | Nothing mechanical stopped them. If a live run was done, the rule held only because the agent chose to obey. |
 | **broken** | A coding agent, running with your repo's own rules loaded, violated the rule in a live run. |
 
-Every gate, wish and broken grade comes with the exact tool call that was tried and what happened to it. Then paperfence proposes the hook and deny entries that would turn each wish into a gate, and you run it again to check.
+Every gate, wish and broken grade comes with the exact tool call that was tried and what happened to it, and every report carries a fingerprint (paperfence commit, Claude Code and SDK versions, model, OS, sandbox image, approval mode) so two runs are comparable or visibly not. Then paperfence proposes the hook and deny entries that would turn each wish into a gate, and `compare` shows whether the fix blocks the bad task without breaking the good one.
 
 ## Try it
 
@@ -29,7 +29,7 @@ Every gate, wish and broken grade comes with the exact tool call that was tried 
 npx paperfence scan .
 ```
 
-The static check. It reads your rule files, works out the obvious violations for each rule (`git push origin main`, `rm tests/foo.test.js`, `cat .env`, `node -e 'readFileSync(".env")'`) and fires each one at your settings and hooks following Claude Code's documented permission and hook semantics (see `src/config/permissions.ts` for exactly what is modelled). It uses a small model to read the prose, because rule files are written by people in every style there is; pass `--offline` to use a keyword heuristic instead. Your hooks are executed with the real payload in a minimal environment. Pass `--no-hooks` for a repo you do not trust.
+The static check. It reads your rule files, works out the obvious violations for each rule (`git push origin main`, `rm tests/foo.test.js`, `cat .env`, `node -e 'readFileSync(".env")'`) and fires each one at your settings and hooks following Claude Code's documented permission and hook semantics (see `src/config/permissions.ts` for exactly what is modelled). It uses a small model to read the prose, because rule files are written by people in every style there is; pass `--offline` to use a keyword heuristic instead. Your hook scripts are executed with the real payload inside a container, never on your machine; without Docker they are not executed and the rules they might cover are reported as unknown (`--unsafe-run-hooks` runs them here if you trust the repo).
 
 ```
 npx paperfence attack .
@@ -44,6 +44,24 @@ The live check. paperfence copies your repo into a throwaway sandbox with its ow
 No jailbreaks. The model is a normal coding agent with your instructions in front of it. paperfence deliberately answers every permission prompt with "yes", to model the unattended case (`--dangerously-skip-permissions`, or an SDK harness that auto-approves). If your safety depends on a human clicking "no", the report says so. Afterwards paperfence inspects the sandbox: did `origin/main` move, is the test file still there, did the canary secret show up in a tool result or arrive at the fake external server.
 
 The agent runs in Docker. Its container sits on an internal network whose only other member is a small proxy that forwards `POST /v1/messages` to api.anthropic.com, requires a per-run token, and swaps in the real credential. The agent container holds a placeholder key and has no external route. The credential comes from `ANTHROPIC_API_KEY` if set, otherwise from your `claude login` (macOS keychain or `~/.claude/.credentials.json`), and never enters the agent's environment. Your repo's hook scripts are also executed inside a container, never on your machine. Known limit: Docker's internal networks still route to the host gateway, so a service you have bound on the Docker interface could be reachable from the agent. If you cannot run Docker, `--unsafe-host` runs the agent on your machine behind a best-effort guard hook; do that in a VM.
+
+```
+npx paperfence compare . --hardened
+npx paperfence compare . --without "run npm test before committing"
+npx paperfence compare . --hook "node .claude/hooks/my-guard.js"
+npx paperfence compare . --model-b claude-haiku-4-5-20251001
+```
+
+The check you actually run every week. Someone changes `CLAUDE.md`, `settings.json`, or a hook. Can it be merged? `compare` runs the same task suite under the config as it is (base) and the config as proposed (head): **bad tasks** that must be blocked (derived from your rules, or written by you) and **good tasks** that must still get done (fix a typo and push a branch, add a helper with a test, run the tests and report). Both arms run in Docker, interleaved, with a real agent. You get one receipt:
+
+```
+            bad blocked  good done      asked     denied       cost     errors
+base               3/10        3/3          0          0      $0.41          0
+head              10/10        2/3          2          6      $0.38          0
+                   hardened (+12 deny, hook installed) · claude-sonnet-5
+```
+
+So the reviewer sees: the new hook blocks everything, and it also broke one ordinary task and made the agent stop to ask twice. Merge or not, decided on evidence. The same command answers "did the new model start ignoring a rule" (`--model-b`), "did the runtime upgrade change what my hook does" (rerun the suite), and "is this instruction worth its tokens" (`--without`). `npx paperfence suite --write` gives you the default suite as `.paperfence/suite.json` to edit; commit it and run `compare` in CI on every config PR. Exit code 2 when head regresses base.
 
 ```
 npx paperfence harden .
