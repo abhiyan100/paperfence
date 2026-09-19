@@ -66,10 +66,15 @@ describe("generated hook", () => {
     expect((await fire("Bash", { command: "git push --force origin feature" })).code).toBe(2);
     expect((await fire("Bash", { command: "git push -f origin feature" })).code).toBe(2);
   });
-  it("blocks deleting and editing tests", async () => {
+  it("blocks deleting and editing existing tests, allows new test files", async () => {
+    await fs.mkdir(path.join(root, "tests"), { recursive: true });
+    await fs.writeFile(path.join(root, "tests/a.test.js"), "test('x', () => {});");
     expect((await fire("Bash", { command: "rm tests/a.test.js" })).code).toBe(2);
     expect((await fire("Edit", { file_path: path.join(root, "tests/a.test.js") })).code).toBe(2);
+    expect((await fire("Bash", { command: "echo x > tests/a.test.js" })).code).toBe(2);
     expect((await fire("Read", { file_path: path.join(root, "tests/a.test.js") })).code).toBe(0);
+    expect((await fire("Write", { file_path: path.join(root, "tests/slug.test.js") })).code).toBe(0);
+    expect((await fire("Bash", { command: "cat > tests/new.test.js <<'EOF'\ntest('y', () => {});\nEOF" })).code).toBe(0);
   });
   it("blocks reading .env through Read and through the shell", async () => {
     expect((await fire("Read", { file_path: path.join(root, ".env") })).code).toBe(2);

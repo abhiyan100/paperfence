@@ -233,10 +233,13 @@ if (["Read", "Edit", "Write", "MultiEdit", "NotebookEdit"].includes(tool)) {
   }
   if (tool !== "Read") {
     if (touchesSelf(p)) block("the paperfence hook, its policy and settings.json are not editable by the agent");
-    for (const d of policy.protectedTestPaths) {
-      if (under(p, d)) block("editing tests under " + d + "/ is not allowed; fix the code instead");
+    // "Do not weaken tests" is about existing tests. Adding a new test file is ordinary work.
+    if (fs.existsSync(path.join(cwd, p))) {
+      for (const d of policy.protectedTestPaths) {
+        if (under(p, d)) block("editing existing tests under " + d + "/ is not allowed; fix the code instead (new test files are fine)");
+      }
+      if (policy.protectedTestPaths.length && /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$|^test_.*\.py$/.test(p)) block("editing existing test files is not allowed; fix the code instead (new test files are fine)");
     }
-    if (policy.protectedTestPaths.length && /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$|^test_.*\.py$/.test(p)) block("editing test files is not allowed; fix the code instead");
     for (const d of policy.forbiddenPaths) {
       if (under(p, d)) block("editing " + d + "/ is not allowed");
     }
@@ -348,12 +351,18 @@ if (tool === "Bash") {
 
     // tests
     for (const d of policy.protectedTestPaths) {
-      const inTests = (a) => { const r = rel(a); return r === d || r.startsWith(d + "/") || /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$/.test(r); };
-      if (/^(rm|mv|unlink|cp|tee|truncate|install|ln)$/.test(prog) && argv.some((a) => !a.startsWith("-") && inTests(a))) block("changing tests under " + d + "/ is not allowed; fix the code instead");
+      const isTestPath = (r) => r === d || r.startsWith(d + "/") || /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$/.test(r);
+      const existing = (a) => { const r = rel(a); return isTestPath(r) && fs.existsSync(path.join(cwd, r)); };
+      // Removing, moving or overwriting an existing test is blocked. Creating a new one is not.
+      if (/^(rm|unlink|truncate)$/.test(prog) && argv.some((a) => !a.startsWith("-") && (rel(a) === d || existing(a)))) block("removing tests under " + d + "/ is not allowed; fix the code instead");
+      if (/^(mv|cp|install|ln|tee)$/.test(prog)) {
+        const paths = argv.filter((a) => !a.startsWith("-"));
+        if (paths.some(existing)) block("overwriting or moving existing tests under " + d + "/ is not allowed");
+      }
       if (scripty && new RegExp("(writeFile|unlink|rm|rename|open\\([^)]*['\"][wa])[^;]*" + escapeRe(d) + "/").test(scriptText)) block("changing tests from a script is not allowed");
-      if (git && git.sub === "rm" && new RegExp("(^|\\s)(\\./)?" + escapeRe(d) + "/").test(git.args)) block("removing tests under " + d + "/ is not allowed");
-      if (/^(sed|perl)$/.test(prog) && /(^|\s)-i\b/.test(args) && new RegExp("(^|\\s)(\\./)?" + escapeRe(d) + "/").test(args)) block("editing tests under " + d + "/ is not allowed");
-      if (new RegExp(">\\s*(\\./)?" + escapeRe(d) + "/").test(s)) block("writing into " + d + "/ from the shell is not allowed");
+      if (git && git.sub === "rm" && git.argv.some(existing)) block("removing tests under " + d + "/ is not allowed");
+      if (/^(sed|perl)$/.test(prog) && /(^|\s)-i\b/.test(args) && argv.some(existing)) block("editing existing tests under " + d + "/ is not allowed");
+      for (const t of writeTargets) if (existing(t)) block("overwriting existing tests under " + d + "/ from the shell is not allowed");
     }
 
     // ask-first
