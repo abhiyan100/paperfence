@@ -129,6 +129,27 @@ async function main(): Promise<void> {
     process.stderr.write(`demo page skipped: ${(e as Error).message}\n`);
   }
 
+  // Before/after harden receipt, if a compare run has been recorded under data/compare-harden.*
+  let compareLink = "";
+  try {
+    await fs.copyFile("data/compare-harden.html", "site/compare.html");
+    type C = { summaries: { variant: { name: string; describe: string; model: string }; badBlocked: number; badTotal: number; goodCompleted: number; goodTotal: number; denied: number }[] };
+    const c = JSON.parse(await fs.readFile("data/compare-harden.json", "utf8")) as C;
+    const base = c.summaries.find((x) => x.variant.name === "base");
+    const head = c.summaries.find((x) => x.variant.name === "head");
+    if (base && head) {
+      compareLink = `<h2>Does the fix hold, and does it break anything?</h2>
+<p><code>paperfence compare --hardened</code> on the sample repo. Same tasks, same model (${esc(head.variant.model)}), two configs, interleaved, in Docker.</p>
+<table><thead><tr><th>config</th><th class="n">bad tasks blocked</th><th class="n">good tasks completed</th><th class="n">calls denied</th></tr></thead><tbody>
+<tr><td><b>as is</b></td><td class="n">${base.badBlocked} / ${base.badTotal}</td><td class="n">${base.goodCompleted} / ${base.goodTotal}</td><td class="n">${base.denied}</td></tr>
+<tr><td><b>after harden</b><br><span class="small">${esc(head.variant.describe)}</span></td><td class="n">${head.badBlocked} / ${head.badTotal}</td><td class="n">${head.goodCompleted} / ${head.goodTotal}</td><td class="n">${head.denied}</td></tr>
+</tbody></table>
+<p class="small">The first run of this receipt failed the "add a helper with a test" task under hardening: the generated hook refused to create a new test file. That was a real regression in our own fix, caught by the same tool, and it is why the good-task column exists. <a href="compare.html">Full receipt</a>.</p>`;
+    }
+  } catch {
+    // no compare data yet
+  }
+
   const tableRows = scanned
     .map(
       (r) => `<tr>
@@ -164,10 +185,12 @@ async function main(): Promise<void> {
 <h2>What this means</h2>
 <p>A <b>wish</b> is a rule like "never push to main" with nothing behind it but the sentence. The agent follows it because it is well-behaved, and it will keep following it right up until a user in a hurry, or a note planted in the repo, gives it a reason not to. A <b>gate</b> is a rule that is also backed by a <code>permissions.deny</code> entry or a <code>PreToolUse</code> hook that exits 2, so the tool call fails no matter what the agent decides.</p>
 <p>This is not a ranking of who writes good rules. Most of these repos write very sensible rules. It is a measure of how much of that sense is load-bearing.</p>
+${compareLink}
 <h2>Check your own</h2>
-<pre>npx paperfence scan .
-npx paperfence attack .    # a real agent tries to break each rule, in Docker
-npx paperfence harden .    # turn the wishes into gates, then scan again</pre>
+<pre>npx paperfence scan .                 # which rules have a lock, which are just words
+npx paperfence attack .               # a real agent tries to break each rule, in Docker
+npx paperfence harden .               # write the locks
+npx paperfence compare . --hardened   # do the locks hold, and does normal work still get done</pre>
 ${demoLink}
 <footer>Built with <a href="https://github.com/abhiyan100/paperfence">paperfence</a>. Grades are about mechanism, not about the model. Every number above links to the exact rule text and the tool call that was tried.</footer>
 `,

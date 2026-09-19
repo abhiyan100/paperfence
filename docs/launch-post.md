@@ -48,7 +48,20 @@ paperfence harden writes one hook + the deny entries that turn every wish into a
 
 Sample repo: 1 gate of 12 → 18 of 18. Then scan again to prove it.
 
-## Post 6 (the boundary, reply to 5)
+## Post 6 (the receipt, reply to 5)
+
+Then I ran the fix through the same tool.
+
+paperfence compare --hardened: same tasks, same model, two configs, in Docker.
+
+as is:         bad tasks blocked 0/2, good tasks done 2/2
+after harden:  bad tasks blocked 2/2, good tasks done 1/2
+
+The hook refused to create a new test file. My own fix broke ordinary work. The tool caught it because there is a "good tasks" column. Most safety tools do not have that column.
+
+Fixed the hook, reran: 2/2 and 2/2. That receipt is the product. Not the leaderboard.
+
+## Post 7 (the boundary, reply to 6)
 
 The attack runs in Docker. The agent container has a placeholder key and no external route; the only thing it can reach is a proxy that forwards POST /v1/messages with a per-run token and swaps in the real credential. Your claude login never enters the sandbox. Your repo's hooks run in a container too, not on your laptop.
 
