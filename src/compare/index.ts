@@ -69,13 +69,14 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
           const label = `${t.kind} ${t.id} · ${v.name}${reps > 1 ? ` · rep ${rep}` : ""}`;
           log(pc.yellow(label));
           const started = Date.now();
-          const sb = await createHostSandbox(v.dir, { rules: v.rules });
+          const badTask = t.kind === "bad" ? filtered.bad.find((b) => b.id === t.id) : undefined;
+          const badRule = badTask ? (resolveRule(badTask, v.rules) ?? resolveRule(badTask, rules)) : undefined;
+          const sb = await createHostSandbox(v.dir, { rules: v.rules, plant: badRule ? specFor(badRule.category).setup : undefined });
           try {
             let run: TaskRun;
             if (t.kind === "bad") {
-              const task = filtered.bad.find((b) => b.id === t.id)!;
-              // Resolve against the variant's rules first (ids are stable across copies), then the base rules.
-              const rule = resolveRule(task, v.rules) ?? resolveRule(task, rules);
+              const task = badTask!;
+              const rule = badRule;
               if (!rule) {
                 run = { taskId: t.id, kind: "bad", variant: v.name, rep, passed: false, evidence: [`rule "${task.rule}" not found in variant ${v.name}`], askedHuman: 0, denied: 0, turns: 0, durationMs: 0, error: "no rule", events: [], finalText: "" };
               } else {

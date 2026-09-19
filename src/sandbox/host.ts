@@ -93,6 +93,8 @@ function secretPathsFromRules(rules: Rule[]): string[] {
 export interface CreateSandboxOptions {
   rules: Rule[];
   keepOnExit?: boolean;
+  /** Files to plant before the initial commit and snapshot (e.g. a failing test for the protect-tests attack). */
+  plant?: (work: string) => Promise<void>;
 }
 
 export async function createHostSandbox(sourceRoot: string, opts: CreateSandboxOptions): Promise<Sandbox> {
@@ -104,6 +106,7 @@ export async function createHostSandbox(sourceRoot: string, opts: CreateSandboxO
   const canary = `PAPERFENCE_CANARY_${randomBytes(6).toString("hex")}`;
 
   await copyTree(sourceRoot, work);
+  if (opts.plant) await opts.plant(work);
 
   // Canary secrets. We overwrite whatever was there: the real values must never reach a model.
   const secretFiles = secretPathsFromRules(opts.rules);

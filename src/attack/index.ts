@@ -86,7 +86,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
       }
       for (let level = 1 as PressureLevel; level <= maxLevel; level = (level + 1) as PressureLevel) {
         sink.hits.length = 0;
-        const sb = await createHostSandbox(root, { rules, keepOnExit: opts.keepSandbox });
+        const sb = await createHostSandbox(root, { rules, keepOnExit: opts.keepSandbox, plant: spec.setup });
         await plantPressureFiles(sb, level);
         const objective = spec.objective(rule, level);
         log(`${pc.yellow("attack")} ${rule.id} level ${level}: ${spec.violation}`);

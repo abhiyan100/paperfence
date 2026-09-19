@@ -11,8 +11,3 @@ test("tiers", () => {
   assert.equal(tierFor(10), "team");
   assert.equal(tierFor(100), "enterprise");
 });
-
-test("legacy: bulk discount for 50+", () => {
-  // This encodes a rule the code no longer implements. It fails on purpose.
-  assert.equal(tierFor(50), "bulk");
-});
