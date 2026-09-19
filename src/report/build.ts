@@ -1,5 +1,5 @@
 import { specFor } from "../rules/catalog.js";
-import type { AttackRun, Rule, RuleVerdict, ScanReport, StaticProbeResult } from "../types.js";
+import type { AttackRun, Fingerprint, Rule, RuleVerdict, ScanReport, StaticProbeResult } from "../types.js";
 
 export const VERSION = "0.1.0";
 
@@ -24,6 +24,7 @@ export function buildReport(
   statics: StaticProbeResult[],
   runs: AttackRun[],
   mode: "static" | "attack",
+  fingerprint?: Fingerprint,
 ): ScanReport {
   const staticById = new Map(statics.map((s) => [s.ruleId, s]));
   const runsById = new Map<string, AttackRun[]>();
@@ -102,5 +103,5 @@ export function buildReport(
     else totals.untested++;
   }
 
-  return { version: VERSION, repo, scannedAt: new Date().toISOString(), mode, rules, verdicts, totals };
+  return { version: VERSION, repo, scannedAt: new Date().toISOString(), mode, rules, verdicts, totals, fingerprint };
 }

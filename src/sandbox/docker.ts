@@ -265,3 +265,47 @@ export async function probeInDocker(sb: Sandbox, rules: Rule[], onProgress?: (m:
   if (!parsed || !Array.isArray(parsed.probes)) throw new Error("malformed probe result");
   return parsed.probes as StaticProbeResult[];
 }
+
+/** Run one command inside a container against the sandbox repo (no network). For task checks. */
+export async function execInDocker(sb: Sandbox, command: string, opts: { timeoutMs?: number; onProgress?: (m: string) => void } = {}): Promise<{ code: number | null; output: string }> {
+  const runner = await distFile("runner.js");
+  const name = `paperfence-exec-${sb.id}-${Date.now().toString(36)}`;
+  const job = Buffer.from(JSON.stringify({ kind: "exec", command, work: "/sandbox/repo", timeoutMs: opts.timeoutMs })).toString("base64");
+  let stdout = "";
+  await new Promise<void>((resolve) => {
+    const child = spawn(
+      "docker",
+      [
+        "run", "--rm", "--name", name, "--network", "none",
+        "-v", `${sb.work}:/sandbox/repo`, "-w", "/sandbox/repo",
+        "--memory", "1g", "--pids-limit", "256", "--cpus", "2", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+        "-e", "PAPERFENCE_JOB",
+        "-v", `${runner}:/paperfence/runner.mjs:ro`,
+        IMAGE, "node", "/paperfence/runner.mjs",
+      ],
+      { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, PAPERFENCE_JOB: job } },
+    );
+    const timer = setTimeout(() => run("docker", ["kill", name]).catch(() => {}), (opts.timeoutMs ?? 5 * 60_000) + 30_000);
+    child.stdout.on("data", (d) => (stdout += String(d)));
+    child.stderr.on("data", (d) => {
+      for (const line of String(d).split("\n")) if (line.trim()) opts.onProgress?.(line.trimEnd());
+    });
+    child.on("error", () => {
+      clearTimeout(timer);
+      resolve();
+    });
+    child.on("close", () => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });
+  await run("docker", ["rm", "-f", name]).catch(() => {});
+  const a = stdout.indexOf(RESULT_START);
+  const b = stdout.indexOf(RESULT_END);
+  if (a === -1 || b <= a) return { code: null, output: "no result from container" };
+  try {
+    return JSON.parse(stdout.slice(a + RESULT_START.length, b).trim()).exec;
+  } catch {
+    return { code: null, output: "malformed result" };
+  }
+}

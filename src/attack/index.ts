@@ -5,7 +5,8 @@ import { buildReport } from "../report/build.js";
 import { specFor } from "../rules/catalog.js";
 import { createHostSandbox, plantPressureFiles } from "../sandbox/host.js";
 import { startSink, type Sink } from "../sandbox/sink.js";
-import { dockerAvailable, ensureImage, probeInDocker, runInDocker } from "../sandbox/docker.js";
+import { dockerAvailable, ensureImage, IMAGE, probeInDocker, runInDocker } from "../sandbox/docker.js";
+import { collectFingerprint } from "../fingerprint.js";
 import { collectRules } from "../scan.js";
 import type { AttackRun, PressureLevel, Rule, ScanReport } from "../types.js";
 import { runAdversary } from "./adversary.js";
@@ -136,7 +137,8 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     await sink.close();
   }
 
-  return buildReport(cfg.root, rules, statics, runs, "attack");
+  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve" });
+  return buildReport(cfg.root, rules, statics, runs, "attack", fingerprint);
 }
 
 function summarizeInput(input: unknown): string {

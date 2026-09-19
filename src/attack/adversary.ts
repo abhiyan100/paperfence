@@ -138,7 +138,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
         turns++;
         for (const block of msg.message.content) {
           if (block.type === "tool_use") {
-            const e: ToolEvent = { ts: Date.now(), tool: block.name, input: block.input };
+            const e: ToolEvent = { ts: Date.now(), tool: block.name, input: block.input, outcome: "attempted" };
             events.push(e);
             byId.set(block.id, e);
             opts.onEvent?.(e);
@@ -156,13 +156,16 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
           if (!e) continue;
           const text = typeof block.content === "string" ? block.content : Array.isArray(block.content) ? block.content.map((c: { text?: string }) => c.text ?? "").join("\n") : "";
           e.result = text.slice(0, 20_000);
+          e.outcome = block.is_error ? "failed" : "ran";
           if (text.includes(GUARD_PREFIX)) {
             e.denied = true;
+            e.outcome = "denied";
             e.deniedReason = text.slice(0, 300);
             const why = text.match(/paperfence-guard: ([^\n]*)/)?.[1] ?? text.split("\n")[0] ?? "";
             guardBlocks.push(`${e.tool} ${summarize(e.input).replace(sb.work, ".")}: ${why.replace(sb.work, ".").slice(0, 160)}`);
           } else if (block.is_error && DENIAL_PATTERNS.some((re) => re.test(text))) {
             e.denied = true;
+            e.outcome = "denied";
             e.deniedReason = text.slice(0, 300);
             blockEvidence.push(`${e.tool} ${summarize(e.input)} was blocked: ${text.split("\n")[0]?.slice(0, 200)}`);
           }
@@ -175,6 +178,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
           const target = (d.tool_use_id && byId.get(d.tool_use_id)) || events.find((e) => !e.denied && e.tool === d.tool_name && JSON.stringify(e.input) === JSON.stringify(d.tool_input));
           if (target) {
             target.denied = true;
+            target.outcome = "denied";
             target.deniedReason = target.deniedReason ?? "denied by permissions";
           }
           const already = blockEvidence.some((b) => b.startsWith(d.tool_name));

@@ -9,6 +9,10 @@ import { attack } from "./attack/index.js";
 import { collectRules } from "./scan.js";
 import { planHardening } from "./harden/generate.js";
 import { applyHardening } from "./harden/apply.js";
+import { compare } from "./compare/index.js";
+import { renderCompareHtml, renderCompareTerminal } from "./compare/report.js";
+import { loadSuite, renderSuiteTemplate, SUITE_PATH } from "./compare/suite.js";
+import type { VariantSpec } from "./compare/variants.js";
 import type { PressureLevel } from "./types.js";
 
 const program = new Command();
@@ -23,17 +27,19 @@ program
   .argument("[repo]", "path to the repo to scan", ".")
   .option("--offline", "do not use a model to read rule files; keyword heuristic only")
   .option("--ask-counts", 'treat permissions "ask" entries as gates (only true when a human is watching)')
-  .option("--no-hooks", "do not execute the repo's hook scripts (use for repos you do not trust)")
+  .option("--no-hooks", "never execute the repo's hook scripts; report what they might cover as unknown")
+  .option("--unsafe-run-hooks", "execute hook scripts on this machine instead of in a container")
   .option("--json <file>", "also write the report as JSON")
   .option("--html <file>", "also write a self-contained HTML report")
   .option("-q, --quiet", "no progress output")
   .description("Static check: would anything mechanical stop the obvious violation of each rule?")
-  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; unsafeRunHooks?: boolean; json?: string; html?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await scan(root, {
       offline: opts.offline,
       askCounts: opts.askCounts,
       noHooks: opts.hooks === false,
+      unsafeRunHooks: opts.unsafeRunHooks,
       onProgress: opts.quiet ? undefined : (m) => process.stderr.write(pc.dim(`  ${m}\n`)),
     });
     process.stdout.write(renderTerminal(report));
@@ -133,6 +139,81 @@ program
     }
     out.push("");
     process.stdout.write(out.join("\n"));
+  });
+
+program
+  .command("compare")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--head <ref-or-path>", "config to compare against the repo as it is (git ref or directory)")
+  .option("--without <text...>", "head = base with every rule line containing this text removed")
+  .option("--hook <command>", 'head = base with PreToolUse hooks replaced by this command ("" to remove all)')
+  .option("--deny <entries...>", "head = base plus these permissions.deny entries")
+  .option("--hardened", "head = base after paperfence harden")
+  .option("--model-b <model>", "head runs with this model instead (same config)")
+  .option("--model <model>", "model for both arms (default claude-sonnet-5)")
+  .option("--reps <n>", "repetitions per task", "1")
+  .option("--level <n>", "pressure level for bad tasks, 1-3", "2")
+  .option("--max-turns <n>", "turn budget per run", "30")
+  .option("--only <ids...>", "run only these task ids")
+  .option("--offline", "keyword heuristic for reading rule files")
+  .option("--json <file>", "write the receipt as JSON")
+  .option("--html <file>", "write the receipt as HTML")
+  .option("-q, --quiet", "no progress output")
+  .description("Can this config change be merged? Run bad tasks (must be blocked) and good tasks (must still work) under base and head.")
+  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; offline?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+    const root = path.resolve(repo);
+    const headSpec: VariantSpec = { name: "head", offline: opts.offline };
+    let any = false;
+    if (opts.head) { headSpec.from = opts.head; any = true; }
+    if (opts.without?.length) { headSpec.without = opts.without; any = true; }
+    if (opts.hook !== undefined) { headSpec.hook = opts.hook; any = true; }
+    if (opts.deny?.length) { headSpec.deny = opts.deny; any = true; }
+    if (opts.hardened) { headSpec.hardened = true; any = true; }
+    if (opts.modelB) { headSpec.model = opts.modelB; any = true; }
+    if (!any) throw new Error("say how head differs: --head, --without, --hook, --deny, --hardened, or --model-b");
+    const report = await compare(root, {
+      variants: [{ name: "base", offline: opts.offline }, headSpec],
+      model: opts.model,
+      reps: Number(opts.reps),
+      level: Math.min(3, Math.max(1, Number(opts.level))) as PressureLevel,
+      maxTurns: Number(opts.maxTurns),
+      only: opts.only,
+      offline: opts.offline,
+      onProgress: opts.quiet ? undefined : (m) => process.stderr.write(`  ${m}\n`),
+    });
+    process.stdout.write(renderCompareTerminal(report));
+    if (opts.json) {
+      await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
+      process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    if (opts.html) {
+      await fs.writeFile(opts.html, renderCompareHtml(report));
+      process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
+    }
+    const head = report.summaries[1]!;
+    const base = report.summaries[0]!;
+    const regressed = head.goodCompleted < base.goodCompleted || head.badBlocked < base.badBlocked;
+    process.exitCode = regressed ? 2 : 0;
+  });
+
+program
+  .command("suite")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--offline", "keyword heuristic for reading rule files")
+  .option("--write", `write the default suite to ${SUITE_PATH} so you can edit it`)
+  .description("Show the task suite compare would run (bad tasks from your rules, good tasks from what the repo has).")
+  .action(async (repo: string, opts: { offline?: boolean; write?: boolean }) => {
+    const root = path.resolve(repo);
+    const { rules } = await collectRules(root, { offline: opts.offline, onProgress: (m) => process.stderr.write(pc.dim(`  ${m}\n`)) });
+    const { suite, source } = await loadSuite(root, rules);
+    process.stderr.write(pc.dim(`source: ${source === "file" ? SUITE_PATH : "default"}\n`));
+    if (opts.write && source === "default") {
+      const p = path.join(root, SUITE_PATH);
+      await fs.mkdir(path.dirname(p), { recursive: true });
+      await fs.writeFile(p, renderSuiteTemplate(suite));
+      process.stderr.write(pc.dim(`wrote ${SUITE_PATH}\n`));
+    }
+    process.stdout.write(renderSuiteTemplate(suite));
   });
 
 program.parseAsync(process.argv).catch((e) => {

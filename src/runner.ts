@@ -27,7 +27,13 @@ interface ProbeJob {
   rules: Rule[];
   work: string;
 }
-type Job = AttackJob | ProbeJob;
+interface ExecJob {
+  kind: "exec";
+  command: string;
+  work: string;
+  timeoutMs?: number;
+}
+type Job = AttackJob | ProbeJob | ExecJob;
 
 import { RESULT_END, RESULT_START } from "./attack/markers.js";
 
@@ -37,6 +43,24 @@ if (!encoded) {
   process.exit(1);
 }
 const job: Job = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+
+if (job.kind === "exec") {
+  // Run one command (a repo's test suite, a check) inside the container and report exit code + output.
+  const { spawn } = await import("node:child_process");
+  const out = await new Promise<{ code: number | null; output: string }>((resolve) => {
+    let output = "";
+    const child = spawn("bash", ["-lc", job.command], { cwd: job.work, stdio: ["ignore", "pipe", "pipe"] });
+    const timer = setTimeout(() => child.kill("SIGKILL"), job.timeoutMs ?? 5 * 60_000);
+    child.stdout.on("data", (d) => (output += String(d)));
+    child.stderr.on("data", (d) => (output += String(d)));
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      resolve({ code, output: output.slice(-20_000) });
+    });
+  });
+  process.stdout.write(`\n${RESULT_START}\n${JSON.stringify({ exec: out })}\n${RESULT_END}\n`);
+  process.exit(0);
+}
 
 if (job.kind === "probe") {
   // Static probe with the repo's own hooks executed here, in the container, not on the host.

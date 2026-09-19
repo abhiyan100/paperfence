@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import type { Grade, RuleVerdict, ScanReport } from "../types.js";
+import { fingerprintLine } from "../fingerprint.js";
 
 const BADGE: Record<Grade, string> = {
   GATE: pc.bgGreen(pc.black(" GATE ")),
@@ -66,6 +67,10 @@ export function renderTerminal(report: ScanReport): string {
   out.push("");
   if (totals.wish + totals.broken > 0) {
     out.push(pc.dim(`Run ${pc.reset("paperfence harden")} to turn wishes into gates, then scan again.`));
+    out.push("");
+  }
+  if (report.fingerprint) {
+    out.push(pc.dim(fingerprintLine(report.fingerprint)));
     out.push("");
   }
   return out.join("\n");

@@ -70,6 +70,15 @@ export type PressureLevel = 1 | 2 | 3;
 
 export type Grade = "GATE" | "WISH" | "BROKEN" | "UNTESTED" | "ERROR";
 
+/**
+ * What happened to a tool call. Four different facts, kept apart:
+ *   attempted  the agent asked for it; we never saw a result
+ *   denied     a hook or permission rule refused it before it ran
+ *   ran        it executed and the tool reported success
+ *   failed     it executed and the tool reported an error (non-zero exit, exception)
+ */
+export type ToolOutcome = "attempted" | "denied" | "ran" | "failed";
+
 export interface ToolEvent {
   ts: number;
   tool: string;
@@ -78,6 +87,21 @@ export interface ToolEvent {
   result?: string;
   denied?: boolean;
   deniedReason?: string;
+  outcome?: ToolOutcome;
+}
+
+/** Everything needed to say what exactly produced a report. */
+export interface Fingerprint {
+  paperfence: string;
+  paperfenceCommit?: string;
+  claudeCode?: string;
+  agentSdk?: string;
+  model?: string;
+  os: string;
+  sandbox: "docker" | "host" | "none";
+  image?: string;
+  approvalMode: "auto-approve" | "n/a";
+  at: string;
 }
 
 export interface AttackRun {
@@ -118,4 +142,87 @@ export interface ScanReport {
   rules: Rule[];
   verdicts: RuleVerdict[];
   totals: { gate: number; wish: number; broken: number; untested: number; error: number };
+  fingerprint?: Fingerprint;
+}
+
+// ---------- compare ----------
+
+/** A check that decides whether a good task was completed. Runs after the agent finishes. */
+export type TaskCheck =
+  | { kind: "file-contains"; path: string; text: string }
+  | { kind: "file-exists"; path: string }
+  | { kind: "pushed-non-main-branch" }
+  | { kind: "commit-on-non-main-branch" }
+  | { kind: "command"; command: string; description?: string };
+
+export interface BadTask {
+  id: string;
+  /** Rule id from the scan, or a category name. The objective comes from the catalog. */
+  rule: string;
+  level?: PressureLevel;
+  /** Optional override of the catalog objective. */
+  prompt?: string;
+}
+
+export interface GoodTask {
+  id: string;
+  prompt: string;
+  checks: TaskCheck[];
+}
+
+export interface Suite {
+  bad: BadTask[];
+  good: GoodTask[];
+}
+
+export interface Variant {
+  name: string;
+  /** Directory holding this variant's repo (config included). */
+  dir: string;
+  model: string;
+  /** Human description of how it differs from base. */
+  describe: string;
+}
+
+export interface TaskRun {
+  taskId: string;
+  kind: "bad" | "good";
+  variant: string;
+  rep: number;
+  /** bad: the forbidden effect did not happen; good: every check passed. */
+  passed: boolean;
+  /** bad: violation evidence; good: failed checks. */
+  evidence: string[];
+  askedHuman: number;
+  denied: number;
+  turns: number;
+  costUsd?: number;
+  durationMs: number;
+  error?: string;
+  events: ToolEvent[];
+  finalText: string;
+}
+
+export interface VariantSummary {
+  variant: Variant;
+  badBlocked: number;
+  badTotal: number;
+  goodCompleted: number;
+  goodTotal: number;
+  askedHuman: number;
+  denied: number;
+  costUsd: number;
+  errors: number;
+}
+
+export interface CompareReport {
+  version: string;
+  repo: string;
+  at: string;
+  suite: Suite;
+  variants: Variant[];
+  runs: TaskRun[];
+  summaries: VariantSummary[];
+  reps: number;
+  fingerprint: Fingerprint;
 }
