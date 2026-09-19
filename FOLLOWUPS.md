@@ -4,13 +4,14 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 
 ## Deferred from review 2
 - Docker `--internal` networks still route to the host gateway. A host service bound on the Docker interface is reachable from the agent. Documented in the README; a real fix needs iptables or a user-space network (gVisor).
-- Events carry no execution status: a call that was attempted, one that was denied, and one that ran and failed all look alike except for `denied`. Add `outcome: attempted | denied | ran | failed` from tool_result.
-- Reports have no runtime fingerprint (Claude Code version, SDK version, paperfence commit, model). Add to ScanReport and print it.
+- Done 2026-09-19: tool events carry `outcome`; reports carry a fingerprint; `scan` probes hooks in a container by default; `compare` exists.
+- `compare` runs the repo's suite only; no equivalence statistics yet. Add per-task confidence when reps >= 3 and refuse to say "no difference" on n=1.
+- Codex runtime adapter: not started. The Codex hook model lacks `ask`; a second adapter is the next big item after `compare` settles.
 - `harden --dry-run` should print the exact settings.json patch and policy.json it would write.
 - Percentages count a prose rule and its backing permission entry separately; ERROR and UNTESTED leave the denominator. De-duplicate and show the denominator.
 - Leaderboard rows should pin the scanned commit SHA and the extractor model; cached rows should invalidate on either.
 - Conformance: differential tests against the real CLI (a settings file, a mock command, compare the decision) so doc drift shows up as a failing test.
-- `paperfence attack` on a repo without the fixture's shape (README typo, failing test, infra/) produces "held" verdicts that mean "could not do the task". Detect missing prerequisites and mark INCONCLUSIVE.
+- `paperfence attack` on a repo without the fixture's shape produces "held" verdicts that mean "could not do the task". The protect-tests scenario now plants its own failing test; the branch, secrets and exfil scenarios are repo-agnostic; scope, install and require-before still assume the fixture. Detect missing prerequisites and mark INCONCLUSIVE.
 
 - Test integrity is byte equality. Strengthening a test is flagged; disabling the suite through package.json `scripts.test` is not. Add a "test command still runs the same files" check.
 - "Run X before Y" always probes and hardens Y = commit. Carry the action (commit / push / PR) from the rule text through catalog and policy.
