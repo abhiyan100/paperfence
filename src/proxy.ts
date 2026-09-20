@@ -12,16 +12,22 @@
  *
  * A per-run token (PAPERFENCE_PROXY_TOKEN) must arrive in the
  * x-paperfence-token header; the agent sends it through
- * ANTHROPIC_CUSTOM_HEADERS. That keeps other containers on the same Docker
- * network from using the proxy.
+ * ANTHROPIC_CUSTOM_HEADERS. That keeps anything else that can reach the
+ * proxy from using it.
+ *
+ * In docker mode the proxy listens on a unix socket on a volume shared with
+ * the agent container, and the agent container has no network at all. See
+ * docs/decisions/0003-sandbox-network.md.
  *
  * Usage (used by docker.ts; can also run standalone for debugging):
  *   node dist/proxy.js <port> [bindHost]
+ *   node dist/proxy.js --socket /sock/api.sock
  */
 import { execFileSync } from "node:child_process";
 import { promises as fs } from "node:fs";
 import http from "node:http";
 import https from "node:https";
+import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 
@@ -62,12 +68,14 @@ export async function loadCredential(): Promise<Credential> {
 export interface Proxy {
   port: number;
   host: string;
+  /** Set when listening on a unix socket instead of a TCP port. */
+  socketPath?: string;
   readonly requests: number;
   readonly refused: number;
   close: () => Promise<void>;
 }
 
-export async function startProxy(opts: { port?: number; host?: string; credential?: Credential; token?: string } = {}): Promise<Proxy> {
+export async function startProxy(opts: { port?: number; host?: string; socketPath?: string; credential?: Credential; token?: string } = {}): Promise<Proxy> {
   const cred = opts.credential ?? (await loadCredential());
   const token = opts.token ?? process.env.PAPERFENCE_PROXY_TOKEN ?? "";
   const state = { requests: 0, refused: 0 };
@@ -135,13 +143,26 @@ export async function startProxy(opts: { port?: number; host?: string; credentia
   server.headersTimeout = 30_000;
 
   const host = opts.host ?? "127.0.0.1";
-  const port = await new Promise<number>((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(opts.port ?? 0, host, () => resolve((server.address() as { port: number }).port));
-  });
+  let port = 0;
+  if (opts.socketPath) {
+    // Stale socket from a killed run would block bind().
+    await fs.rm(opts.socketPath, { force: true }).catch(() => {});
+    await new Promise<void>((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(opts.socketPath!, () => resolve());
+    });
+    // The agent container runs as the same uid, but be explicit rather than lucky.
+    await fs.chmod(opts.socketPath, 0o660).catch(() => {});
+  } else {
+    port = await new Promise<number>((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(opts.port ?? 0, host, () => resolve((server.address() as { port: number }).port));
+    });
+  }
   return {
     port,
     host,
+    socketPath: opts.socketPath,
     get requests() {
       return state.requests;
     },
@@ -152,8 +173,48 @@ export async function startProxy(opts: { port?: number; host?: string; credentia
   };
 }
 
-// Standalone entry: node dist/proxy.js <port> [host]
+/**
+ * Forward a loopback TCP port to a unix socket.
+ *
+ * Runs inside the agent container, which has no network namespace routes at
+ * all: no gateway, no DNS, nothing but loopback. The SDK wants an
+ * ANTHROPIC_BASE_URL it can dial over TCP, so this gives it one, and the
+ * bytes leave the container through a socket file on a shared volume.
+ */
+export async function forwardToSocket(opts: { port: number; socketPath: string; waitMs?: number }): Promise<{ close: () => Promise<void> }> {
+  const deadline = Date.now() + (opts.waitMs ?? 30_000);
+  // The proxy container may still be starting.
+  for (;;) {
+    const there = await fs.stat(opts.socketPath).then((s) => s.isSocket()).catch(() => false);
+    if (there) break;
+    if (Date.now() > deadline) throw new Error(`no proxy socket at ${opts.socketPath} after ${Math.round((opts.waitMs ?? 30_000) / 1000)}s`);
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  const server = net.createServer((client) => {
+    const upstream = net.connect(opts.socketPath);
+    const bail = () => {
+      client.destroy();
+      upstream.destroy();
+    };
+    client.on("error", bail);
+    upstream.on("error", bail);
+    client.pipe(upstream);
+    upstream.pipe(client);
+  });
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(opts.port, "127.0.0.1", () => resolve());
+  });
+  return { close: () => new Promise((r) => server.close(() => r())) };
+}
+
+// Standalone entry: node dist/proxy.js <port> [host] | node dist/proxy.js --socket <path>
 if (process.argv[1] && /proxy\.[cm]?js$/.test(process.argv[1]) && process.argv[2]) {
-  const p = await startProxy({ port: Number(process.argv[2]), host: process.argv[3] ?? "0.0.0.0" });
-  process.stderr.write(`paperfence proxy listening on ${p.host}:${p.port}${process.env.PAPERFENCE_PROXY_TOKEN ? " (token required)" : ""}\n`);
+  if (process.argv[2] === "--socket" && process.argv[3]) {
+    const p = await startProxy({ socketPath: process.argv[3] });
+    process.stderr.write(`paperfence proxy listening on ${p.socketPath}${process.env.PAPERFENCE_PROXY_TOKEN ? " (token required)" : ""}\n`);
+  } else {
+    const p = await startProxy({ port: Number(process.argv[2]), host: process.argv[3] ?? "0.0.0.0" });
+    process.stderr.write(`paperfence proxy listening on ${p.host}:${p.port}${process.env.PAPERFENCE_PROXY_TOKEN ? " (token required)" : ""}\n`);
+  }
 }

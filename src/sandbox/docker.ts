@@ -17,26 +17,32 @@ const run = promisify(execFile);
 /**
  * Docker mode: the boundary is the container, not a regex.
  *
- *   internal network (no external route)          egress network
- *   ┌──────────────┐   http://proxy:8080   ┌──────────────┐
- *   │ agent        │ ────────────────────► │ proxy        │ ──► api.anthropic.com
- *   │ Claude Code  │  placeholder key +    │ POST         │
- *   │ via Agent SDK│  per-run token header │ /v1/messages │
- *   │ repo + origin│                       │ only; swaps  │
- *   │ mounted      │                       │ in the cred  │
- *   └──────────────┘                       └──────────────┘
+ *   --network none                              egress network
+ *   ┌────────────────────────┐              ┌──────────────┐
+ *   │ agent                  │              │ proxy        │
+ *   │ Claude Code via SDK    │  shared      │ POST         │
+ *   │ 127.0.0.1:8080 ────────┼── volume ───►│ /v1/messages │──► api.anthropic.com
+ *   │   forwarder in runner  │  api.sock    │ only; swaps  │
+ *   │ repo + origin mounted  │              │ in the cred  │
+ *   └────────────────────────┘              └──────────────┘
  *
- * The agent can only reach the proxy, and only with the per-run token. The
- * proxy only reaches Anthropic. The credential lives in the proxy's
- * environment. The job goes in through an environment variable and the
- * result comes out on stdout, so nothing the agent can write is trusted.
+ * The agent container has no network namespace routes at all: no gateway, no
+ * DNS, no other containers, only loopback. Its single path to the model API
+ * is a unix socket on a volume it shares with the proxy, reached through a
+ * loopback forwarder the runner starts. The proxy requires the per-run token,
+ * forwards only POST /v1/messages, and holds the only credential.
  *
- * Known limit: Docker's --internal network still routes to the host gateway,
- * so a service bound on the host's Docker interface could be reachable. It
- * cannot reach the internet or the credential. See docs/decisions/0003.
+ * The job goes in through an environment variable and the result comes out on
+ * stdout, so nothing the agent can write is trusted.
+ *
+ * See docs/decisions/0003-sandbox-network.md for what this replaced and why.
  */
 
-export const IMAGE = "paperfence-sandbox:0.3";
+export const IMAGE = "paperfence-sandbox:0.4";
+
+/** Where the proxy's unix socket lives inside both containers. */
+export const SOCK_DIR = "/paperfence/sock";
+export const PROXY_SOCKET = `${SOCK_DIR}/api.sock`;
 
 function here(): string {
   return path.dirname(fileURLToPath(import.meta.url));
@@ -88,7 +94,11 @@ RUN npm init -y >/dev/null && npm pkg set type=module \\
  && case "$(uname -m)" in aarch64|arm64) P=linux-arm64;; x86_64|amd64) P=linux-x64;; *) echo "unsupported arch" && exit 1;; esac \\
  && npm install --omit=dev @anthropic-ai/claude-agent-sdk@0.3.272 @anthropic-ai/claude-agent-sdk-$P@0.3.272 \\
  && test -x node_modules/@anthropic-ai/claude-agent-sdk-$P/claude \\
+ && mkdir -p /paperfence/sock \\
  && chown -R node:node /paperfence
+# /paperfence/sock is where the proxy's unix socket volume mounts. Docker seeds
+# a new named volume with the ownership of the image directory, so it has to
+# exist here and belong to node, or neither container can use it.
 ENV GIT_AUTHOR_NAME=agent GIT_AUTHOR_EMAIL=agent@sandbox GIT_COMMITTER_NAME=agent GIT_COMMITTER_EMAIL=agent@sandbox GIT_TERMINAL_PROMPT=0
 ENV HOME=/home/node
 USER node
@@ -109,17 +119,21 @@ export async function runInDocker(rule: Rule, level: PressureLevel, objective: s
   const proxyJs = await distFile("proxy.js");
   const cred = await loadCredential();
   const token = randomBytes(16).toString("hex");
-  const netInternal = `paperfence-int-${sb.id}`;
   const netEgress = `paperfence-egress-${sb.id}`;
   const proxyName = `paperfence-proxy-${sb.id}`;
   const agentName = `paperfence-agent-${sb.id}`;
-  const job = Buffer.from(JSON.stringify({ rule, level, objective, model: opts.model, maxTurns: opts.maxTurns, work: "/sandbox/repo", dir: "/sandbox" })).toString("base64");
+  // A named volume, not a bind mount: unix sockets do not work across the
+  // macOS filesystem bridge, but do work on a volume inside the Linux VM.
+  const sockVol = `paperfence-sock-${sb.id}`;
+  const job = Buffer.from(
+    JSON.stringify({ rule, level, objective, model: opts.model, maxTurns: opts.maxTurns, work: "/sandbox/repo", dir: "/sandbox", proxySocket: PROXY_SOCKET, proxyPort: 8080 }),
+  ).toString("base64");
 
   const startedAt = Date.now();
   let error: string | undefined;
   let stdout = "";
   const cleanup = async () => {
-    for (const args of [["rm", "-f", agentName], ["rm", "-f", proxyName], ["network", "rm", netInternal], ["network", "rm", netEgress]]) {
+    for (const args of [["rm", "-f", agentName], ["rm", "-f", proxyName], ["network", "rm", netEgress], ["volume", "rm", "-f", sockVol]]) {
       await run("docker", args).catch(() => {});
     }
   };
@@ -128,36 +142,39 @@ export async function runInDocker(rule: Rule, level: PressureLevel, objective: s
 
   try {
     await cleanup();
-    await run("docker", ["network", "create", "--internal", netInternal]);
     await run("docker", ["network", "create", netEgress]);
+    await run("docker", ["volume", "create", sockVol]);
 
-    // Proxy sidecar: internal + its own egress network. Credential passed through the environment.
+    // Proxy sidecar: egress only. It never shares a network with the agent.
+    // Credential passed through the environment.
     const credName = cred.kind === "api-key" ? "ANTHROPIC_API_KEY" : "CLAUDE_CODE_OAUTH_TOKEN";
     await run(
       "docker",
       [
         "run", "-d", "--rm", "--name", proxyName,
-        "--network", netInternal,
+        "--network", netEgress,
         "-v", `${proxyJs}:/paperfence/proxy.mjs:ro`,
+        "-v", `${sockVol}:${SOCK_DIR}`,
         "-e", credName,
         "-e", "PAPERFENCE_PROXY_TOKEN",
         "--memory", "256m", "--pids-limit", "64", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
-        IMAGE, "node", "/paperfence/proxy.mjs", "8080", "0.0.0.0",
+        IMAGE, "node", "/paperfence/proxy.mjs", "--socket", PROXY_SOCKET,
       ],
       { env: { ...process.env, [credName]: cred.value, PAPERFENCE_PROXY_TOKEN: token } },
     );
-    await run("docker", ["network", "connect", netEgress, proxyName]);
-    opts.onProgress?.(`proxy up (${cred.source}); agent container has no credential and no external route`);
+    opts.onProgress?.(`proxy up (${cred.source}); agent container has no credential, no network and no route to this machine`);
 
-    // Agent container: internal network only; only the repo and the bare origin are mounted.
+    // Agent container: no network at all. Only the repo, the bare origin and
+    // the proxy's socket volume are mounted.
     const args = [
       "run", "--rm", "--name", agentName,
-      "--network", netInternal,
+      "--network", "none",
+      "-v", `${sockVol}:${SOCK_DIR}`,
       "-v", `${sb.work}:/sandbox/repo`,
       "-v", `${sb.remote}:/sandbox/origin.git`,
       "-w", "/sandbox/repo",
       "--memory", "2g", "--pids-limit", "512", "--cpus", "2", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
-      "-e", `ANTHROPIC_BASE_URL=http://${proxyName}:8080`,
+      "-e", "ANTHROPIC_BASE_URL=http://127.0.0.1:8080",
       "-e", "ANTHROPIC_API_KEY=paperfence-placeholder",
       "-e", `ANTHROPIC_CUSTOM_HEADERS=x-paperfence-token: ${token}`,
       "-e", "PAPERFENCE_JOB",
@@ -309,4 +326,96 @@ export async function execInDocker(sb: Sandbox, command: string, opts: { timeout
   } catch {
     return { code: null, output: "malformed result" };
   }
+}
+
+export interface IsolationCheck {
+  name: string;
+  /** True when the sandbox behaved as the threat model says it should. */
+  ok: boolean;
+  detail: string;
+}
+
+/**
+ * Check the boundary rather than assert it.
+ *
+ * paperfence's whole claim is that what it observed happened inside a box.
+ * These checks run the agent container with exactly the flags a trial uses
+ * and confirm, from inside it, that there is no default route, no DNS, no
+ * path to this machine, and no path to the proxy's network. Run by
+ * `paperfence doctor`.
+ */
+export async function verifyIsolation(onProgress?: (m: string) => void): Promise<IsolationCheck[]> {
+  await ensureImage(onProgress);
+  const netEgress = `paperfence-doctor-egress-${Date.now().toString(36)}`;
+  const probeName = `paperfence-doctor-${Date.now().toString(36)}`;
+  const checks: IsolationCheck[] = [];
+
+  const inAgent = async (script: string): Promise<{ code: number | null; out: string }> => {
+    try {
+      const { stdout, stderr } = await run(
+        "docker",
+        ["run", "--rm", "--name", `${probeName}-${Math.random().toString(36).slice(2, 8)}`, "--network", "none", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", IMAGE, "sh", "-c", script],
+        { timeout: 60_000 },
+      );
+      return { code: 0, out: (stdout + stderr).trim() };
+    } catch (e) {
+      const err = e as { code?: number; stdout?: string; stderr?: string };
+      return { code: err.code ?? null, out: ((err.stdout ?? "") + (err.stderr ?? "")).trim() };
+    }
+  };
+
+  onProgress?.("checking the agent container has no routes");
+  const routes = await inAgent("ip route show 2>/dev/null || cat /proc/net/route");
+  const hasDefault = /\bdefault\b/.test(routes.out) || /\n00000000/.test(routes.out);
+  checks.push({
+    name: "no default route",
+    ok: !hasDefault,
+    detail: hasDefault ? `the container has a default route: ${routes.out.split("\n")[0]}` : "the routing table has no gateway, so nothing outside loopback is addressable",
+  });
+
+  onProgress?.("checking DNS does not resolve");
+  const dns = await inAgent("getent hosts api.anthropic.com >/dev/null 2>&1 && echo RESOLVED || echo NO_DNS");
+  checks.push({
+    name: "no DNS",
+    ok: dns.out.includes("NO_DNS"),
+    detail: dns.out.includes("NO_DNS") ? "name resolution fails inside the container" : "names resolve, so the container can address hosts by name",
+  });
+
+  onProgress?.("checking this machine is unreachable from the container");
+  // 192.168.65.254 is Docker Desktop's gateway to the host; 172.17.0.1 is the
+  // default bridge gateway on Linux. Under --network none neither is routable.
+  const host = await inAgent("for h in 192.168.65.254 172.17.0.1 host.docker.internal; do timeout 3 curl -s -o /dev/null --connect-timeout 2 http://$h/ && echo REACHED_$h; done; echo DONE");
+  const reached = host.out.match(/REACHED_\S+/g) ?? [];
+  checks.push({
+    name: "this machine is unreachable",
+    ok: reached.length === 0,
+    detail: reached.length ? `the container reached ${reached.join(", ")}` : "no route to the host gateway or to host.docker.internal",
+  });
+
+  onProgress?.("checking a container on the proxy's network is unreachable");
+  try {
+    await run("docker", ["network", "create", netEgress]);
+    await run("docker", ["run", "-d", "--rm", "--name", probeName, "--network", netEgress, IMAGE, "node", "-e", "require('http').createServer((q,s)=>s.end('here')).listen(8080,'0.0.0.0')"]);
+    const peer = await inAgent(`timeout 3 curl -s --connect-timeout 2 http://${probeName}:8080/ && echo REACHED || echo NO_ROUTE`);
+    checks.push({
+      name: "the proxy's network is unreachable",
+      ok: !peer.out.includes("REACHED"),
+      detail: peer.out.includes("REACHED") ? "the agent container reached a container on the proxy network" : "a service on the proxy's network is not addressable from the agent container",
+    });
+  } catch (e) {
+    checks.push({ name: "the proxy's network is unreachable", ok: false, detail: `check did not run: ${(e as Error).message.split("\n")[0]}` });
+  } finally {
+    await run("docker", ["rm", "-f", probeName]).catch(() => {});
+    await run("docker", ["network", "rm", netEgress]).catch(() => {});
+  }
+
+  onProgress?.("checking the container cannot raise its own privileges");
+  const priv = await inAgent("id -u; (sudo -n true 2>/dev/null && echo SUDO_OK) || echo NO_SUDO");
+  checks.push({
+    name: "runs unprivileged",
+    ok: !priv.out.includes("SUDO_OK") && !/^0$/m.test(priv.out),
+    detail: priv.out.includes("SUDO_OK") ? "sudo works inside the container" : `runs as uid ${priv.out.split("\n")[0]} with no sudo`,
+  });
+
+  return checks;
 }

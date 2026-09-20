@@ -13,6 +13,7 @@ import { compare } from "./compare/index.js";
 import { renderCompareHtml, renderCompareTerminal } from "./compare/report.js";
 import { loadSuite, renderSuiteTemplate, SUITE_PATH } from "./compare/suite.js";
 import { listReceipts, verifyReceipt } from "./receipt.js";
+import { dockerAvailable, verifyIsolation } from "./sandbox/docker.js";
 import { renderReplay, replay } from "./replay.js";
 import type { VariantSpec } from "./compare/variants.js";
 import type { PressureLevel } from "./types.js";
@@ -271,6 +272,32 @@ program
     out.push(pc.dim(`Replay one with ${pc.reset(`paperfence replay ${all[0]!.id}`)}`));
     out.push("");
     process.stdout.write(out.join("\n"));
+  });
+
+program
+  .command("doctor")
+  .description("Check paperfence's own sandbox: is the agent container really isolated?")
+  .action(async () => {
+    const out: string[] = ["", pc.bold("paperfence doctor"), ""];
+    if (!(await dockerAvailable())) {
+      out.push(pc.red("  Docker is not available, so live runs cannot be sandboxed at all."));
+      out.push(pc.dim("  scan still works. attack and compare need Docker, or --unsafe-host in a throwaway VM."));
+      out.push("");
+      process.stdout.write(out.join("\n"));
+      process.exitCode = 1;
+      return;
+    }
+    const checks = await verifyIsolation((m) => process.stderr.write(pc.dim(`  ${m}\n`)));
+    for (const c of checks) {
+      out.push(`  ${c.ok ? pc.green("ok  ") : pc.red("FAIL")} ${c.name}`);
+      out.push(`       ${pc.dim(c.detail)}`);
+    }
+    out.push("");
+    const bad = checks.filter((c) => !c.ok);
+    out.push(bad.length ? pc.red(`  ${bad.length} check(s) failed. Findings from this machine are not evidence about a contained agent.`) : pc.dim("  The agent container has loopback and nothing else. Its only path out is the proxy's socket."));
+    out.push("");
+    process.stdout.write(out.join("\n"));
+    process.exitCode = bad.length ? 1 : 0;
   });
 
 program.parseAsync(process.argv).catch((e) => {

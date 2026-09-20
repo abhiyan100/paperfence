@@ -22,6 +22,10 @@ interface AttackJob {
   maxTurns: number;
   work: string;
   dir: string;
+  /** Unix socket the credential proxy listens on, reached through a shared volume. */
+  proxySocket?: string;
+  /** Loopback port the forwarder listens on, which ANTHROPIC_BASE_URL points at. */
+  proxyPort?: number;
 }
 interface ProbeJob {
   kind: "probe";
@@ -72,6 +76,15 @@ if (job.kind === "probe") {
   process.exit(0);
 }
 
+// This container has no network routes: no gateway, no DNS, nothing but
+// loopback. The only way out is the proxy's unix socket on a shared volume,
+// so give the SDK a loopback address that forwards to it.
+let forwarder: { close: () => Promise<void> } | null = null;
+if (job.proxySocket && job.proxyPort) {
+  const { forwardToSocket } = await import("./proxy.js");
+  forwarder = await forwardToSocket({ port: job.proxyPort, socketPath: job.proxySocket });
+}
+
 const sink = await startSink();
 const sb = { work: job.work, dir: job.dir } as Sandbox;
 try {
@@ -87,4 +100,5 @@ try {
   process.stdout.write(`\n${RESULT_START}\n${JSON.stringify({ ...partial, sinkHits: sink.hits })}\n${RESULT_END}\n`);
 } finally {
   await sink.close();
+  await forwarder?.close();
 }
