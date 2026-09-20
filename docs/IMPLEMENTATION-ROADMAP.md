@@ -27,11 +27,11 @@ Debt, in priority order:
 
 | # | slice | status |
 |---|---|---|
-| 1 | Domain model: verdicts (PASS/FAIL/ERROR/INCONCLUSIVE/NOT_APPLICABLE), repo profile + prerequisites, versioned scenario definitions with attack forms, trial statistics (Wilson CI) | in progress |
-| 2 | Receipts (content-addressed, stored under `.paperfence/receipts`) and `replay` | planned |
-| 3 | Sandbox: agent container with no network namespace routes; API via unix-socket proxy + loopback forwarder | planned |
-| 4 | Runtime adapters: interface with declared capabilities; Claude Code adapter; Codex adapter (discovery + semantics; execution declared unsupported until validated) | planned |
-| 5 | Policy IR (`paperfence.policy.yaml`), inference from rules, compiler to Claude / Codex / GitHub targets with enforceability classes; `harden --dry-run` shows the patch | planned |
+| 1 | Domain model: verdicts (PASS/FAIL/ERROR/INCONCLUSIVE/NOT_APPLICABLE), repo profile + prerequisites, versioned scenario definitions with attack forms, trial statistics (Wilson CI) | done |
+| 2 | Receipts (content-addressed, stored under `.paperfence/receipts`) and `replay` | done |
+| 3 | Sandbox: agent container with no network routes; API via unix-socket proxy; `doctor` verifies it | done |
+| 4 | Runtime adapters with declared capabilities; Claude Code full; Codex discovery only | done |
+| 5 | Policy document, inference, compiler with five enforceability classes | done; `harden --dry-run` patch still open |
 | 6 | Test integrity beyond byte equality; secret access paths and encoded exfiltration | planned |
 | 7 | GitHub Action + PR summary | planned |
 | 8 | Docs: threat model, limitations, decisions; README refresh | planned |

@@ -15,6 +15,10 @@ import { loadSuite, renderSuiteTemplate, SUITE_PATH } from "./compare/suite.js";
 import { listReceipts, verifyReceipt } from "./receipt.js";
 import { dockerAvailable, verifyIsolation } from "./sandbox/docker.js";
 import { renderReplay, replay } from "./replay.js";
+import { compilePolicy, unenforcedAnywhere, type TargetId } from "./policy/compile.js";
+import { inferPolicy, loadPolicy, POLICY_PATH, renderPolicy } from "./policy/document.js";
+import { renderPolicyCheck } from "./policy/report.js";
+import { detectRuntimes } from "./runtimes/index.js";
 import type { VariantSpec } from "./compare/variants.js";
 import type { PressureLevel } from "./types.js";
 
@@ -272,6 +276,58 @@ program
     out.push(pc.dim(`Replay one with ${pc.reset(`paperfence replay ${all[0]!.id}`)}`));
     out.push("");
     process.stdout.write(out.join("\n"));
+  });
+
+const policy = program.command("policy").description("Write down what your agents may do, and find out what can actually enforce it.");
+
+policy
+  .command("init")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--offline", "keyword heuristic for reading rule files instead of a model")
+  .option("--force", `overwrite an existing ${POLICY_PATH}`)
+  .option("--stdout", "print the draft instead of writing it")
+  .description(`Draft ${POLICY_PATH} from the rules already in this repository.`)
+  .action(async (repo: string, opts: { offline?: boolean; force?: boolean; stdout?: boolean }) => {
+    const root = path.resolve(repo);
+    const existing = await loadPolicy(root).catch(() => null);
+    if (existing && !opts.force && !opts.stdout) {
+      throw new Error(`${POLICY_PATH} already exists. Edit it, or pass --force to redraft from the repo's rules.`);
+    }
+    const { rules } = await collectRules(root, { offline: opts.offline, onProgress: (m) => process.stderr.write(pc.dim(`  ${m}\n`)) });
+    const found = await detectRuntimes(root);
+    const doc = inferPolicy(rules, found.length ? found.map((f) => f.adapter.id) : ["claude-code"]);
+    const text = renderPolicy(doc);
+    if (opts.stdout) {
+      process.stdout.write(text);
+      return;
+    }
+    await fs.writeFile(path.join(root, POLICY_PATH), text);
+    process.stderr.write(pc.dim(`wrote ${POLICY_PATH} with ${doc.statements.length} statement(s)\n`));
+    process.stderr.write(pc.dim(`Read it, fix the wording, then run ${pc.reset("paperfence policy check")}.\n`));
+  });
+
+policy
+  .command("check")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--target <ids...>", "targets to compile for: claude-code, claude-code-hook, codex, github")
+  .option("--json <file>", "also write the assessment as JSON")
+  .description("For every statement, what would enforce it, and what it would miss.")
+  .action(async (repo: string, opts: { target?: string[]; json?: string }) => {
+    const root = path.resolve(repo);
+    const loaded = await loadPolicy(root);
+    if (!loaded) throw new Error(`no ${POLICY_PATH} here. Run \`paperfence policy init\` to draft one from the rules you already have.`);
+    const targets = (opts.target?.length ? opts.target : ["claude-code", "claude-code-hook", "github"]) as TargetId[];
+    for (const t of targets) {
+      if (!["claude-code", "claude-code-hook", "codex", "github"].includes(t)) throw new Error(`unknown target "${t}"; known: claude-code, claude-code-hook, codex, github`);
+    }
+    const compiled = targets.map((t) => compilePolicy(loaded.doc, t));
+    const unenforced = unenforcedAnywhere(compiled);
+    process.stdout.write(renderPolicyCheck(compiled, unenforced));
+    if (opts.json) {
+      await fs.writeFile(opts.json, JSON.stringify({ policy: loaded.doc, compiled, unenforcedAnywhere: unenforced }, null, 2));
+      process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    process.exitCode = unenforced.filter((s) => !s.statement.acceptAsGuidance).length > 0 ? 2 : 0;
   });
 
 program
