@@ -96,7 +96,7 @@ averaged; they fail in opposite directions and one number would hide both.
 
 |  | model reader | offline keyword reader |
 |---|---|---|
-| mechanical policies found | **26/44 (59%)** | 18/44 (41%) |
+| mechanical policies found | **22-28 of 44 across runs (50-64%)** | 18/44 (41%) |
 | all statements found | 79/272 (29%) | 95/272 (35%) |
 | category, clear-cut cases | 38/55 (69%) | 53/69 (77%) |
 | category, arguable cases | 15/24 (63%) | 13/26 (50%) |

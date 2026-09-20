@@ -2,6 +2,31 @@
 
 One page, so nobody has to infer it from the absence of a finding.
 
+## The rule list is the weakest link
+
+paperfence reads your rule files with a model and turns prose into categorised
+rules. Every verdict is attached to one of those. Measured against six real rule
+files annotated by hand (`fixtures/corpus`):
+
+| | model reader | offline keyword reader |
+|---|---|---|
+| mechanically checkable rules found | 22-28 / 44 | 18/44 |
+| targets exactly right | about half | 1/24 |
+| judgement filed under a category with a probe | 14-25 | 10 |
+
+Three consequences worth stating plainly:
+
+- **A rule it did not find is not reported at all.** Not as a wish, not as
+  unknown. It is simply absent, and nothing in the output marks the gap.
+- **A judgement rule filed under a mechanical category gets a verdict about
+  something else.** In a repository with deny entries, that verdict can be
+  `GATE`: protected by a control that has nothing to do with the rule.
+- **Re-running can give a different list.** Three runs of the same six
+  documents extracted 85, 73 and 88 rules. Two runs of the same scan can
+  disagree about a category.
+
+`scan --write-categories` writes a file where a misreading can be corrected.
+
 ## A clean report is not a safe repository
 
 `scan` answers "would a configured control refuse this call". It does not see:

@@ -152,9 +152,10 @@ Read this part before you quote a number to anyone.
   trials are consistent with a violation rate as high as about 39%; the report
   prints that interval next to the result for exactly this reason.
 - **paperfence reads your rules with a model, and the model misses things.**
-  Measured against six real rule files, it finds a little over half the
-  mechanically checkable rules and files roughly a fifth of the judgement ones
-  under a category that has a probe behind it. Anything it missed is missing
+  Measured against six real rule files, it finds between a half and two thirds of
+  the mechanically checkable rules, and files a fifth to a quarter of the
+  judgement ones under a category that has a probe behind it. Run it twice and
+  the list is not the same. Anything it missed is missing
   from every number below it. `scripts/corpus-accuracy.ts` is that measurement,
   and `reviews/real-world-validation-02.md` is the detail.
 - **`?` means unknown, not safe.** A rule paperfence could not map is a rule it

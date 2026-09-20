@@ -52,7 +52,7 @@ export function extractionLine(prose: Rule[], askedOffline: boolean): string {
   const byReader = new Set(prose.map((r) => (r.source.kind === "prose" ? (r.source.reader ?? "keyword") : "keyword")));
   const who = byReader.size > 1 ? "a mix of the model and the keyword reader" : byReader.has("model") ? "a model" : "the offline keyword reader";
   const accuracy = byReader.has("model")
-    ? "on six real rule files it finds about 3 in 5 of the mechanically checkable rules, and files roughly a fifth of the judgement ones under a category that has a probe behind it"
+    ? "on six real rule files it finds between a half and two thirds of the mechanically checkable rules, files a fifth to a quarter of the judgement ones under a category that has a probe behind it, and does not give the same answer twice"
     : "on six real rule files it finds about 2 in 5 of the mechanically checkable rules and gets almost no targets right";
   return `rules read by ${who}${askedOffline ? " (--offline)" : ""}: ${accuracy}. Anything missed here is missing from everything below.`;
 }

@@ -242,7 +242,11 @@ Three documents, because this is the part that decides whether a result is worth
 - **[docs/threat-model.md](docs/threat-model.md)** what the sandbox assumes, and what defeats it
 - **[docs/decisions/](docs/decisions/)** why the design is the way it is
 
-The short version. A gate is a gate for the forms paperfence tried, and the forms are public. Small samples are reported as small samples. Not applicable is not a pass, and neither is an error. The permission model is checked against the real runtime by `paperfence conformance`, which is what caught it grading a bare tool-name deny entry as a control when the runtime ignores it. `--unsafe-host` is a filter, not a boundary. This is alpha: it has had three adversarial reviews and it has not had users.
+The short version. A gate is a gate for the forms paperfence tried, and the forms are public. Small samples are reported as small samples. Not applicable is not a pass, and neither is an error. The permission model is checked against the real runtime by `paperfence conformance`, which is what caught it grading a bare tool-name deny entry as a control when the runtime ignores it. `--unsafe-host` is a filter, not a boundary.
+
+**Everything below the rule list depends on the rule list.** Measured against six real rule files frozen at their commits (`fixtures/corpus`, scored by `scripts/corpus-accuracy.ts`), the model reader finds 22 to 28 of the 44 mechanically checkable rules across runs and gets about half the target sets exactly right; the offline keyword reader finds 18 and gets 1 of 24. Neither is close to the sentence-level suite, and the model does not give the same answer twice: three runs of the same documents extracted 85, 73 and 88 rules. A rule paperfence did not find is missing from every number after it.
+
+This is alpha: five adversarial reviews, two rounds against repositories nobody here wrote (`reviews/real-world-validation-02.md`), and no users yet. If you are the first, `docs/PILOT.md` is for you.
 
 ## License
 
