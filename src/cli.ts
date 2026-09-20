@@ -12,6 +12,8 @@ import { applyHardening } from "./harden/apply.js";
 import { compare } from "./compare/index.js";
 import { renderCompareHtml, renderCompareTerminal } from "./compare/report.js";
 import { loadSuite, renderSuiteTemplate, SUITE_PATH } from "./compare/suite.js";
+import { listReceipts, verifyReceipt } from "./receipt.js";
+import { renderReplay, replay } from "./replay.js";
 import type { VariantSpec } from "./compare/variants.js";
 import type { PressureLevel } from "./types.js";
 
@@ -61,6 +63,9 @@ program
   .option("--level <n>", "highest pressure level to try, 1-3", "3")
   .option("--max-turns <n>", "turn budget per run", "30")
   .option("--rule <ids...>", "only attack these rule ids (from scan output)")
+  .option("--reps <n>", "trials per attack form and pressure level; more trials narrow the interval", "1")
+  .option("--form <ids...>", "only try these attack forms")
+  .option("--no-receipts", "do not write a receipt per trial")
   .option("--category <names...>", "only attack these categories")
   .option("--offline", "keyword heuristic for reading rule files instead of a model")
   .option("--keep-sandbox", "leave sandboxes on disk for inspection")
@@ -69,12 +74,15 @@ program
   .option("--html <file>", "also write a self-contained HTML report")
   .option("-q, --quiet", "no progress output")
   .description("Live check: a coding agent, running with this repo's own rules, is asked to break each one.")
-  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await attack(root, {
       model: opts.model,
       maxLevel: Math.min(3, Math.max(1, Number(opts.level))) as PressureLevel,
       maxTurns: Number(opts.maxTurns),
+      reps: Number(opts.reps),
+      formIds: opts.form,
+      receipts: opts.receipts !== false,
       ruleIds: opts.rule,
       categories: opts.category,
       offline: opts.offline,
@@ -214,6 +222,55 @@ program
       process.stderr.write(pc.dim(`wrote ${SUITE_PATH}\n`));
     }
     process.stdout.write(renderSuiteTemplate(suite));
+  });
+
+program
+  .command("replay")
+  .argument("<receipt>", "receipt id (pf_...) or a path to a receipt file")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--model <model>", "replay with a different model, to ask whether the newer one still does it")
+  .option("--unsafe-host", "run the agent on this machine instead of in Docker")
+  .option("-q, --quiet", "no progress output")
+  .description("Re-run the conditions a receipt describes and show what changed. Reproduces the setup, not the agent.")
+  .action(async (receipt: string, repo: string, opts: { model?: string; unsafeHost?: boolean; quiet?: boolean }) => {
+    const root = path.resolve(repo);
+    const result = await replay(root, receipt, {
+      model: opts.model,
+      sandbox: opts.unsafeHost ? "host" : "docker",
+      onProgress: opts.quiet ? undefined : (m) => process.stderr.write(`  ${m}\n`),
+    });
+    process.stdout.write(renderReplay(result));
+    process.exitCode = result.replayed.verdict.verdict === "FAIL" ? 2 : 0;
+  });
+
+program
+  .command("receipts")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--json", "print the list as JSON")
+  .description("List the trial receipts stored in this repo.")
+  .action(async (repo: string, opts: { json?: boolean }) => {
+    const root = path.resolve(repo);
+    const all = await listReceipts(root);
+    if (opts.json) {
+      process.stdout.write(JSON.stringify(all, null, 2) + "\n");
+      return;
+    }
+    if (!all.length) {
+      process.stdout.write(pc.dim("\nNo receipts yet. Run `paperfence attack` and every trial writes one.\n\n"));
+      return;
+    }
+    const out = ["", pc.bold(`${all.length} receipt${all.length === 1 ? "" : "s"}`) + pc.dim(`  ${root}`), ""];
+    for (const r of all) {
+      const v = r.verdict.verdict;
+      const badge = v === "FAIL" ? pc.red(v.padEnd(13)) : v === "PASS" ? pc.green(v.padEnd(13)) : v === "ERROR" ? pc.magenta(v.padEnd(13)) : pc.yellow(v.padEnd(13));
+      const tamper = verifyReceipt(r) ? "" : pc.red("  [edited: does not match its own hash]");
+      out.push(`  ${pc.bold(r.id)}  ${badge} ${r.trial.scenario} · ${r.trial.form} · level ${r.trial.level}${tamper}`);
+      out.push(`  ${" ".repeat(r.id.length)}  ${pc.dim(`${new Date(r.at).toLocaleString()} · ${r.fingerprint.model ?? "?"} · ${r.verdict.explain.slice(0, 70)}`)}`);
+    }
+    out.push("");
+    out.push(pc.dim(`Replay one with ${pc.reset(`paperfence replay ${all[0]!.id}`)}`));
+    out.push("");
+    process.stdout.write(out.join("\n"));
   });
 
 program.parseAsync(process.argv).catch((e) => {

@@ -9,8 +9,9 @@ import { createHostSandbox } from "../sandbox/host.js";
 import { startSink, type Sink } from "../sandbox/sink.js";
 import { dockerAvailable, ensureImage, IMAGE, probeInDocker, runInDocker } from "../sandbox/docker.js";
 import { collectFingerprint } from "../fingerprint.js";
+import { buildReceipt, repoState, writeReceipt, type ReceiptRepo } from "../receipt.js";
 import { collectRules } from "../scan.js";
-import type { AttackRun, PressureLevel, Rule, ScanReport } from "../types.js";
+import type { AttackRun, Fingerprint, PressureLevel, Rule, ScanReport } from "../types.js";
 import { verdictFor } from "../verdict.js";
 import { runAdversary } from "./adversary.js";
 import { runAssertion } from "./assert.js";
@@ -32,6 +33,8 @@ export interface AttackOptions {
   skipStaticGates?: boolean;
   /** "docker" (default) runs the agent in a container with no credential and no route out; "host" runs it here behind a best-effort guard. */
   sandbox?: "docker" | "host";
+  /** Write a receipt per trial into .paperfence/receipts. Default true. */
+  receipts?: boolean;
   onProgress?: (msg: string) => void;
   onRun?: (run: AttackRun, rule: Rule) => void;
 }
@@ -89,6 +92,10 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
   }
   const staticById = new Map(statics.map((s) => [s.ruleId, s]));
 
+  // Conditions are fixed before the first trial, so every receipt in this run describes the same setup.
+  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve" });
+  const repo = await repoState(cfg.root);
+
   // In docker mode the sink runs inside the container; here it only exists in host mode.
   const sink: Sink = useDocker ? { port: 0, hits: [], close: async () => {} } : await startSink();
   const runs: AttackRun[] = [];
@@ -121,7 +128,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
         let settled = false;
         for (let level = 1 as PressureLevel; level <= maxLevel && !settled; level = (level + 1) as PressureLevel) {
           for (let rep = 0; rep < reps && !settled; rep++) {
-            const run = await oneTrial({ rule, form, ctx, level, profile, model, maxTurns, useDocker, sink, keepSandbox: opts.keepSandbox, log });
+            const run = await oneTrial({ rule, form, ctx, level, profile, model, maxTurns, useDocker, sink, keepSandbox: opts.keepSandbox, log, fingerprint, repo, writeReceipts: opts.receipts !== false });
             runs.push(run);
             opts.onRun?.(run, rule);
             const v = run.verdict!;
@@ -147,7 +154,6 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     await sink.close();
   }
 
-  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve" });
   return buildReport(cfg.root, rules, statics, runs, "attack", fingerprint, { profile, notApplicable, skippedForms });
 }
 
@@ -163,6 +169,9 @@ interface TrialArgs {
   sink: Sink;
   keepSandbox?: boolean;
   log: (m: string) => void;
+  fingerprint: Fingerprint;
+  repo: ReceiptRepo;
+  writeReceipts: boolean;
 }
 
 async function oneTrial(a: TrialArgs): Promise<AttackRun> {
@@ -200,7 +209,9 @@ async function oneTrial(a: TrialArgs): Promise<AttackRun> {
     // A call our own guard stopped counts as an attempted violation only if it was one.
     const relevantGuard = firstViolation(a.rule, partial.events.filter((e) => e.denied && (e.deniedReason ?? "").includes("paperfence-guard")), vctx);
 
-    const hitTurnLimit = /max_turns/.test(partial.error ?? "") || partial.turns >= a.maxTurns;
+    // Only the runtime can tell us it ran out of turns: our own counter counts assistant
+    // messages, which is a different number from the SDK's turn budget.
+    const hitTurnLimit = /max_turns/.test(partial.error ?? "");
     const timedOut = /exceeded \d+ minutes|timed out/.test(partial.error ?? "");
     const infraError = partial.error && !/max_turns/.test(partial.error) ? partial.error : undefined;
 
@@ -218,7 +229,7 @@ async function oneTrial(a: TrialArgs): Promise<AttackRun> {
         (relevantBlock ? `${relevantBlock.event.tool} was blocked: ${relevantBlock.why}` : undefined),
     });
 
-    return {
+    const built: AttackRun = {
       ...partial,
       scenarioId: scenario.id,
       scenarioVersion: scenario.version,
@@ -231,6 +242,14 @@ async function oneTrial(a: TrialArgs): Promise<AttackRun> {
       mechanicallyBlocked: relevantBlock !== null,
       blockEvidence: relevantBlock ? [`${relevantBlock.event.tool} was blocked: ${relevantBlock.why}: ${(relevantBlock.event.deniedReason ?? "").split("\n")[0]?.slice(0, 200)}`] : [],
     };
+
+    if (a.writeReceipts) {
+      const receipt = buildReceipt({ run: built, fingerprint: a.fingerprint, repo: a.repo, rule: a.rule, objective, maxTurns: a.maxTurns, canary: sb.canary });
+      await writeReceipt(a.repo.root, receipt);
+      built.receipt = receipt.id;
+      a.log(pc.dim(`    receipt ${receipt.id}`));
+    }
+    return built;
   } finally {
     if (!a.keepSandbox) await sb.destroy();
     else a.log(pc.dim(`    sandbox kept at ${sb.dir}`));

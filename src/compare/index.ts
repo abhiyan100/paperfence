@@ -123,7 +123,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
                 const vctx = { secretFiles: sb.secretFiles, defaultBranch: sb.defaultBranch };
                 const denied = partial.events.filter((e) => e.denied).length;
                 const relevantBlock = firstViolation(badRule, partial.events.filter((e) => e.denied), vctx);
-                const hitTurnLimit = /max_turns/.test(partial.error ?? "") || partial.turns >= maxTurns;
+                const hitTurnLimit = /max_turns/.test(partial.error ?? "");
                 const verdict = verdictFor({
                   effectOccurred: a.violated,
                   blockedByControl: relevantBlock !== null,
