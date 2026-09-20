@@ -41,7 +41,8 @@ export type PrerequisiteKind =
   | "python-manifest"
   | "numeric-constant"
   | "scope-target"
-  | "command-target";
+  | "command-target"
+  | "required-step";
 
 export interface ScenarioContext {
   rule: Rule;
@@ -120,21 +121,107 @@ export const PREREQUISITES: Record<PrerequisiteKind, Prerequisite> = {
     describe: "a command named by the rule",
     met: (c) => commandTarget(c) !== null,
   },
+  "required-step": {
+    kind: "required-step",
+    describe: "a required step that is a command this repository can actually run",
+    met: (c) => requiredStep(c) !== null,
+  },
 };
 
+/** Programs a rule file plausibly names as a required step. */
+const RUNNERS = new Set([
+  "npm", "pnpm", "yarn", "bun", "bunx", "npx", "node", "deno",
+  "python", "python3", "uv", "uvx", "pip", "poetry", "pytest", "tox", "ruff", "mypy", "black", "pyright",
+  "go", "cargo", "rustfmt", "clippy", "just", "make", "bazel", "gradle", "mvn", "dotnet",
+  "git", "tsc", "eslint", "prettier", "biome", "oxlint", "vitest", "jest", "mocha", "rspec", "bundle", "rake",
+  "docker", "terraform", "prek", "pre-commit", "lefthook", "husky", "breeze",
+]);
+
+/**
+ * The command a `require-before` rule says must run, or null when the rule
+ * does not name one.
+ *
+ * This is the same failure as an invented scope path, and worse in its
+ * consequence. The assertion takes `targets[0]` as the command to look for, so
+ * when extraction returns a fragment of the sentence instead of a command -
+ * `API changes`, `evidence gathering before commit`, `tests` - nothing the
+ * agent runs can ever match it, `ranStep` stays false, and the first commit
+ * the agent makes is recorded as skipping a required step. A rule the agent
+ * had no way to satisfy is reported as broken in a live run.
+ *
+ * So the step has to be a command: a program this ecosystem has, or a script
+ * this repository defines. Anything else means the rule is not checkable here,
+ * which is a true thing to say and the other is not.
+ */
+export function requiredStep(ctx: ScenarioContext): string | null {
+  const scripts = Object.keys((ctx.profile.packageJson as { scripts?: Record<string, string> } | null)?.scripts ?? {});
+  for (const raw of ctx.rule.targets) {
+    const clean = raw.replace(/^`|`$/g, "").trim();
+    if (!clean || clean.length > 80) continue;
+    // Ordering prose that leaked into the target list.
+    if (/\b(before|after|first|then|when|while|unless|every|all)\b/i.test(clean)) continue;
+    if (/[,;]/.test(clean)) continue;
+    const parts = clean.split(/\s+/);
+    if (parts.length > 6) continue;
+    const head = parts[0]!.toLowerCase();
+    if (RUNNERS.has(head)) return clean;
+    // A bare script name, when the repository really defines it.
+    if (parts.length === 1 && scripts.includes(clean)) return `npm run ${clean}`;
+  }
+  return null;
+}
+
 /** A file that exists in this repo and would violate the scope rule if edited. */
+/**
+ * Is this target a path this repository actually has?
+ *
+ * Extraction often returns a fragment of the sentence instead of a path:
+ * `bug fixes: confined to immediate impact`, `test assertions`, `API changes`.
+ * Those are not targets, and treating them as one produced the worst kind of
+ * output this project can produce. `scopeTarget` looked for a file outside the
+ * "allowed directory" `bug fixes: confined to immediate impact`, every file in
+ * the repository qualified, and the report then said
+ *
+ *   Nothing mechanical stops "edit .claude-plugin/marketplace.json"
+ *
+ * for a rule about keeping bug fixes small. The path came from paperfence, not
+ * from the repository's rule, and the sentence reads as though it came from
+ * the rule.
+ *
+ * So a target has to name something that is really there. When none of them
+ * do, the rule is unmapped, which the report already knows how to say.
+ */
+export function matchesTarget(file: string, pattern: string): boolean {
+  if (pattern.includes("*")) {
+    const rx = new RegExp("^" + pattern.split("*").map((x) => x.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join("[^/]*") + "$");
+    return rx.test(file);
+  }
+  return file === pattern || file.startsWith(pattern + "/");
+}
+
+export function usableTarget(target: string, files: string[]): string | null {
+  const clean = target.replace(/^!/, "").replace(/^`|`$/g, "").replace(/^\.\//, "").replace(/\/$/, "").trim();
+  if (!clean || clean.length > 120) return null;
+  // A sentence fragment, not a path. Spaces and colons are the giveaway; a
+  // path with a space is possible and vanishingly rare in a rule file.
+  if (/\s|:/.test(clean)) return null;
+  if (clean.startsWith("~") || clean.startsWith("/") || clean.split("/").includes("..")) return null;
+  return files.some((f) => matchesTarget(f, clean)) ? clean : null;
+}
+
 export function scopeTarget(ctx: ScenarioContext): string | null {
   const { rule, profile } = ctx;
-  const forbidden = rule.targets.filter((t) => t.startsWith("!")).map((t) => t.slice(1).replace(/\/$/, ""));
-  const allowed = rule.targets.filter((t) => !t.startsWith("!")).map((t) => t.replace(/\/$/, ""));
-  const under = (f: string, d: string) => f === d || f.startsWith(d + "/");
+  const forbidden = rule.targets.filter((t) => t.startsWith("!")).map((t) => usableTarget(t, profile.files)).filter((t): t is string => t !== null);
+  const allowed = rule.targets.filter((t) => !t.startsWith("!")).map((t) => usableTarget(t, profile.files)).filter((t): t is string => t !== null);
+  // Nothing in the rule names a real path, so there is nothing honest to probe.
+  if (!forbidden.length && !allowed.length) return null;
   const editable = profile.files.filter((f) => !f.startsWith(".git/") && !/\.(png|jpg|jpeg|gif|ico|pdf|zip|lock)$/.test(f) && f !== "package-lock.json" && f !== "pnpm-lock.yaml");
   if (forbidden.length) {
-    const hit = editable.find((f) => forbidden.some((d) => under(f, d)));
+    const hit = editable.find((f) => forbidden.some((d) => matchesTarget(f, d)));
     if (hit) return hit;
   }
   if (allowed.length) {
-    const hit = editable.find((f) => !allowed.some((d) => under(f, d)) && !f.startsWith(".claude/") && !/^(README|LICENSE)/i.test(f));
+    const hit = editable.find((f) => !allowed.some((d) => matchesTarget(f, d)) && !f.startsWith(".claude/") && !/^(README|LICENSE)/i.test(f));
     if (hit) return hit;
   }
   return null;

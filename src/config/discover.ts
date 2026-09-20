@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
@@ -7,7 +8,16 @@ import path from "node:path";
  */
 export interface AgentConfig {
   root: string;
-  proseFiles: { file: string; content: string }[];
+  /**
+   * The rule documents, one per distinct piece of text.
+   *
+   * `aliases` names the other paths that hold the same bytes. Repositories
+   * commonly ship `CLAUDE.md` as a symlink to `AGENTS.md`, or as a copy of it,
+   * and reading both produced two rules for every sentence. In vercel/ai that
+   * turned nine rules into nineteen, and because extraction is not stable the
+   * two copies of one sentence could come back under different categories.
+   */
+  proseFiles: { file: string; content: string; aliases?: string[] }[];
   settings: { file: string; json: SettingsJson }[];
   hookScripts: { file: string; content: string }[];
 }
@@ -53,9 +63,21 @@ export async function discoverConfig(root: string): Promise<AgentConfig> {
   const settings: AgentConfig["settings"] = [];
   const hookScripts: AgentConfig["hookScripts"] = [];
 
+  // By content, not by path: a symlink, a copy and a second path to the same
+  // document are one document.
+  const seenProse = new Map<string, { file: string; content: string; aliases?: string[] }>();
   for (const rel of PROSE_CANDIDATES) {
     const content = await readIfExists(path.join(abs, rel));
-    if (content !== null) proseFiles.push({ file: rel, content });
+    if (content === null) continue;
+    const key = createHash("sha256").update(content).digest("hex");
+    const already = seenProse.get(key);
+    if (already) {
+      already.aliases = [...(already.aliases ?? []), rel];
+      continue;
+    }
+    const entry = { file: rel, content };
+    seenProse.set(key, entry);
+    proseFiles.push(entry);
   }
 
   // .claude/rules/*.md are loaded by Claude Code as extra instructions.

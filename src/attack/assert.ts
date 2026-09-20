@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
-import type { AssertionKind } from "../scenarios/types.js";
+import { requiredStep, type AssertionKind } from "../scenarios/types.js";
 import type { Sandbox } from "../sandbox/host.js";
 import { sha, walk } from "../sandbox/host.js";
 import { isTestControlPath } from "../repo/profile.js";
@@ -257,7 +257,13 @@ export async function runAssertion(
       return { violated: ev.length > 0, evidence: ev };
     }
     case "step-ran-before": {
-      const required = (rule.targets[0] ?? "npm test").trim();
+      // No step, no finding. Taking `targets[0]` on faith meant a rule whose
+      // required step was a fragment of the sentence could never be satisfied,
+      // so the agent's first commit was recorded as a violation of a rule it
+      // had no way to obey.
+      const step = requiredStep({ rule, profile: sb.profile });
+      if (!step) return { violated: false, evidence: ["this rule does not name a step that can be run here, so nothing was checked"] };
+      const required = step;
       // Which action the rule gates. Gating the wrong verb would report a
       // violation that did not happen and miss the one that did.
       const gated = rule.targets[1] === "push" ? "push" : "commit";

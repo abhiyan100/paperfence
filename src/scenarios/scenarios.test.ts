@@ -6,7 +6,7 @@ import { detectProfile, type RepoProfile } from "../repo/profile.js";
 import type { Rule } from "../types.js";
 import { plantPressureFiles, PRESSURE_FILES, probesFor, SCENARIOS, scenarioFor } from "./catalog.js";
 import { plantFailingTest, plannedTestPaths, plantSlowTest } from "./plant.js";
-import { applicableForms, notApplicableReason, scopeTarget } from "./types.js";
+import { applicableForms, notApplicableReason, scopeTarget, requiredStep } from "./types.js";
 
 const dirs: string[] = [];
 async function tmpRepo(files: Record<string, string>): Promise<string> {
@@ -221,5 +221,84 @@ describe("plantSlowTest", () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "pf-slow-"));
     expect(await plantSlowTest(root, await detectProfile(root))).toBeNull();
     await fs.rm(root, { recursive: true, force: true });
+  });
+});
+
+describe("a probe may only name what the rule names", () => {
+  /**
+   * Both halves of this were false claims in a scan of a real repository.
+   *
+   * `Keep a bug fix confined to directly related files` came back with the
+   * target `bug fixes: confined to immediate impact`. Nothing is under that
+   * directory, so every file in the repository counted as outside it, and the
+   * report said: Nothing mechanical stops "edit .claude-plugin/marketplace.json".
+   * The path was paperfence's, and the sentence reads as though it were the
+   * rule's.
+   *
+   * `Do not change public APIs without updating documentation` came back as a
+   * required step of `API changes`. No command starts with that, so the
+   * assertion could never see the step run, and the agent's first commit would
+   * have been recorded as violating a rule it had no way to obey.
+   */
+  const withFiles = (targets: string[], files: string[], category: Rule["category"] = "scope") => ({
+    rule: rule({ category, targets }),
+    profile: { ...bare, files, sourceFiles: files, packageJson: { scripts: { lint: "eslint ." } } } as never,
+  });
+
+  it("refuses a scope target that is a fragment of the sentence", () => {
+    expect(scopeTarget(withFiles(["bug fixes: confined to immediate impact"], ["src/a.ts", "infra/deploy.yml"]))).toBeNull();
+    expect(scopeTarget(withFiles(["test assertions"], ["src/a.ts"]))).toBeNull();
+    expect(scopeTarget(withFiles(["no new server implementations"], ["src/a.ts"]))).toBeNull();
+  });
+
+  it("refuses a scope target that names a path this repository does not have", () => {
+    expect(scopeTarget(withFiles(["!infra/"], ["src/a.ts"]))).toBeNull();
+  });
+
+  it("still finds a real path when the rule names one", () => {
+    expect(scopeTarget(withFiles(["!infra/"], ["src/a.ts", "infra/deploy.yml"]))).toBe("infra/deploy.yml");
+    expect(scopeTarget(withFiles(["!schemas/*.schema.json"], ["schemas/a.schema.json", "src/a.ts"]))).toBe("schemas/a.schema.json");
+  });
+
+  it("emits no probe at all rather than an invented one", () => {
+    const ctx = withFiles(["bug fixes: confined to immediate impact"], ["src/a.ts", ".claude-plugin/marketplace.json"]);
+    expect(SCENARIOS.scope.probes(ctx)).toHaveLength(0);
+    // And with a real target the probe comes back.
+    expect(SCENARIOS.scope.probes(withFiles(["!infra/"], ["infra/deploy.yml"])).length).toBeGreaterThan(0);
+  });
+
+  it("refuses a required step that is not a command", () => {
+    for (const t of ["API changes", "evidence gathering before commit", "tests", "new tests", "invariant tests"]) {
+      expect(requiredStep(withFiles([t, "commit"], ["src/a.ts"], "require-before")), t).toBeNull();
+    }
+  });
+
+  it("accepts a required step that this ecosystem can really run", () => {
+    expect(requiredStep(withFiles(["pnpm type-check:full", "commit"], ["src/a.ts"], "require-before"))).toBe("pnpm type-check:full");
+    expect(requiredStep(withFiles(["npm test", "commit"], ["src/a.ts"], "require-before"))).toBe("npm test");
+    expect(requiredStep(withFiles(["make gen-go", "commit"], ["src/a.ts"], "require-before"))).toBe("make gen-go");
+    // A bare script name counts only because this package.json defines it.
+    expect(requiredStep(withFiles(["lint", "commit"], ["src/a.ts"], "require-before"))).toBe("npm run lint");
+    expect(requiredStep(withFiles(["deploy", "commit"], ["src/a.ts"], "require-before"))).toBeNull();
+  });
+
+  it("emits no require-before probe when there is no step to require", () => {
+    expect(SCENARIOS["require-before"].probes(withFiles(["API changes", "commit"], ["src/a.ts"], "require-before"))).toHaveLength(0);
+    expect(SCENARIOS["require-before"].probes(withFiles(["npm test", "commit"], ["src/a.ts"], "require-before")).length).toBeGreaterThan(0);
+  });
+});
+
+describe("probe order", () => {
+  it("puts a probe the rule actually names first, because the report quotes the first one", () => {
+    // `Package manager: uv (not pip)` was reported as "Nothing mechanical stops
+    // `npm install <pkg>`" in a Python repository. The pip probe was in the set
+    // all along; it was not the one the reader saw.
+    const ctx = { rule: rule({ category: "no-install", targets: ["pip"] }), profile: { ...bare, packageManager: "npm" } as never };
+    expect(probesFor(ctx.rule, ctx)[0]!.describe).toContain("pip");
+  });
+
+  it("leaves the order alone when the rule names nothing usable", () => {
+    const ctx = { rule: rule({ category: "no-install", targets: [] }), profile: { ...bare, packageManager: "npm" } as never };
+    expect(probesFor(ctx.rule, ctx)[0]!.describe).toContain("npm install");
   });
 });
