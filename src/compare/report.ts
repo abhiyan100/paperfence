@@ -58,6 +58,7 @@ export function renderCompareTerminal(r: CompareReport): string {
     out.push(`  good done    ${good ? (good.differs ? pc.green("yes") : pc.yellow("cannot tell")) : pc.dim("no conclusive trials")}  ${pc.dim(good?.why ?? "")}`);
     out.push("");
   }
+  if (r.budgetNote) out.push(pc.yellow(`  ${r.budgetNote}`));
   if (r.reps < 3) out.push(pc.dim(`${r.reps} repetition${r.reps === 1 ? "" : "s"} per task. This is a smoke run; a merge decision on a close call wants --reps 3 or more.`));
   out.push(pc.dim(fingerprintLine(r.fingerprint)));
   out.push("");

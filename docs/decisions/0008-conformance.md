@@ -20,7 +20,17 @@ Two things the suite had to be designed around, both found by running it:
 
 **Every case allows the tool it exercises.** In the default permission mode the runtime asks about anything not explicitly allowed, so without a baseline allow, "asked" happens to everything and carries no information.
 
-## What the first run found
+## What the first runs found
+
+### A deny entry that names only a tool does not stop anything
+
+`deny: ["Bash"]` let `pwd` run in five of eight trials and refused it in none. `deny: ["Glob"]` behaved the same way over four. Whatever the documentation says about tool-name-only rules, this form is not a control.
+
+paperfence graded it as a gate, and `harden` generated `deny: ["WebFetch"]` as part of its own output. Both are fixed: the matcher reports such an entry as present and unreliable rather than as a refusal, and `harden` emits a pattern plus the hook instead.
+
+This is the finding that justifies the whole suite. It was wrong in the dangerous direction, in code that had unit tests, for as long as the tool has existed.
+
+### The gaps are prompts, not silent allows
 
 Three cases documented as gaps are not silent allows. For `/bin/echo` against a `Bash(echo:*)` deny, for `sh -c 'echo hello'` against the same, and for `grep` against a `Read` deny, the runtime **prompts**. So does an `Edit` to a path outside an `Edit(vendor/**)` deny, despite a bare `Edit` allow.
 

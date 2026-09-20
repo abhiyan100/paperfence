@@ -264,6 +264,8 @@ export interface ScanReport {
   profile?: { line: string; testCommand: string | null; languages: string[]; files: number };
   /** Which agent runtimes this repository is configured for, and how much of each we covered. */
   runtimes?: RuntimeCoverage[];
+  /** Set when a spend limit stopped the run early. Trials that did not run are not passes. */
+  budgetNote?: string;
 }
 
 export interface RuntimeCoverage {
@@ -367,4 +369,6 @@ export interface CompareReport {
   summaries: VariantSummary[];
   reps: number;
   fingerprint: Fingerprint;
+  /** Set when a spend limit stopped the run early. Tasks that did not run are not passes. */
+  budgetNote?: string;
 }

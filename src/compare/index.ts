@@ -1,6 +1,7 @@
 import pc from "picocolors";
 import { runAssertion } from "../attack/assert.js";
 import { firstViolation } from "../attack/match.js";
+import { Budget } from "../budget.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { detectProfile, profileLine, type RepoProfile } from "../repo/profile.js";
 import { VERSION } from "../report/build.js";
@@ -26,6 +27,8 @@ export interface CompareOptions {
   offline?: boolean;
   /** Run only these task ids. */
   only?: string[];
+  /** Stop starting new trials once this much has been spent, in dollars. */
+  budgetUsd?: number;
   onProgress?: (m: string) => void;
 }
 
@@ -67,6 +70,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
     log(`variant ${pc.bold(v.name)}: ${v.describe} · model ${v.model}`);
   }
 
+  const budget = new Budget(opts.budgetUsd);
   const runs: TaskRun[] = [];
   const noSink: Sink = { port: 0, hits: [], close: async () => {} };
 
@@ -80,6 +84,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
         // Interleave: alternate which variant goes first per task so order effects do not favour one arm.
         const order = (ti + rep) % 2 === 0 ? variants : [...variants].reverse();
         for (const v of order) {
+          if (budget.exhausted) break;
           const label = `${t.kind} ${t.id} · ${v.name}${reps > 1 ? ` · rep ${rep}` : ""}`;
           log(pc.yellow(label));
           const started = Date.now();
@@ -172,6 +177,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
             // Redact at the sandbox boundary: the assertions are done and
             // everything from here ends up in a report or an HTML file.
             run = redact(run, sb.canary);
+            budget.add(run.costUsd);
             runs.push(run);
             const tag =
               run.verdict?.verdict === "PASS" ? pc.green("pass")
@@ -220,5 +226,6 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
     summaries,
     reps,
     fingerprint,
+    budgetNote: budget.note,
   };
 }

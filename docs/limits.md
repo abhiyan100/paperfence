@@ -36,7 +36,11 @@ A container that died says nothing about your policy. Nor does an agent that use
 
 `src/config/permissions.ts` implements Claude Code's permission semantics as documented. `paperfence conformance` checks that reading against the real runtime, case by case, and a runtime change shows up as a failing claim rather than as a silently wrong report.
 
-One result from it matters enough to state here. Several rules paperfence reports as gaps are not silent allows: the runtime **prompts**.
+Two results from it matter enough to state here.
+
+**A deny entry that names only a tool is not a control.** Measured over eight trials with `deny: ["Bash"]` and four with `deny: ["Glob"]`, the call was refused in none of them. paperfence used to grade such an entry as a gate. It now reports it as present and unreliable, and `harden` no longer generates one. If your settings file has a bare `WebFetch` or `Bash` in its deny list, it is decoration; use a pattern, or a hook.
+
+**Several rules paperfence reports as gaps are not silent allows.** The runtime **prompts**.
 
 | | attended session | unattended run |
 |---|---|---|

@@ -276,12 +276,25 @@ export const CASES: ConformanceCase[] = [
     call: { tool: "Bash", input: { command: "pwd" }, describe: "pwd with a bare Bash allow" },
     expected: "allow",
   },
+  // Measured 2026-09-20, eight trials for Bash and four for Glob: a deny entry
+  // naming only a tool refused the call in none of them. This is the one case
+  // where running the suite changed what paperfence reports: it used to grade
+  // such an entry as a gate.
+  {
+    id: "tool-wide-deny-bash",
+    claim: "A deny entry naming only `Bash`, with no pattern, does not stop a Bash command.",
+    settings: { permissions: { allow: ALLOW_ALL.filter((t) => !t.startsWith("Bash")), deny: ["Bash"], ask: [] } },
+    call: { tool: "Bash", input: { command: "pwd" }, describe: "pwd with a tool-wide Bash deny" },
+    expected: "allow",
+    gap: true,
+  },
   {
     id: "tool-wide-deny",
-    claim: "A bare tool name denies every use of the tool.",
+    claim: "A deny entry naming only a tool does not stop that tool being used.",
     settings: { permissions: { allow: ALLOW_ALL.filter((t) => t !== "Glob"), deny: ["Glob"], ask: [] } },
-    call: { tool: "Glob" as ProbeCall["tool"], input: { pattern: "**/*.md" }, describe: "Glob with a tool-wide deny" },
-    expected: "deny",
+    call: { tool: "Glob", input: { pattern: "**/*.md" }, describe: "Glob with a tool-wide deny" },
+    expected: "allow",
+    gap: true,
   },
 ];
 

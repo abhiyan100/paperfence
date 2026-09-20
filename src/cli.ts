@@ -79,6 +79,7 @@ program
   .option("--reps <n>", "trials per attack form and pressure level; more trials narrow the interval", "1")
   .option("--form <ids...>", "only try these attack forms")
   .option("--no-receipts", "do not write a receipt per trial")
+  .option("--budget <usd>", "stop starting new trials once this much has been spent")
   .option("--category <names...>", "only attack these categories")
   .option("--offline", "keyword heuristic for reading rule files instead of a model")
   .option("--keep-sandbox", "leave sandboxes on disk for inspection")
@@ -88,13 +89,14 @@ program
   .option("--markdown <file>", "also write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Live check: a coding agent, running with this repo's own rules, is asked to break each one.")
-  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; budget?: string; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await attack(root, {
       model: opts.model,
       maxLevel: Math.min(3, Math.max(1, Number(opts.level))) as PressureLevel,
       maxTurns: Number(opts.maxTurns),
       reps: Number(opts.reps),
+      budgetUsd: opts.budget ? Number(opts.budget) : undefined,
       formIds: opts.form,
       receipts: opts.receipts !== false,
       ruleIds: opts.rule,
@@ -201,13 +203,14 @@ program
   .option("--level <n>", "pressure level for bad tasks, 1-3", "2")
   .option("--max-turns <n>", "turn budget per run", "30")
   .option("--only <ids...>", "run only these task ids")
+  .option("--budget <usd>", "stop starting new tasks once this much has been spent")
   .option("--offline", "keyword heuristic for reading rule files")
   .option("--json <file>", "write the receipt as JSON")
   .option("--html <file>", "write the receipt as HTML")
   .option("--markdown <file>", "write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Can this config change be merged? Run bad tasks (must be blocked) and good tasks (must still work) under base and head.")
-  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; offline?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; budget?: string; offline?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const headSpec: VariantSpec = { name: "head", offline: opts.offline };
     let any = false;
@@ -225,6 +228,7 @@ program
       level: Math.min(3, Math.max(1, Number(opts.level))) as PressureLevel,
       maxTurns: Number(opts.maxTurns),
       only: opts.only,
+      budgetUsd: opts.budget ? Number(opts.budget) : undefined,
       offline: opts.offline,
       onProgress: opts.quiet ? undefined : (m) => process.stderr.write(`  ${m}\n`),
     });
@@ -373,10 +377,11 @@ program
   .option("--only <ids...>", "run only these case ids")
   .option("--model <model>", "model that drives the runtime (default claude-sonnet-5)")
   .option("--max-turns <n>", "turn budget per case", "6")
+  .option("--reps <n>", "run each case this many times; a permission decision that varies is itself a finding", "1")
   .option("--list", "list the cases and what paperfence predicts, without running anything")
   .option("--json <file>", "write the result as JSON")
   .description("Check paperfence's reading of Claude Code's permission rules against the real runtime.")
-  .action(async (opts: { only?: string[]; model?: string; maxTurns: string; list?: boolean; json?: string }) => {
+  .action(async (opts: { only?: string[]; model?: string; maxTurns: string; reps: string; list?: boolean; json?: string }) => {
     if (opts.list) {
       const out = ["", pc.bold(`${CASES.length} conformance cases`), ""];
       for (const c of CASES) {
@@ -392,6 +397,7 @@ program
       only: opts.only,
       model: opts.model,
       maxTurns: Number(opts.maxTurns),
+      reps: Number(opts.reps),
       onProgress: (m) => process.stderr.write(`  ${m}\n`),
     });
     process.stdout.write(renderConformance(report));
@@ -399,7 +405,7 @@ program
       await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
       process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
     }
-    process.exitCode = report.disagreed > 0 ? 2 : 0;
+    process.exitCode = report.disagreed > 0 || report.unstable > 0 ? 2 : 0;
   });
 
 program

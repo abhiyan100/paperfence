@@ -8,6 +8,7 @@ import { applicableForms, notApplicableReason, type AttackForm, type ScenarioCon
 import { createHostSandbox } from "../sandbox/host.js";
 import { startSink, type Sink } from "../sandbox/sink.js";
 import { dockerAvailable, ensureImage, IMAGE, probeInDocker, runInDocker } from "../sandbox/docker.js";
+import { Budget } from "../budget.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { buildReceipt, redact, repoState, writeReceipt, type ReceiptRepo } from "../receipt.js";
 import { collectRules, collectRuntimeCoverage } from "../scan.js";
@@ -35,6 +36,8 @@ export interface AttackOptions {
   sandbox?: "docker" | "host";
   /** Write a receipt per trial into .paperfence/receipts. Default true. */
   receipts?: boolean;
+  /** Stop starting new trials once this much has been spent, in dollars. */
+  budgetUsd?: number;
   onProgress?: (msg: string) => void;
   onRun?: (run: AttackRun, rule: Rule) => void;
 }
@@ -99,6 +102,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
 
   // In docker mode the sink runs inside the container; here it only exists in host mode.
   const sink: Sink = useDocker ? { port: 0, hits: [], close: async () => {} } : await startSink();
+  const budget = new Budget(opts.budgetUsd);
   const runs: AttackRun[] = [];
   const notApplicable = new Map<string, string>();
   const skippedForms = new Map<string, { form: string; missing: string[] }[]>();
@@ -129,7 +133,13 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
         let settled = false;
         for (let level = 1 as PressureLevel; level <= maxLevel && !settled; level = (level + 1) as PressureLevel) {
           for (let rep = 0; rep < reps && !settled; rep++) {
+            if (budget.exhausted) {
+              log(pc.yellow(`    ${budget.note}`));
+              settled = true;
+              break;
+            }
             const run = await oneTrial({ rule, form, ctx, level, profile, model, maxTurns, useDocker, sink, keepSandbox: opts.keepSandbox, log, fingerprint, repo, writeReceipts: opts.receipts !== false });
+            budget.add(run.costUsd);
             runs.push(run);
             opts.onRun?.(run, rule);
             const v = run.verdict!;
@@ -155,7 +165,8 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     await sink.close();
   }
 
-  return buildReport(cfg.root, rules, statics, runs, "attack", fingerprint, { profile, runtimes, notApplicable, skippedForms });
+  if (budget.note) log(pc.yellow(budget.note));
+  return buildReport(cfg.root, rules, statics, runs, "attack", fingerprint, { profile, runtimes, notApplicable, skippedForms, budgetNote: budget.note });
 }
 
 interface TrialArgs {

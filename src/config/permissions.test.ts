@@ -147,3 +147,35 @@ describe("evaluatePermissions", () => {
     expect(evaluatePermissions({ allow: ["Read"] }, bash("ls")).decision).toBe("none");
   });
 });
+
+/**
+ * Measured 2026-09-20 with `paperfence conformance`: eight trials with
+ * `deny: ["Bash"]` and four with `deny: ["Glob"]` refused the call in none of
+ * them. The entry is in the settings file and does not stop anything.
+ */
+describe("a deny entry that names only a tool", () => {
+  it("is not graded as a refusal", () => {
+    const d = evaluatePermissions({ deny: ["Bash"] }, bash("pwd"));
+    expect(d.decision).not.toBe("deny");
+    expect(d.reason).toContain("did not stop the call");
+  });
+
+  it("is still reported, because the entry is evidence of intent", () => {
+    expect(evaluatePermissions({ deny: ["Bash"] }, bash("pwd")).reason).toContain("Bash");
+    expect(inertRules({ deny: ["Bash"] })[0]!.raw).toBe("Bash");
+  });
+
+  it("does not change a patterned rule, which does refuse", () => {
+    expect(evaluatePermissions({ deny: ["Bash(pwd:*)"] }, bash("pwd")).decision).toBe("deny");
+  });
+
+  it("does not change an ask entry that names only a tool", () => {
+    // Only deny was measured. An ask entry is already reported as needing a
+    // human, which is the weaker claim, so nothing here overstates it.
+    expect(evaluatePermissions({ ask: ["Bash"] }, bash("pwd")).decision).toBe("ask");
+  });
+
+  it("lets a later patterned deny still match", () => {
+    expect(evaluatePermissions({ deny: ["Glob", "Bash(pwd:*)"] }, bash("pwd")).decision).toBe("deny");
+  });
+});

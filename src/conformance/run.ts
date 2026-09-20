@@ -35,6 +35,8 @@ export interface CaseResult {
   case: ConformanceCase;
   predicted: Expected;
   observed: Observed;
+  /** Every outcome seen across repetitions. More than one distinct value means the case is not settled. */
+  observedAll?: Observed[];
   agrees: boolean;
   /**
    * True when we predicted allow and the runtime prompted. The two agree in an
@@ -42,6 +44,8 @@ export interface CaseResult {
    * attended one. paperfence's matcher answers the unattended question.
    */
   promptedButUnattendedAgrees: boolean;
+  /** True when repetitions of the same case came out differently. */
+  unstable?: boolean;
   /** What the runtime actually did, for the report. */
   detail: string;
   costUsd?: number;
@@ -49,12 +53,15 @@ export interface CaseResult {
 
 export interface ConformanceReport {
   at: string;
+  reps: number;
   fingerprint: Fingerprint;
   results: CaseResult[];
   agreed: number;
   disagreed: number;
   /** Cases where the runtime prompts and we predict allow: the same outcome unattended. */
   prompted: number;
+  /** Cases whose repetitions disagreed with each other. */
+  unstable: number;
   inconclusive: number;
 }
 
@@ -62,6 +69,16 @@ export interface ConformanceOptions {
   only?: string[];
   model?: string;
   maxTurns?: number;
+  /**
+   * Times to run each case.
+   *
+   * A permission decision should be deterministic, so a case that comes out
+   * differently across repetitions is itself a finding: either the runtime is
+   * not deterministic here, or the agent's route to the call varies in a way
+   * that changes the answer. One repetition cannot tell those apart from a
+   * settled result.
+   */
+  reps?: number;
   onProgress?: (m: string) => void;
 }
 
@@ -139,52 +156,74 @@ export async function runConformance(opts: ConformanceOptions = {}): Promise<Con
   await ensureImage(log);
 
   const cases = opts.only?.length ? CASES.filter((c) => opts.only!.includes(c.id)) : CASES;
+  const reps = Math.max(1, opts.reps ?? 1);
   const results: CaseResult[] = [];
 
   for (const c of cases) {
-    const dir = await materialize(c);
-    try {
-      const predicted = predict(c, dir);
-      const profile = await detectProfile(dir);
-      // A throwaway rule: the runner logs against one, and nothing here grades it.
-      const rule: Rule = { id: c.id, text: c.claim, category: "other", targets: [], source: { kind: "prose", file: "conformance" } };
-      const sb = await createHostSandbox(dir, { rules: [], profile });
+    log(`${pc.dim("case")} ${c.id}: ${c.claim}`);
+    const observedAll: Observed[] = [];
+    let detail = "";
+    let cost = 0;
+    let predicted: Expected = "allow";
+
+    for (let rep = 0; rep < reps; rep++) {
+      const dir = await materialize(c);
       try {
-        log(`${pc.dim("case")} ${c.id}: ${c.claim}`);
-        const run = await runInDocker(rule, 1, objectiveFor(c), sb, { model, maxTurns, timeoutMs: 5 * 60_000 });
-        const { observed, detail } = classify(run, c);
-        const agrees = observed === predicted;
-        // Predicted allow, runtime prompted: same answer unattended, different
-        // answer with a human present. Not a disagreement about enforcement.
-        const promptedButUnattendedAgrees = !agrees && predicted === "allow" && observed === "ask";
-        results.push({ case: c, predicted, observed, agrees, promptedButUnattendedAgrees, detail, costUsd: run.costUsd });
-        const tag =
-          observed === "not-attempted" || observed === "error"
-            ? pc.yellow(observed)
-            : agrees
-              ? pc.green("agrees")
-              : promptedButUnattendedAgrees
-                ? pc.cyan("prompts")
-                : pc.red("DISAGREES");
-        log(`  ${tag} predicted ${predicted}, observed ${observed}${agrees || promptedButUnattendedAgrees ? "" : pc.dim(` · ${detail}`)}`);
+        predicted = predict(c, dir);
+        const profile = await detectProfile(dir);
+        // A throwaway rule: the runner logs against one, and nothing here grades it.
+        const rule: Rule = { id: c.id, text: c.claim, category: "other", targets: [], source: { kind: "prose", file: "conformance" } };
+        const sb = await createHostSandbox(dir, { rules: [], profile });
+        try {
+          const run = await runInDocker(rule, 1, objectiveFor(c), sb, { model, maxTurns, timeoutMs: 5 * 60_000 });
+          const o = classify(run, c);
+          observedAll.push(o.observed);
+          cost += run.costUsd ?? 0;
+          // Keep the detail of the first outcome that is not simply agreement.
+          if (!detail || o.observed !== predicted) detail = o.detail;
+        } finally {
+          await sb.destroy();
+        }
       } finally {
-        await sb.destroy();
+        await fs.rm(dir, { recursive: true, force: true });
       }
-    } finally {
-      await fs.rm(dir, { recursive: true, force: true });
     }
+
+    // A permission decision should not vary. When it does, say so rather than
+    // reporting whichever run happened to be last.
+    const distinct = [...new Set(observedAll)];
+    const observed: Observed = distinct.length === 1 ? distinct[0]! : pickWorst(distinct, predicted);
+    const unstable = distinct.length > 1;
+    const agrees = !unstable && observed === predicted;
+    const promptedButUnattendedAgrees = !unstable && !agrees && predicted === "allow" && observed === "ask";
+    if (unstable) detail = `not deterministic across ${reps} runs: ${observedAll.join(", ")}. ${detail}`;
+    results.push({ case: c, predicted, observed, observedAll, agrees, promptedButUnattendedAgrees, unstable, detail, costUsd: cost });
+
+    const tag =
+      unstable
+        ? pc.red("UNSTABLE")
+        : observed === "not-attempted" || observed === "error"
+          ? pc.yellow(observed)
+          : agrees
+            ? pc.green("agrees")
+            : promptedButUnattendedAgrees
+              ? pc.cyan("prompts")
+              : pc.red("DISAGREES");
+    log(`  ${tag} predicted ${predicted}, observed ${unstable ? observedAll.join("/") : observed}${agrees || promptedButUnattendedAgrees ? "" : pc.dim(` · ${detail}`)}`);
   }
 
   const fingerprint = await collectFingerprint({ model, sandbox: "docker", image: IMAGE, approvalMode: "auto-approve" });
-  const conclusive = results.filter((r) => r.observed !== "not-attempted" && r.observed !== "error");
+  const conclusive = results.filter((r) => !r.unstable && r.observed !== "not-attempted" && r.observed !== "error");
   return {
     at: new Date().toISOString(),
+    reps,
     fingerprint,
     results,
     agreed: conclusive.filter((r) => r.agrees).length,
     disagreed: conclusive.filter((r) => !r.agrees && !r.promptedButUnattendedAgrees).length,
     prompted: conclusive.filter((r) => r.promptedButUnattendedAgrees).length,
-    inconclusive: results.length - conclusive.length,
+    unstable: results.filter((r) => r.unstable).length,
+    inconclusive: results.filter((r) => !r.unstable && (r.observed === "not-attempted" || r.observed === "error")).length,
   };
 }
 
@@ -212,16 +251,25 @@ function classify(run: Awaited<ReturnType<typeof runInDocker>>, c: ConformanceCa
         return { observed: "deny", detail: `the Read that Edit requires was refused first: ${(blockedRead.deniedReason ?? "").split("\n")[0]?.slice(0, 140)}` };
       }
     }
-    // A tool-wide deny does not refuse the call: it removes the tool from the
-    // agent's toolset, which is stronger. The agent reports it as unavailable.
-    const gone = new RegExp(`(don't|do not|doesn't|does not) have (a |an |the )?\\*?\\*?${c.call.tool}|${c.call.tool}\\*?\\*? tool (is )?(not available|unavailable|isn't available)|no ${c.call.tool} tool`, "i");
-    if (gone.test(run.finalText)) {
-      return { observed: "deny", detail: `the ${c.call.tool} tool was not offered to the agent at all, which is stronger than refusing the call` };
-    }
+    // Deliberately no heuristic on the agent's own words here. An agent saying
+    // "I don't have that tool" is a report of its belief, and this project's
+    // whole argument is that text is not enforcement. A run where the call was
+    // never made is inconclusive, and repeating the case is how a real
+    // absence separates itself from a model's assumption.
     return { observed: "not-attempted", detail: `the agent never made the call; it said: ${run.finalText.slice(0, 200)}` };
   }
   if (asked) return { observed: "ask", detail: "the runtime asked for approval before running it" };
   return { observed: "allow", detail: "the call ran with no refusal and no approval request" };
+}
+
+/**
+ * When a case is not deterministic, report the outcome that most undermines
+ * our prediction. A rule that blocks three times out of four is not a gate.
+ */
+function pickWorst(seen: Observed[], predicted: Expected): Observed {
+  const order: Observed[] = ["allow", "ask", "deny", "not-attempted", "error"];
+  if (predicted === "deny") return seen.sort((a, b) => order.indexOf(a) - order.indexOf(b))[0]!;
+  return seen.sort((a, b) => order.indexOf(b) - order.indexOf(a))[0]!;
 }
 
 export function renderConformance(r: ConformanceReport): string {
@@ -244,7 +292,20 @@ export function renderConformance(r: ConformanceReport): string {
     }
   }
 
-  const unknown = r.results.filter((x) => x.observed === "not-attempted" || x.observed === "error");
+  const unstable = r.results.filter((x) => x.unstable);
+  if (unstable.length) {
+    out.push(pc.bold(pc.red("Not deterministic")));
+    out.push(pc.dim("  The same case came out differently across repetitions. A rule that refuses three"));
+    out.push(pc.dim("  times out of four is not a gate, and one run cannot tell you which you have."));
+    out.push("");
+    for (const u of unstable) {
+      out.push(`  ${pc.red("·")} ${u.case.id}: ${u.case.claim}`);
+      out.push(`    ${pc.dim(`we predict ${u.predicted}; observed ${u.observedAll?.join(", ")}`)}`);
+    }
+    out.push("");
+  }
+
+  const unknown = r.results.filter((x) => !x.unstable && (x.observed === "not-attempted" || x.observed === "error"));
   if (unknown.length) {
     out.push(pc.bold("Not settled"));
     for (const u of unknown) out.push(`  ${pc.yellow(u.observed)} ${u.case.id}: ${pc.dim(u.detail.slice(0, 120))}`);
@@ -275,10 +336,12 @@ export function renderConformance(r: ConformanceReport): string {
   out.push(`  ${pc.green("agree")}        ${String(r.agreed).padStart(3)}`);
   out.push(`  ${r.disagreed ? pc.red("disagree") : pc.dim("disagree")}     ${String(r.disagreed).padStart(3)}`);
   out.push(`  ${pc.cyan("prompts")}      ${String(r.prompted).padStart(3)}   ${pc.dim("we say allow, the runtime asks: the same answer unattended")}`);
+  out.push(`  ${r.unstable ? pc.red("unstable") : pc.dim("unstable")}     ${String(r.unstable).padStart(3)}   ${pc.dim("repetitions of the same case disagreed")}`);
   out.push(`  ${pc.dim("not settled")}  ${String(r.inconclusive).padStart(3)}   ${pc.dim("the agent never made the call, or the trial failed")}`);
   out.push(`  ${pc.dim("cost")}         ${pc.dim("$" + cost.toFixed(2))}`);
   out.push("");
-  if (r.disagreed === 0 && r.inconclusive === 0) {
+  if (r.reps < 3) out.push(pc.dim(`  ${r.reps} repetition${r.reps === 1 ? "" : "s"} per case. A permission decision should not vary, so --reps 3 is what proves it does not.`));
+  if (r.disagreed === 0 && r.inconclusive === 0 && r.unstable === 0) {
     out.push(pc.dim("  Our reading matches the runtime on every case. That is a statement about these cases, not about the whole permission system."));
   }
   out.push("");

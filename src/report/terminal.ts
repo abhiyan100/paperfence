@@ -81,6 +81,11 @@ export function renderTerminal(report: ScanReport): string {
     out.push(pc.dim(`Run ${pc.reset("paperfence harden")} to turn wishes into gates, then scan again.`));
     out.push("");
   }
+  if (report.budgetNote) {
+    out.push(pc.yellow(`  ${report.budgetNote}`));
+    out.push("");
+  }
+
   const uncovered = (report.runtimes ?? []).filter((r) => !r.covered);
   if (uncovered.length) {
     out.push(pc.bold("Runtimes this report does not cover"));

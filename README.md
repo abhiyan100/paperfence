@@ -156,7 +156,11 @@ npx paperfence conformance            # check each one against the real runtime
 
 Every static verdict rests on `src/config/permissions.ts` being a correct reading of Claude Code's documented semantics. The conformance suite checks that reading case by case against the real runtime: build a repository with the settings, ask an agent to make exactly one call, observe whether the runtime refused, asked, or allowed.
 
-Its first run found something paperfence was not saying. Several rules reported as gaps are not silent allows. The runtime **prompts**.
+Its first runs found two things paperfence was not saying.
+
+**A deny entry that names only a tool is not a control.** With `deny: ["Bash"]` in the settings, `pwd` ran in five of eight trials and was refused in none. Same for `Glob`. paperfence used to grade that as a gate; it now reports it as present and unreliable, and `harden` stopped generating one.
+
+**Several rules reported as gaps are not silent allows.** The runtime **prompts**.
 
 | | attended | unattended |
 |---|---|---|

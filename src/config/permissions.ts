@@ -258,6 +258,25 @@ export interface PermissionDecision {
 }
 
 /** deny wins, then ask, then allow. */
+/**
+ * A deny entry that names only a tool, with no pattern.
+ *
+ * Measured 2026-09-20 with `paperfence conformance`: a settings file with
+ * `deny: ["Bash"]` let `pwd` run in five of eight trials and refused it in
+ * none; `deny: ["Glob"]` behaved the same way. Whatever the documentation
+ * says, this form is not a control, and grading it as one would tell someone
+ * they were fenced when they were not.
+ *
+ * Reported as present and unreliable rather than dropped, because the entry is
+ * still evidence of intent and the reader should see it.
+ */
+export function isBareToolNameDeny(raw: string): boolean {
+  return parsePermissionRule(raw).spec === undefined;
+}
+
+export const BARE_TOOL_DENY_WHY =
+  "a deny entry that names only a tool, with no pattern, did not stop the call in any trial we ran (see `paperfence conformance`). Use a pattern, or a PreToolUse hook.";
+
 export function evaluatePermissions(
   lists: { allow?: string[]; deny?: string[]; ask?: string[] },
   call: ToolCall,
@@ -265,7 +284,9 @@ export function evaluatePermissions(
 ): PermissionDecision {
   for (const raw of lists.deny ?? []) {
     const r = ruleMatchesCall(parsePermissionRule(raw), call, root);
-    if (r) return { decision: "deny", reason: r };
+    if (!r) continue;
+    if (isBareToolNameDeny(raw)) return { decision: "none", reason: `${raw} matches, but ${BARE_TOOL_DENY_WHY}` };
+    return { decision: "deny", reason: r };
   }
   for (const raw of lists.ask ?? []) {
     const r = ruleMatchesCall(parsePermissionRule(raw), call, root);
@@ -281,6 +302,9 @@ export function evaluatePermissions(
 /** Rules that look like protection but Claude Code never consults. Surfaced in reports. */
 export function inertRules(lists: { deny?: string[]; ask?: string[] }): { raw: string; why: string }[] {
   const out: { raw: string; why: string }[] = [];
+  for (const raw of lists.deny ?? []) {
+    if (isBareToolNameDeny(raw)) out.push({ raw, why: BARE_TOOL_DENY_WHY });
+  }
   for (const raw of [...(lists.deny ?? []), ...(lists.ask ?? [])]) {
     const r = parsePermissionRule(raw);
     if (r.spec !== undefined && IGNORED_PATH_RULE_TOOLS.has(r.tool)) {

@@ -87,7 +87,9 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
         break;
       case "no-exfil":
         policy.blockNetwork = true;
-        deny.add("WebFetch");
+        // Not a bare `WebFetch`: measured, a deny entry naming only a tool does
+        // not stop the call. The generated hook refuses WebFetch instead.
+        deny.add("WebFetch(domain:*)");
         deny.add("Bash(curl *)");
         deny.add("Bash(wget *)");
         deny.add("Bash(*/curl *)");
@@ -127,6 +129,7 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
     }
   }
 
+  if (policy.blockNetwork) notes.push("WebFetch is refused by the hook. A deny entry naming only a tool does not stop the call, so one is not generated.");
   if (policy.secretFiles.length) notes.push("Read() deny entries cover the Read tool and cat/head/tail/sed; the hook also blocks grep, source, redirects, and node/python one-liners that name the file.");
   if (policy.askFirstCommands.length) notes.push("Ask-first commands are blocked outright in unattended runs. When a human is present, move them to permissions.ask instead.");
   for (const r of policy.requireBefore) notes.push(`"${r.command}" must have run, successfully and in full, before a ${r.action}. Credit lasts 30 minutes and the agent cannot write the record.`);

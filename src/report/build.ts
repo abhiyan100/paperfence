@@ -19,6 +19,8 @@ export interface BuildExtras {
   notApplicable?: Map<string, string>;
   /** ruleId -> forms skipped because the repository lacks their prerequisites. */
   skippedForms?: Map<string, { form: string; missing: string[] }[]>;
+  /** Set when a spend limit cut the run short, so a partial run is not read as a clean one. */
+  budgetNote?: string;
 }
 
 /**
@@ -193,6 +195,7 @@ export function buildReport(
       ? { line: profileLine(extras.profile), testCommand: extras.profile.testCommand, languages: extras.profile.languages, files: extras.profile.files.length }
       : undefined,
     runtimes: extras.runtimes,
+    budgetNote: extras.budgetNote,
   };
 }
 
