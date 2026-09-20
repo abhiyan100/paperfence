@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { SettingsJson } from "../config/discover.js";
@@ -21,6 +22,8 @@ export interface ApplyResult {
 }
 
 const HOOK_CMD = "node .claude/hooks/paperfence-guard.cjs";
+
+const sha256 = (s: string): string => createHash("sha256").update(s).digest("hex");
 
 export async function applyHardening(root: string, plan: HardenPlan, opts: { dryRun?: boolean } = {}): Promise<ApplyResult> {
   const hooksDir = path.join(root, ".claude", "hooks");
@@ -84,7 +87,23 @@ export async function applyHardening(root: string, plan: HardenPlan, opts: { dry
     await fs.mkdir(hooksDir, { recursive: true });
     await fs.writeFile(path.join(hooksDir, "paperfence-guard.cjs"), guardBody, { mode: 0o755 });
     wrote.push(".claude/hooks/paperfence-guard.cjs");
-    await fs.writeFile(path.join(hooksDir, "policy.json"), policyBody);
+    // policy.json is generated wholesale, so a team that hand-edited it lost
+    // the edit on the next harden with nothing said. A copy is kept whenever
+    // the file on disk is not one paperfence itself last wrote. The stamp is a
+    // sibling file rather than a field, so the policy the guard reads keeps
+    // exactly the shape it had.
+    const policyPath = path.join(hooksDir, "policy.json");
+    const existing = await fs.readFile(policyPath, "utf8").catch(() => null);
+    if (existing !== null && existing !== policyBody) {
+      const stamp = await fs.readFile(path.join(hooksDir, ".policy.generated"), "utf8").catch(() => "");
+      const ours = stamp.trim() === sha256(existing);
+      if (!ours) {
+        await fs.writeFile(policyPath + ".bak", existing);
+        wrote.push(".claude/hooks/policy.json.bak");
+      }
+    }
+    await fs.writeFile(policyPath, policyBody);
+    await fs.writeFile(path.join(hooksDir, ".policy.generated"), sha256(policyBody) + "\n");
     wrote.push(".claude/hooks/policy.json");
     await fs.writeFile(settingsPath, settingsBody);
     wrote.push(".claude/settings.json");

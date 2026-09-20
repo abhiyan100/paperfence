@@ -25,6 +25,20 @@ You will get three kinds of line:
 | `WISH` | nothing would. The rule depends entirely on the agent choosing to obey |
 | `?` | paperfence could not map this rule to a check, and says so rather than guessing |
 
+### If it read a rule wrongly
+
+paperfence reads your rules with a model, and it files roughly one judgement
+rule in five under a category that has a probe behind it. When that happens:
+
+```bash
+npx paperfence scan . --write-categories   # writes .paperfence/categories.json
+```
+
+Edit the category next to the rule and run `scan` again. Setting a rule to
+`other` means "this is judgement, do not probe it", which is the correction most
+often needed. The file can refile a rule; it cannot invent one, and it cannot
+claim a control exists.
+
 **A `WISH` is not a bug in your repository.** Most rules in most repositories are
 wishes, and plenty of them should be: "prefer composition over inheritance" is
 not a thing a hook can enforce. The number worth looking at is how many of the
@@ -58,6 +72,8 @@ scripts those settings name, your `package.json` / `pyproject.toml` /
 
 Writes, only when you ask:
 
+- `.paperfence/categories.json` — only `scan --write-categories`. Your
+  corrections to how rules were read.
 - `.paperfence/receipts/` — one JSON file per live trial. `attack` writes these
   unless you pass `--no-receipts`. A `.gitignore` is written next to them so
   they do not end up in your history by accident.

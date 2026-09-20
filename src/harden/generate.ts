@@ -27,7 +27,22 @@ export interface HardenPlan {
  * rule about committing, and compiling it as one both blocks work that is
  * allowed and lets through the thing that is not.
  */
-export type GatedAction = "commit" | "push";
+export type GatedAction = "commit" | "push" | "pull-request";
+
+/**
+ * Which action a "run X before Y" rule gates.
+ *
+ * Only commit and push existed, so "run `pnpm lint` before opening a pull
+ * request" was compiled as a push: it blocked ordinary pushes, which is work
+ * the rule allows, and let `gh pr create` through, which is the thing the rule
+ * is about.
+ */
+export function gatedAction(target: string | undefined): GatedAction {
+  const t = (target ?? "").toLowerCase().replace(/[`_]/g, " ").trim();
+  if (/\b(pr|pull request|pull-request|merge request|review)\b/.test(t)) return "pull-request";
+  if (/\bpush\b/.test(t)) return "push";
+  return "commit";
+}
 
 export interface RequireBefore {
   /** The command that must have run. */
@@ -117,7 +132,7 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
         break;
       case "require-before": {
         const command = r.targets[0] ?? "npm test";
-        const action: GatedAction = r.targets[1] === "push" ? "push" : "commit";
+        const action: GatedAction = gatedAction(r.targets[1]);
         if (!policy.requireBefore.some((x) => x.command === command && x.action === action)) policy.requireBefore.push({ command, action });
         break;
       }

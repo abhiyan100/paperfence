@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { OVERRIDES_PATH, renderOverridesTemplate } from "./rules/overrides.js";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import pc from "picocolors";
@@ -50,9 +51,10 @@ program
   .option("--json <file>", "also write the report as JSON")
   .option("--html <file>", "also write a self-contained HTML report")
   .option("--markdown <file>", "also write a Markdown summary for a pull request comment or CI job summary")
+  .option("--write-categories", `write ${OVERRIDES_PATH} so a rule paperfence read wrongly can be corrected`)
   .option("-q, --quiet", "no progress output")
   .description("Static check: would anything mechanical stop the obvious violation of each rule?")
-  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; unsafeRunHooks?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; unsafeRunHooks?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean; writeCategories?: boolean }) => {
     const root = path.resolve(repo);
     const report = await scan(root, {
       offline: opts.offline,
@@ -62,6 +64,18 @@ program
       onProgress: opts.quiet ? undefined : (m) => process.stderr.write(pc.dim(`  ${m}\n`)),
     });
     process.stdout.write(renderTerminal(report));
+    const mapped = report.verdicts.filter((v) => v.rule.category !== "other");
+    if (opts.writeCategories) {
+      const file = path.join(root, OVERRIDES_PATH);
+      await fs.mkdir(path.dirname(file), { recursive: true });
+      await fs.writeFile(file, renderOverridesTemplate(mapped.map((v) => v.rule)));
+      process.stderr.write(pc.dim(`wrote ${OVERRIDES_PATH} — change a category there and run scan again\n`));
+    } else if (mapped.length) {
+      // Categories are a model's reading of prose and it gets roughly one
+      // judgement rule in five wrong. Disagreeing should be cheaper than
+      // arguing with the output.
+      process.stderr.write(pc.dim(`if a rule above is filed under the wrong category, \`paperfence scan --write-categories\` writes a file you can correct\n`));
+    }
     if (opts.json) {
       await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
       process.stderr.write(pc.dim(`wrote ${opts.json}\n`));

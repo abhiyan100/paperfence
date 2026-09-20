@@ -4,6 +4,7 @@ import { buildReport } from "./report/build.js";
 import { extractRulesFromProse, fellBack } from "./rules/extract.js";
 import { rulesFromSettings } from "./rules/from-settings.js";
 import { normalizeRule } from "./rules/normalize.js";
+import { applyOverrides, loadOverrides, OVERRIDES_PATH } from "./rules/overrides.js";
 import type { Rule, ScanReport } from "./types.js";
 import { dockerAvailable, ensureImage, IMAGE, probeInDocker } from "./sandbox/docker.js";
 import { createHostSandbox } from "./sandbox/host.js";
@@ -34,7 +35,9 @@ export async function collectRules(root: string, opts: ScanOptions = {}): Promis
   // had asked for the model.
   if (prose.length || cfg.proseFiles.length) opts.onProgress?.(extractionLine(prose, opts.offline === true));
   for (const f of fellBack) opts.onProgress?.(`  ${f.file}: the model could not be used (${f.why}), so these rules are the keyword reader's`);
-  return { cfg, rules: [...prose, ...perms].map(normalizeRule) };
+  const { rules: corrected, applied } = applyOverrides([...prose, ...perms].map(normalizeRule), await loadOverrides(cfg.root));
+  for (const a of applied) opts.onProgress?.(`  ${OVERRIDES_PATH}: ${a.ruleId} read as ${a.from}, corrected to ${a.to}`);
+  return { cfg, rules: corrected };
 }
 
 /**

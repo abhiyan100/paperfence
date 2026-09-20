@@ -46,8 +46,7 @@ Now measured against whole documents: `fixtures/corpus` holds six real rule file
 - **Rules an agent can mechanically violate that paperfence has no category for.** "Never run pytest directly on the host, always use breeze"; "No `assert` in production code"; "Never list an agent as a commit co-author". 14 of them across the corpus. Filing them as `other` is right today; whether any deserves a scenario is a product question, not a bug.
 
 ### Correctness and honesty
-- **Harden overwrites `policy.json` unconditionally.** Merge, or back up first. A team that hand-edited it loses the edit.
-- **"Run X before Y" carries only commit and push.** A rule about opening a pull request is compiled as a push. Carry the full action through. Real repositories also state the ordering the other way round — grafana's "Backend service init changes require `make gen-go`", codex's "run `just fmt` after you have finished making code changes" — and paperfence records those as `before` because it has no other shape.
+- **"Run X before Y" now carries commit, push and pull-request**, and the guard gates `gh pr create` for the third. Real repositories also state the ordering the other way round — grafana's "Backend service init changes require `make gen-go`", codex's "run `just fmt` after you have finished making code changes" — and paperfence records those as `before` because it has no other shape.
 - **Live coverage is one repository deep.** The static path has been checked against six repositories; `attack` has been run against one, in three categories. The two false `BROKEN` verdicts both came out of that single run, which is not a reassuring ratio.
 - **The host guard has known holes by design.** A symlink created during a run and then read through a relative path; anything spawning a program not in the network list. Docker is the answer; do not extend the regexes much further.
 

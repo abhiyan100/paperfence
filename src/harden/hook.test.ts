@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { planHardening } from "./generate.js";
+import { planHardening, gatedAction } from "./generate.js";
 import { applyHardening } from "./apply.js";
 import type { Rule } from "../types.js";
 
@@ -460,5 +460,75 @@ describe("blind review: ways past the generated guard", () => {
     const help = await firePost("Bash", { command: "npm test --help" });
     expect(help.code).toBe(0);
     expect((await fire("Bash", { command: 'git commit -m x' })).code).toBe(2);
+  });
+});
+
+describe("harden does not silently discard a hand-edited policy", () => {
+  const mk = async () => {
+    const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), "pf-harden-")));
+    await fs.mkdir(path.join(root, ".claude", "hooks"), { recursive: true });
+    return root;
+  };
+  const rules = [
+    { id: "a", text: "Never force-push `main`.", category: "no-force-push" as const, targets: ["main"], source: { kind: "prose" as const, file: "CLAUDE.md" } },
+  ];
+
+  it("keeps a copy when the file on disk is not one it wrote", async () => {
+    const root = await mk();
+    const p = path.join(root, ".claude", "hooks", "policy.json");
+    await fs.writeFile(p, '{"handEdited":true}\n');
+    const r = await applyHardening(root, planHardening(rules));
+    expect(r.wrote).toContain(".claude/hooks/policy.json.bak");
+    expect(await fs.readFile(p + ".bak", "utf8")).toContain("handEdited");
+    await fs.rm(root, { recursive: true, force: true });
+  });
+
+  it("does not litter a backup when it is overwriting its own output", async () => {
+    const root = await mk();
+    await applyHardening(root, planHardening(rules));
+    // Second harden with a different plan: the file on disk is ours, so there
+    // is nothing of anyone else's to preserve.
+    const more = [...rules, { id: "b", text: "Never commit secrets or `.env` files.", category: "protect-secrets" as const, targets: [".env"], source: { kind: "prose" as const, file: "CLAUDE.md" } }];
+    const r = await applyHardening(root, planHardening(more));
+    expect(r.wrote).not.toContain(".claude/hooks/policy.json.bak");
+    await expect(fs.stat(path.join(root, ".claude", "hooks", "policy.json.bak"))).rejects.toThrow();
+    await fs.rm(root, { recursive: true, force: true });
+  });
+});
+
+describe("a rule about opening a pull request gates that, not a push", () => {
+  /**
+   * "Run `pnpm lint` before opening a pull request" was compiled as a push
+   * rule. It blocked ordinary pushes, which the rule allows, and let
+   * `gh pr create` through, which is the thing the rule is about.
+   */
+  it("reads the action the rule names", () => {
+    expect(gatedAction("PR")).toBe("pull-request");
+    expect(gatedAction("pull request")).toBe("pull-request");
+    expect(gatedAction("opening a pull request")).toBe("pull-request");
+    expect(gatedAction("push")).toBe("push");
+    expect(gatedAction("commit")).toBe("commit");
+    expect(gatedAction(undefined)).toBe("commit");
+  });
+
+  it("blocks gh pr create and lets an ordinary push through", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "pf-pr-"));
+    await run("git", ["init", "-q", "-b", "main"], { cwd: dir });
+    await applyHardening(dir, planHardening([
+      { id: "a", text: "Run `npm test` before opening a pull request.", category: "require-before", targets: ["npm test", "PR"], source: { kind: "prose", file: "CLAUDE.md" } },
+    ]));
+    const guard = path.join(dir, ".claude", "hooks", "paperfence-guard.cjs");
+    const fireHere = (command: string): Promise<number> => {
+      const payload = JSON.stringify({ cwd: dir, session_id: "pr-test", hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command } });
+      return new Promise((resolve) => {
+        const child = spawn("node", [guard], { cwd: dir, stdio: ["pipe", "pipe", "pipe"] });
+        child.on("close", (code) => resolve(code ?? 1));
+        child.stdin.end(payload);
+      });
+    };
+    expect(await fireHere("gh pr create --fill")).toBe(2);
+    // The rule says nothing about pushing, so pushing stays allowed.
+    expect(await fireHere("git push origin feature")).toBe(0);
+    await fs.rm(dir, { recursive: true, force: true });
   });
 });

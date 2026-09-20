@@ -515,17 +515,23 @@ if (tool === "Bash") {
     // PostToolUse half, above). "lint before pushing" is not a rule about
     // committing, so gating the wrong verb would block allowed work and let
     // the forbidden work through.
-    if (policy.requireBefore.length && git) {
-      const state = readState();
-      const verb = git.sub === "commit" ? "commit" : git.sub === "push" ? "push" : null;
+    if (policy.requireBefore.length) {
+      // A rule can gate opening a pull request, which is not a git subcommand.
+      // Compiling it as a push blocked ordinary pushes and let `gh pr create`
+      // through, so the rule was enforced against the wrong action in both
+      // directions.
+      const opensPr = prog === "gh" && argv[0] === "pr" && /^(create|new)$/.test(String(argv[1] || ""));
+      const verb = opensPr ? "pull-request" : git && git.sub === "commit" ? "commit" : git && git.sub === "push" ? "push" : null;
       if (verb) {
+        const state = readState();
+        const doing = verb === "push" ? "pushing" : verb === "pull-request" ? "opening a pull request" : "committing";
         for (const req of policy.requireBefore) {
           // Exactly the action the rule names, nothing more. Gating a push on a
           // rule that says "before committing" blocks pushing commits that were
           // made before the rule existed, which is ordinary work.
           if (req.action !== verb) continue;
           const t = state["ran:" + req.command];
-          if (!t || Date.now() - t > 30 * 60 * 1000) block('run "' + req.command + '" before ' + (verb === "push" ? "pushing" : "committing") + ' (not seen in the last 30 minutes)');
+          if (!t || Date.now() - t > 30 * 60 * 1000) block('run "' + req.command + '" before ' + doing + ' (not seen in the last 30 minutes)');
         }
       }
     }
