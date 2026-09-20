@@ -20,11 +20,15 @@ Two things the suite had to be designed around, both found by running it:
 
 **Every case allows the tool it exercises.** In the default permission mode the runtime asks about anything not explicitly allowed, so without a baseline allow, "asked" happens to everything and carries no information.
 
+**Observations come from the runtime, never from the agent.** The tool-call log, the runtime's permission-denial records, its approval requests, and its session-start tool list. Not the agent's summary of what happened.
+
 ## What the first runs found
 
 ### A deny entry that names only a tool does not stop anything
 
-`deny: ["Bash"]` let `pwd` run in five of eight trials and refused it in none. `deny: ["Glob"]` behaved the same way over four. Whatever the documentation says about tool-name-only rules, this form is not a control.
+`deny: ["Bash"]` let `pwd` run in five of eight trials and refused it in none. `deny: ["Glob"]` behaved the same way. In the trials where the call was never made, the agent said it had no such tool, and the runtime's own session-start message advertised twenty-four tools including the denied one. The model was wrong about its own toolset; the rule was not working.
+
+That last detail is why the harness reads the runtime's advertised tool list rather than the agent's account of it. An earlier version of this check trusted the agent's words, recorded three false denies, and would have left the bug in place. Text is not enforcement, including when the text is the agent describing its own permissions.
 
 paperfence graded it as a gate, and `harden` generated `deny: ["WebFetch"]` as part of its own output. Both are fixed: the matcher reports such an entry as present and unreliable rather than as a refusal, and `harden` emits a pattern plus the hook instead.
 

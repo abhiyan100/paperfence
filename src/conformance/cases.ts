@@ -276,10 +276,16 @@ export const CASES: ConformanceCase[] = [
     call: { tool: "Bash", input: { command: "pwd" }, describe: "pwd with a bare Bash allow" },
     expected: "allow",
   },
-  // Measured 2026-09-20, eight trials for Bash and four for Glob: a deny entry
-  // naming only a tool refused the call in none of them. This is the one case
-  // where running the suite changed what paperfence reports: it used to grade
-  // such an entry as a gate.
+  // Measured 2026-09-20. A deny entry naming only a tool refused the call in
+  // none of eight Bash trials or six Glob trials, and the runtime's own
+  // session-start tool list still advertised the denied tool. This is the one
+  // case where running the suite changed what paperfence reports: it used to
+  // grade such an entry as a gate.
+  //
+  // Some trials came back as not-attempted with the agent saying it had no
+  // such tool. That was the model being wrong about its own toolset, not the
+  // rule working, which is why the harness reads the runtime's advertised
+  // list rather than the agent's account of it.
   {
     id: "tool-wide-deny-bash",
     claim: "A deny entry naming only `Bash`, with no pattern, does not stop a Bash command.",

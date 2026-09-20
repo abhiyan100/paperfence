@@ -256,7 +256,8 @@ function classify(run: Awaited<ReturnType<typeof runInDocker>>, c: ConformanceCa
     // whole argument is that text is not enforcement. A run where the call was
     // never made is inconclusive, and repeating the case is how a real
     // absence separates itself from a model's assumption.
-    return { observed: "not-attempted", detail: `the agent never made the call; it said: ${run.finalText.slice(0, 200)}` };
+    const offered = run.availableTools ? ` The runtime advertised ${run.availableTools.length} tools including ${c.call.tool}.` : " The runtime did not advertise its tool list.";
+    return { observed: "not-attempted", detail: `the agent never made the call, though it could have.${offered} It said: ${run.finalText.slice(0, 180)}` };
   }
   if (asked) return { observed: "ask", detail: "the runtime asked for approval before running it" };
   return { observed: "allow", detail: "the call ran with no refusal and no approval request" };

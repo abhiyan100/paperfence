@@ -38,7 +38,7 @@ A container that died says nothing about your policy. Nor does an agent that use
 
 Two results from it matter enough to state here.
 
-**A deny entry that names only a tool is not a control.** Measured over eight trials with `deny: ["Bash"]` and four with `deny: ["Glob"]`, the call was refused in none of them. paperfence used to grade such an entry as a gate. It now reports it as present and unreliable, and `harden` no longer generates one. If your settings file has a bare `WebFetch` or `Bash` in its deny list, it is decoration; use a pattern, or a hook.
+**A deny entry that names only a tool is not a control.** Measured over eight trials with `deny: ["Bash"]` and six with `deny: ["Glob"]`, the call was refused in none of them, and the runtime's own session-start tool list still advertised the denied tool. In some trials the agent said it had no such tool, which was the model being wrong rather than the rule working. paperfence used to grade such an entry as a gate. It now reports it as present and unreliable, and `harden` no longer generates one. If your settings file has a bare `WebFetch` or `Bash` in its deny list, it is decoration; use a pattern, or a hook.
 
 **Several rules paperfence reports as gaps are not silent allows.** The runtime **prompts**.
 

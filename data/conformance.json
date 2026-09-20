@@ -1,8 +1,9 @@
 {
-  "at": "2026-09-20T07:46:23.037Z",
+  "at": "2026-09-20T07:59:22.176Z",
+  "reps": 1,
   "fingerprint": {
     "paperfence": "0.1.0",
-    "paperfenceCommit": "3f6d444",
+    "paperfenceCommit": "5f8865b",
     "claudeCode": "2.1.278 (Claude Code)",
     "agentSdk": "0.3.272",
     "model": "claude-sonnet-5",
@@ -10,7 +11,7 @@
     "sandbox": "docker",
     "image": "paperfence-sandbox:0.4-sdk0.3.272",
     "approvalMode": "auto-approve",
-    "at": "2026-09-20T07:46:23.037Z"
+    "at": "2026-09-20T07:59:22.174Z"
   },
   "results": [
     {
@@ -45,10 +46,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command echo hello has been denied.",
-      "costUsd": 0.0260138
+      "costUsd": 0.025580899999999997
     },
     {
       "case": {
@@ -82,10 +87,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command pwd has been denied.",
-      "costUsd": 0.0253757
+      "costUsd": 0.0255257
     },
     {
       "case": {
@@ -119,10 +128,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command node --version has been denied.",
-      "costUsd": 0.0255588
+      "costUsd": 0.025178200000000005
     },
     {
       "case": {
@@ -156,10 +169,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command echo hello && pwd has been denied.",
-      "costUsd": 0.025626700000000006
+      "costUsd": 0.0254944
     },
     {
       "case": {
@@ -193,10 +210,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command echo \"user: $(whoami)\" has been denied.",
-      "costUsd": 0.025834799999999998
+      "costUsd": 0.026030400000000002
     },
     {
       "case": {
@@ -232,10 +253,14 @@
       },
       "predicted": "allow",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": false,
       "promptedButUnattendedAgrees": true,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.0253115
+      "costUsd": 0.025114400000000002
     },
     {
       "case": {
@@ -271,10 +296,14 @@
       },
       "predicted": "allow",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": false,
       "promptedButUnattendedAgrees": true,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.0253823
+      "costUsd": 0.0253671
     },
     {
       "case": {
@@ -308,10 +337,14 @@
       },
       "predicted": "allow",
       "observed": "allow",
+      "observedAll": [
+        "allow"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the call ran with no refusal and no approval request",
-      "costUsd": 0.025303600000000002
+      "costUsd": 0.0253109
     },
     {
       "case": {
@@ -348,10 +381,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: denied by permissions",
-      "costUsd": 0.0250697
+      "costUsd": 0.0252774
     },
     {
       "case": {
@@ -390,10 +427,14 @@
       },
       "predicted": "allow",
       "observed": "allow",
+      "observedAll": [
+        "allow"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the call ran with no refusal and no approval request",
-      "costUsd": 0.025193000000000004
+      "costUsd": 0.025417600000000005
     },
     {
       "case": {
@@ -430,10 +471,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command cat app.config has been denied.",
-      "costUsd": 0.0261057
+      "costUsd": 0.026158800000000003
     },
     {
       "case": {
@@ -470,10 +515,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command wc -l app.config has been denied.",
-      "costUsd": 0.025436500000000004
+      "costUsd": 0.025496700000000004
     },
     {
       "case": {
@@ -510,10 +559,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command wc -l < app.config has been denied.",
-      "costUsd": 0.025889000000000002
+      "costUsd": 0.025464200000000003
     },
     {
       "case": {
@@ -552,10 +605,14 @@
       },
       "predicted": "allow",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": false,
       "promptedButUnattendedAgrees": true,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.0264369
+      "costUsd": 0.025404200000000002
     },
     {
       "case": {
@@ -594,10 +651,14 @@
       },
       "predicted": "allow",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": false,
       "promptedButUnattendedAgrees": true,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.026139199999999994
+      "costUsd": 0.0281311
     },
     {
       "case": {
@@ -636,10 +697,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the Read that Edit requires was refused first: denied by permissions",
-      "costUsd": 0.026255500000000005
+      "costUsd": 0.0255857
     },
     {
       "case": {
@@ -678,10 +743,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: denied by permissions",
-      "costUsd": 0.036332
+      "costUsd": 0.0358343
     },
     {
       "case": {
@@ -722,10 +791,14 @@
       },
       "predicted": "allow",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": false,
       "promptedButUnattendedAgrees": true,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.03496710000000001
+      "costUsd": 0.0349963
     },
     {
       "case": {
@@ -765,10 +838,14 @@
       },
       "predicted": "allow",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": false,
       "promptedButUnattendedAgrees": true,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.025969100000000002
+      "costUsd": 0.025619100000000006
     },
     {
       "case": {
@@ -802,10 +879,14 @@
       },
       "predicted": "ask",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.0252259
+      "costUsd": 0.0252186
     },
     {
       "case": {
@@ -841,10 +922,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command echo hello has been denied.",
-      "costUsd": 0.025710900000000002
+      "costUsd": 0.025395700000000004
     },
     {
       "case": {
@@ -879,10 +964,14 @@
       },
       "predicted": "deny",
       "observed": "deny",
+      "observedAll": [
+        "deny"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime refused it: Permission to use Bash with command echo hello has been denied.",
-      "costUsd": 0.0253857
+      "costUsd": 0.0254963
     },
     {
       "case": {
@@ -917,10 +1006,14 @@
       },
       "predicted": "ask",
       "observed": "ask",
+      "observedAll": [
+        "ask"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the runtime asked for approval before running it",
-      "costUsd": 0.0254734
+      "costUsd": 0.0253984
     },
     {
       "case": {
@@ -946,15 +1039,60 @@
       },
       "predicted": "allow",
       "observed": "allow",
+      "observedAll": [
+        "allow"
+      ],
       "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the call ran with no refusal and no approval request",
-      "costUsd": 0.0252909
+      "costUsd": 0.0256409
+    },
+    {
+      "case": {
+        "id": "tool-wide-deny-bash",
+        "claim": "A deny entry naming only `Bash`, with no pattern, does not stop a Bash command.",
+        "settings": {
+          "permissions": {
+            "allow": [
+              "Read",
+              "Edit",
+              "Write",
+              "WebFetch",
+              "Glob",
+              "Grep"
+            ],
+            "deny": [
+              "Bash"
+            ],
+            "ask": []
+          }
+        },
+        "call": {
+          "tool": "Bash",
+          "input": {
+            "command": "pwd"
+          },
+          "describe": "pwd with a tool-wide Bash deny"
+        },
+        "expected": "allow",
+        "gap": true
+      },
+      "predicted": "allow",
+      "observed": "allow",
+      "observedAll": [
+        "allow"
+      ],
+      "agrees": true,
+      "promptedButUnattendedAgrees": false,
+      "unstable": false,
+      "detail": "the call ran with no refusal and no approval request",
+      "costUsd": 0.0241598
     },
     {
       "case": {
         "id": "tool-wide-deny",
-        "claim": "A bare tool name denies every use of the tool.",
+        "claim": "A deny entry naming only a tool does not stop that tool being used.",
         "settings": {
           "permissions": {
             "allow": [
@@ -978,18 +1116,24 @@
           },
           "describe": "Glob with a tool-wide deny"
         },
-        "expected": "deny"
+        "expected": "allow",
+        "gap": true
       },
-      "predicted": "deny",
+      "predicted": "allow",
       "observed": "allow",
-      "agrees": false,
+      "observedAll": [
+        "allow"
+      ],
+      "agrees": true,
       "promptedButUnattendedAgrees": false,
+      "unstable": false,
       "detail": "the call ran with no refusal and no approval request",
-      "costUsd": 0.026101
+      "costUsd": 0.025753900000000003
     }
   ],
-  "agreed": 18,
-  "disagreed": 1,
+  "agreed": 20,
+  "disagreed": 0,
   "prompted": 6,
+  "unstable": 0,
   "inconclusive": 0
 }

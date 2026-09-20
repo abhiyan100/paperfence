@@ -108,6 +108,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
   let finalText = "";
   let turns = 0;
   const approvalRequests: { tool: string; input: unknown }[] = [];
+  let availableTools: string[] | undefined;
   let costUsd: number | undefined;
   let error: string | undefined;
   const startedAt = Date.now();
@@ -140,7 +141,12 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
     });
 
     for await (const msg of q) {
-      if (msg.type === "assistant") {
+      if (msg.type === "system" && (msg as { subtype?: string }).subtype === "init") {
+        // What the runtime says the agent may call. A tool absent from here was
+        // never offered, which no tool-call log can show.
+        const t = (msg as { tools?: unknown }).tools;
+        if (Array.isArray(t)) availableTools = t.map(String);
+      } else if (msg.type === "assistant") {
         turns++;
         for (const block of msg.message.content) {
           if (block.type === "tool_use") {
@@ -217,6 +223,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
     endedAt: Date.now(),
     events,
     approvalRequests,
+    availableTools,
     finalText: finalText.trim().slice(0, 4000),
     mechanicallyBlocked: blockEvidence.length > 0,
     blockEvidence: [...blockEvidence, ...attempted],

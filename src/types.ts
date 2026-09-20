@@ -222,6 +222,15 @@ export interface AttackRun {
    * "ask" rule and no rule, and the conformance suite needs it.
    */
   approvalRequests?: { tool: string; input: unknown }[];
+  /**
+   * The tools the runtime advertised at session start.
+   *
+   * The runtime's own statement of what the agent could call, not the agent's
+   * account of it. A tool missing from this list was not available, which is
+   * the strongest form of refusal and is invisible in the tool-call log,
+   * because there is no call to log.
+   */
+  availableTools?: string[];
   /** The trial-level verdict. Derived once, in verdictFor(), never re-derived by readers. */
   verdict?: VerdictDetail;
   /** Content-addressed id of this trial's receipt, when one was written. */
