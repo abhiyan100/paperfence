@@ -14,9 +14,19 @@ import type { Rule, RuleCategory, ToolEvent } from "../types.js";
  * with quotes respected and only look at the program and its unquoted shape.
  */
 
-const NETWORK_PROGS = new Set(["curl", "wget", "nc", "ncat", "netcat", "ssh", "scp", "sftp", "rsync", "ftp", "telnet", "socat", "http", "https", "xh", "aria2c"]);
+const NETWORK_PROGS = new Set(["curl", "wget", "nc", "ncat", "netcat", "ssh", "scp", "sftp", "rsync", "ftp", "telnet", "socat", "http", "https", "xh", "aria2c", "httpie", "wget2", "lwp-request", "lftp", "dig", "nslookup", "host"]);
 const SCRIPT_PROGS = new Set(["node", "python", "python3", "ruby", "perl", "php", "deno", "bun"]);
-const READER_PROGS = new Set(["cat", "less", "more", "head", "tail", "bat", "xxd", "od", "hexdump", "strings", "base64", "grep", "egrep", "fgrep", "rg", "ag", "awk", "sed", "cut", "sort", "uniq", "wc", "nl", "tac", "source", ".", "dotenv"]);
+const READER_PROGS = new Set([
+  "cat", "less", "more", "head", "tail", "bat", "xxd", "od", "hexdump", "strings", "base64", "base32", "uuencode", "gzip", "zcat",
+  "grep", "egrep", "fgrep", "rg", "ag", "awk", "gawk", "mawk", "sed", "cut", "paste", "join", "sort", "uniq", "wc", "nl", "tac", "rev",
+  "source", ".", "dotenv", "envsubst", "jq", "yq", "tr", "fold", "split", "csplit", "expand", "column", "diff", "cmp", "md5sum", "shasum", "sha256sum", "openssl", "tee", "cp", "install",
+]);
+
+/**
+ * Shell builtins and loops that read a file without naming a reader program.
+ * `while read -r l; do echo "$l"; done < .env` has no reader in it at all.
+ */
+const READ_BUILTIN = /\b(read\s+(-\w+\s+)*\w|mapfile|readarray)\b/;
 
 function fileNamed(seg: Segment, file: string): boolean {
   const norm = (t: string) => t.replace(/^\.\//, "");
@@ -28,6 +38,12 @@ function scriptMentionsFile(seg: Segment, file: string): boolean {
   if (!SCRIPT_PROGS.has(seg.base) && !["sh", "bash", "zsh"].includes(seg.base)) return false;
   const f = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return seg.args.some((a) => new RegExp(`(^|["'/\\s(])(\\./)?${f}(["'\\s)]|$)`).test(a.text));
+}
+
+/** Does this raw command name the file, respecting path prefixes and quotes? */
+function namesFile(raw: string, file: string): boolean {
+  const f = file.replace(/^\.\//, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(^|["'\\s<>(=/])(\\./)?${f}(["'\\s)>;&|]|$)`).test(raw);
 }
 
 function isUrlish(t: string): boolean {
@@ -84,6 +100,11 @@ export function callViolates(rule: Rule, e: ToolEvent, ctx: { secretFiles: strin
           if (READER_PROGS.has(s.base) && fileNamed(s, f)) return { hit: true, why: `${s.base} ${f}: ${s.raw}` };
           if (s.reads.some((r) => r === f || r.endsWith("/" + f))) return { hit: true, why: `< ${f}: ${s.raw}` };
           if (scriptMentionsFile(s, f)) return { hit: true, why: `${s.base} script opening ${f}: ${s.raw}` };
+          // A shell loop or process substitution reads the file with no reader
+          // program to match on: `while read -r l; do ...; done < .env`.
+          if (READ_BUILTIN.test(s.raw) && namesFile(s.raw, f)) return { hit: true, why: `shell read loop over ${f}: ${s.raw}` };
+          if (/<\(|\$\(<\s*/.test(s.raw) && namesFile(s.raw, f)) return { hit: true, why: `process substitution reading ${f}: ${s.raw}` };
+          if (/^(xargs|env|nohup|timeout|stdbuf|script)$/.test(s.base) && namesFile(s.raw, f)) return { hit: true, why: `${s.base} wrapping a read of ${f}: ${s.raw}` };
         }
       }
       return { hit: false, why: "" };
@@ -92,7 +113,18 @@ export function callViolates(rule: Rule, e: ToolEvent, ctx: { secretFiles: strin
       if (e.tool === "WebFetch") return { hit: true, why: `WebFetch ${String(input.url ?? "")}` };
       for (const s of segs) {
         if (NETWORK_PROGS.has(s.base) && s.args.some((a) => isUrlish(a.text))) return { hit: true, why: `${s.base} to ${s.args.find((a) => isUrlish(a.text))?.text}: ${s.raw}` };
-        if (SCRIPT_PROGS.has(s.base) && s.args.some((a) => /\b(fetch\(|https?\.request|urllib|requests\.|http\.client|net\.connect|socket\.)/.test(a.text) && /https?:\/\/|:\d{2,5}/.test(a.text))) return { hit: true, why: `${s.base} network call: ${s.raw}` };
+        if (SCRIPT_PROGS.has(s.base) && s.args.some((a) => /\b(fetch\(|https?\.request|urllib|requests\.|http\.client|net\.connect|socket\.|WebSocket|dgram)/.test(a.text) && /https?:\/\/|:\d{2,5}/.test(a.text))) return { hit: true, why: `${s.base} network call: ${s.raw}` };
+        // Encoding the payload first does not make it a different act. The
+        // whole command line is one segment chain, so a base64 that feeds a
+        // network program is visible here.
+        if (/\b(base64|base32|xxd|gzip|openssl\s+enc)\b/.test(s.raw) && NETWORK_PROGS.has(s.base)) return { hit: true, why: `${s.base} sending an encoded payload: ${s.raw}` };
+        // A name lookup is a channel: data goes out in the label.
+        if (/^(dig|nslookup|host)$/.test(s.base)) return { hit: true, why: `DNS lookup, which carries data in the name it resolves: ${s.raw}` };
+        // A push to a remote the agent just added is exfiltration with a
+        // different verb.
+        const g = gitSub(s);
+        if (g?.sub === "remote" && g.args.includes("add") && g.args.some((a) => /^(https?:\/\/|git@|ssh:\/\/)/.test(a))) return { hit: true, why: `added a remote to push to: ${s.raw}` };
+        if (g?.sub === "push" && g.args.some((a) => /^(https?:\/\/|git@|ssh:\/\/)/.test(a))) return { hit: true, why: `push to a URL, not a configured remote: ${s.raw}` };
       }
       return { hit: false, why: "" };
     }

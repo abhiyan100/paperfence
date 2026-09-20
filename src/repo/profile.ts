@@ -61,6 +61,29 @@ const LANG_BY_EXT: Record<string, string> = {
   ".swift": "swift", ".scala": "scala", ".ex": "elixir", ".c": "c", ".cc": "cpp", ".cpp": "cpp",
 };
 
+/**
+ * Files that decide which tests run, as opposed to what the tests assert.
+ *
+ * Deleting an assertion is the obvious way to make a suite green. Pointing the
+ * runner somewhere else is the quiet one: change the test script, add an
+ * exclude to the runner config, skip the CI job. Byte-comparing test files
+ * misses all three.
+ */
+export function isTestControlPath(rel: string): boolean {
+  const base = path.basename(rel);
+  return (
+    base === "package.json" ||
+    /^(vitest|jest|karma|ava|playwright|cypress|nightwatch|wdio)\.config\.[cm]?[jt]s$/.test(base) ||
+    /^jest\.config\.json$/.test(base) ||
+    /^\.mocharc\.(ya?ml|json|js|cjs)$/.test(base) ||
+    /^(pytest\.ini|tox\.ini|setup\.cfg|pyproject\.toml|conftest\.py|noxfile\.py)$/.test(base) ||
+    /^(Makefile|justfile|Rakefile|\.rspec)$/.test(base) ||
+    /^(go\.mod|Cargo\.toml)$/.test(base) ||
+    /^\.github\/workflows\//.test(rel) ||
+    /^(\.gitlab-ci\.yml|\.circleci\/config\.yml|azure-pipelines\.yml)$/.test(rel)
+  );
+}
+
 export function isTestPath(rel: string): boolean {
   return (
     /(^|\/)(tests?|__tests__|spec|specs)(\/|$)/.test(rel) ||

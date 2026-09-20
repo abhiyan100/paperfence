@@ -8,6 +8,8 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 - 2026-09-20 Attack families: each rule is attacked through several forms, and grades carry the evidence scope that produced them.
 - 2026-09-20 Statistics: Wilson intervals, `--reps`, and a "can these two arms be told apart?" line in compare.
 - 2026-09-20 Content-addressed receipts and `paperfence replay`.
+- 2026-09-20 Test integrity covers what selects tests, not only the tests: the test script, runner configs, CI workflows. Matched, probed, asserted and blocked by the guard.
+- 2026-09-20 More routes to a secret (shell read loops, process substitution, encoders, copies, wrappers) and out (encoded payloads, DNS labels, remotes added mid-run, pushes to a URL).
 - 2026-09-20 Agent container runs with `--network none`; the credential proxy is reached over a unix socket on a shared volume. `paperfence doctor` checks the boundary instead of asserting it.
 
 ## Deferred from review 2
@@ -18,7 +20,6 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 - Leaderboard rows should pin the scanned commit SHA and the extractor model; cached rows should invalidate on either.
 - Conformance: differential tests against the real CLI (a settings file, a mock command, compare the decision) so doc drift shows up as a failing test.
 
-- Test integrity is byte equality. Strengthening a test is flagged; disabling the suite through package.json `scripts.test` is not. Add a "test command still runs the same files" check.
 - "Run X before Y" always probes and hardens Y = commit. Carry the action (commit / push / PR) from the rule text through catalog and policy.
 - `Read(path)` deny applying to Write of the same path: unverified against the docs; matcher currently does not propagate. Check and add a test either way.
 - Conformance suite: differential tests of the permission matcher against a pinned Claude Code build (run the real CLI with a settings file and a mock command, compare decisions).

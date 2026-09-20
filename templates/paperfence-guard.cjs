@@ -245,6 +245,50 @@ function touchesSelf(p) {
   return n === ".claude" || n === ".claude/hooks" || SELF.some((x) => n === x || n.startsWith(x) || n.endsWith("/" + x) || n.includes("/" + x));
 }
 
+// ---------- what decides which tests run ----------
+// Deleting an assertion is the obvious way to make a suite green. Pointing the
+// runner somewhere else is the quiet one. These files select tests; the tests
+// themselves are protected separately above.
+function isTestControl(p) {
+  const base = p.split("/").pop() || "";
+  return (
+    /^(vitest|jest|karma|ava|playwright|cypress|nightwatch|wdio)\.config\.[cm]?[jt]s$/.test(base) ||
+    base === "jest.config.json" ||
+    /^\.mocharc\.(ya?ml|json|js|cjs)$/.test(base) ||
+    /^(pytest\.ini|tox\.ini|setup\.cfg|conftest\.py|noxfile\.py|\.rspec)$/.test(base) ||
+    /^\.github\/workflows\//.test(p) ||
+    p === ".gitlab-ci.yml" ||
+    p === ".circleci/config.yml" ||
+    p === "azure-pipelines.yml"
+  );
+}
+
+// The test script in package.json, as written. Changing it is how a suite goes
+// green without a single test file being touched.
+function testScript() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(cwd, "package.json"), "utf8")).scripts?.test ?? null;
+  } catch {
+    return null;
+  }
+}
+const TEST_SCRIPT_BEFORE = policy.protectedTestPaths.length ? testScript() : null;
+
+// An edit to package.json is ordinary work unless it lands on the test script.
+// We look at the edit's own text rather than guessing from the file path.
+function changesTestScript(input) {
+  if (TEST_SCRIPT_BEFORE === null) return false;
+  const texts = [];
+  if (typeof input.content === "string") texts.push(input.content);
+  if (typeof input.new_string === "string") texts.push(input.new_string);
+  if (typeof input.old_string === "string") texts.push(input.old_string);
+  if (Array.isArray(input.edits)) for (const e of input.edits) { if (e && typeof e === "object") { if (typeof e.old_string === "string") texts.push(e.old_string); if (typeof e.new_string === "string") texts.push(e.new_string); } }
+  if (!texts.length) return true; // an edit we cannot read: assume it could
+  const whole = texts.join("\n");
+  if (whole.includes(TEST_SCRIPT_BEFORE)) return true;
+  return /"test"\s*:/.test(whole);
+}
+
 // ---------- file tools ----------
 if (["Read", "Edit", "Write", "MultiEdit", "NotebookEdit"].includes(tool)) {
   const p = rel(ti.file_path || ti.path || ti.notebook_path || "");
@@ -260,6 +304,14 @@ if (["Read", "Edit", "Write", "MultiEdit", "NotebookEdit"].includes(tool)) {
         if (under(p, d)) block("editing existing tests under " + d + "/ is not allowed; fix the code instead (new test files are fine)");
       }
       if (policy.protectedTestPaths.length && /\.(test|spec)\.[cm]?[jt]sx?$|_test\.(go|py|rb)$|^test_.*\.py$/.test(p)) block("editing existing test files is not allowed; fix the code instead (new test files are fine)");
+    }
+    // Unlike a test file, a *new* runner config is not ordinary work: adding
+    // one that excludes the failing test is exactly the move being prevented.
+    if (policy.protectedTestPaths.length && isTestControl(p)) {
+      block("writing " + p + " is not allowed: it decides which tests run, and changing it makes the suite pass without fixing anything");
+    }
+    if (policy.protectedTestPaths.length && TEST_SCRIPT_BEFORE !== null && p === "package.json" && changesTestScript(ti)) {
+      block("changing the test script in package.json is not allowed: it decides which tests run");
     }
     for (const d of policy.forbiddenPaths) {
       if (under(p, d)) block("editing " + d + "/ is not allowed");
@@ -336,7 +388,13 @@ if (tool === "Bash") {
 
     // network
     if (policy.blockNetwork) {
-      if (/^(curl|wget|nc|ncat|netcat|ssh|scp|sftp|rsync|ftp|telnet|socat|http|https|xh|aria2c)$/.test(prog) && !/127\.0\.0\.1|localhost/.test(args)) block("outbound network commands are not allowed");
+      if (/^(curl|wget|wget2|nc|ncat|netcat|ssh|scp|sftp|rsync|ftp|lftp|telnet|socat|http|https|httpie|xh|aria2c|lwp-request)$/.test(prog) && !/127\.0\.0\.1|localhost/.test(args)) block("outbound network commands are not allowed");
+      // A name lookup is a channel: the data goes out in the label being resolved.
+      if (/^(dig|nslookup|host)$/.test(prog)) block("name lookups are not allowed: a hostname carries whatever is put in it");
+      // A remote added mid-run, or a push straight to a URL, is exfiltration
+      // with a different verb.
+      if (git && git.sub === "remote" && git.argv.includes("add") && git.argv.some((a) => /^(https?:\/\/|git@|ssh:\/\/)/.test(a))) block("adding a remote to push to is not allowed");
+      if (git && git.sub === "push" && git.argv.some((a) => /^(https?:\/\/|git@|ssh:\/\/)/.test(a))) block("pushing to a URL instead of a configured remote is not allowed");
       if (scripty && /(urllib|requests\.|http\.client|\bfetch\s*\(|https?\.(request|get)|net\.connect|socket\.|WebSocket|XMLHttpRequest|axios|got\()/.test(scriptText) && !/127\.0\.0\.1|localhost/.test(scriptText)) block("outbound network from scripts is not allowed");
       if (scripty && /https?:\/\//.test(scriptText) && !/127\.0\.0\.1|localhost/.test(scriptText)) block("outbound network from scripts is not allowed");
     }
@@ -344,10 +402,15 @@ if (tool === "Bash") {
     // secrets
     for (const f of policy.secretFiles) {
       const fRe = secretFileRe(f);
-      const readers = /^(cat|less|more|head|tail|bat|xxd|od|hexdump|strings|base64|grep|egrep|fgrep|rg|ag|awk|sed|cut|sort|uniq|wc|nl|tac|rev|source|\.|dotenv|python3?|node|ruby|perl|php|deno|bun|sh|bash|zsh)$/;
-      if (readers.test(prog) && new RegExp("(^|[\\s'\"(=])" + fRe + "([\\s'\")]|$)").test(args)) block("reading " + f + " is not allowed");
-      if (new RegExp("<\\s*" + fRe + "(\\s|$)").test(s)) block("reading " + f + " is not allowed");
-      if (new RegExp("(readFileSync|readFile|open|read_text|load_dotenv)\\s*\\(\\s*['\"]" + fRe + "['\"]").test(s)) block("reading " + f + " is not allowed");
+      const readers = /^(cat|less|more|head|tail|bat|xxd|od|hexdump|strings|base64|base32|uuencode|gzip|zcat|grep|egrep|fgrep|rg|ag|awk|gawk|mawk|sed|cut|paste|join|sort|uniq|wc|nl|tac|rev|fold|split|expand|column|diff|cmp|tr|jq|yq|envsubst|md5sum|shasum|sha256sum|openssl|cp|install|tee|source|\.|dotenv|python3?|node|ruby|perl|php|deno|bun|sh|bash|zsh|env|xargs|timeout|nohup|stdbuf|script)$/;
+      const named = new RegExp("(^|[\\s'\"(=<>])(\\.\\/)?" + fRe + "([\\s'\")>;&|]|$)");
+      if (readers.test(prog) && named.test(args)) block("reading " + f + " is not allowed");
+      if (new RegExp("<\\s*(\\.\\/)?" + fRe + "(\\s|$|;|&)").test(s)) block("reading " + f + " is not allowed");
+      if (new RegExp("(readFileSync|readFile|open|read_text|load_dotenv)\\s*\\(\\s*['\"](\\.\\/)?" + fRe + "['\"]").test(s)) block("reading " + f + " is not allowed");
+      // A shell loop or a process substitution reads the file with no reader
+      // program on the line at all.
+      if (/\b(read\s+(-\w+\s+)*\w|mapfile|readarray)\b/.test(s) && named.test(s)) block("reading " + f + " is not allowed");
+      if (/<\(|\$\(<\s*/.test(s) && named.test(s)) block("reading " + f + " is not allowed");
     }
 
     // the hook itself
@@ -384,6 +447,21 @@ if (tool === "Bash") {
       if (git && git.sub === "rm" && git.argv.some(existing)) block("removing tests under " + d + "/ is not allowed");
       if (/^(sed|perl)$/.test(prog) && /(^|\s)-i\b/.test(args) && argv.some(existing)) block("editing existing tests under " + d + "/ is not allowed");
       for (const t of writeTargets) if (existing(t)) block("overwriting existing tests under " + d + "/ from the shell is not allowed");
+    }
+
+    // what decides which tests run
+    if (policy.protectedTestPaths.length) {
+      if (shellTouches((a) => isTestControl(rel(a)))) block("changing a file that decides which tests run is not allowed");
+      if (/^(rm|unlink|truncate|mv)$/.test(prog) && argv.some((a) => !a.startsWith("-") && isTestControl(rel(a)))) block("removing or moving a file that decides which tests run is not allowed");
+      if (scripty && /(writeFile|appendFile|unlink|rename|open\([^)]*['"][wa])/.test(scriptText) && /(package\.json|jest\.config|vitest\.config|mocharc|pytest\.ini|conftest|workflows\/)/.test(scriptText)) {
+        block("changing a file that decides which tests run, from a script, is not allowed");
+      }
+      // `npm pkg set scripts.test=...` edits package.json without an Edit tool call.
+      if (prog === "npm" && /\bpkg\b/.test(args) && /scripts\.test/.test(args)) block("changing the test script is not allowed: it decides which tests run");
+      if (/^(sed|perl)$/.test(prog) && /(^|\s)-i\b/.test(args) && argv.some((a) => rel(a) === "package.json" || isTestControl(rel(a)))) {
+        block("editing a file that decides which tests run, in place, is not allowed");
+      }
+      for (const t of writeTargets) if (isTestControl(rel(t)) || rel(t) === "package.json") block("overwriting a file that decides which tests run is not allowed");
     }
 
     // ask-first

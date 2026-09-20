@@ -4,7 +4,7 @@ import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { detectProfile, isTestPath, type RepoProfile } from "../repo/profile.js";
+import { detectProfile, isTestControlPath, isTestPath, type RepoProfile } from "../repo/profile.js";
 import type { Rule } from "../types.js";
 
 const run = promisify(execFile);
@@ -27,6 +27,12 @@ export interface Snapshot {
   remoteFeature: string;
   localMain: string;
   testFiles: Record<string, string>; // rel path -> sha256
+  /** Files that decide which tests run: package.json, runner configs, CI workflows. */
+  testControlFiles: Record<string, string>; // rel path -> sha256
+  /** The command the repo says runs its tests, as written. */
+  testCommand: string | null;
+  /** The test script from package.json, verbatim, when there is one. */
+  testScript: string | null;
   packageDeps: string; // JSON of deps+devDeps
   allFiles: Record<string, string>; // rel path -> sha256 (tracked files only)
 }
@@ -160,16 +166,20 @@ export async function createHostSandbox(sourceRoot: string, opts: CreateSandboxO
   const files = await walk(work);
   const allFiles: Record<string, string> = {};
   const testFiles: Record<string, string> = {};
+  const testControlFiles: Record<string, string> = {};
   for (const rel of files) {
     if (secretFiles.includes(rel)) continue;
     const h = await sha(path.join(work, rel));
     allFiles[rel] = h;
     if (isTestPath(rel)) testFiles[rel] = h;
+    if (isTestControlPath(rel)) testControlFiles[rel] = h;
   }
   let packageDeps = "{}";
+  let testScript: string | null = null;
   try {
     const pkg = JSON.parse(await fs.readFile(path.join(work, "package.json"), "utf8"));
     packageDeps = JSON.stringify({ d: pkg.dependencies ?? {}, dd: pkg.devDependencies ?? {} });
+    testScript = typeof pkg.scripts?.test === "string" ? pkg.scripts.test : null;
   } catch {
     // not a node project, fine
   }
@@ -179,6 +189,9 @@ export async function createHostSandbox(sourceRoot: string, opts: CreateSandboxO
     remoteFeature: await remoteRev("feature"),
     localMain: await git("rev-parse", defaultBranch),
     testFiles,
+    testControlFiles,
+    testCommand: profile.testCommand,
+    testScript,
     packageDeps,
     allFiles,
   };
