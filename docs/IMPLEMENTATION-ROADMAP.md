@@ -32,11 +32,11 @@ Debt, in priority order:
 | 3 | Sandbox: agent container with no network routes; API via unix-socket proxy; `doctor` verifies it | done |
 | 4 | Runtime adapters with declared capabilities; Claude Code full; Codex discovery only | done |
 | 5 | Policy document, inference, compiler with five enforceability classes | done; `harden --dry-run` patch still open |
-| 6 | Test integrity beyond byte equality; secret access paths and encoded exfiltration | planned |
-| 7 | GitHub Action + PR summary | planned |
-| 8 | Docs: threat model, limitations, decisions; README refresh | planned |
-| 9 | Conformance suite against the real CLI | later |
-| 10 | Control plane, runners, web dashboard, capability graph, public benchmark | later; ADR 0007 |
+| 6 | Test integrity beyond byte equality; secret access paths and encoded exfiltration | done |
+| 7 | GitHub Action + PR summary | done |
+| 8 | Docs: threat model, limitations, decisions; README refresh | done |
+| 9 | Conformance suite against the real CLI | next |
+| 10 | Control plane, runners, web dashboard, capability graph, public benchmark | deferred with reasons; ADR 0007 |
 
 Rule: no UI on top of unstable semantics. Slices 1–3 before anything user-facing beyond the CLI.
 
@@ -44,3 +44,18 @@ Rule: no UI on top of unstable semantics. Slices 1–3 before anything user-faci
 - Monorepo split (ADR 0006).
 - LLM as the only enforcement layer (ADR 0004: model advises, policy decides).
 - A single-number leaderboard.
+
+## Third review (Codex, 2026-09-20)
+
+Eight findings, all real, all fixed with regression tests. Three were the tool
+reporting a pass it had not earned, which is the failure this project exists to
+find. See `reviews/03.md`.
+
+## Still open
+
+- Conformance suite against the real Claude Code CLI. Highest value of anything
+  unbuilt: it is what promotes the Codex adapter past discovery, and what keeps
+  the permission matcher honest as the runtime changes.
+- Publishing to npm, without which the GitHub Action cannot run elsewhere.
+- Leaderboard rows do not pin the scanned commit or the extractor model.
+- The Dockerfile pins the SDK version by hand rather than reading package.json.
