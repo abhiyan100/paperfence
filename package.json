@@ -8,7 +8,10 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -16,7 +19,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "site": "tsx scripts/site.ts"
+    "site": "tsx scripts/site.ts",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build && node scripts/check-package.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -25,17 +29,19 @@
   "author": "Abhiyan Poudel",
   "repository": {
     "type": "git",
-    "url": "https://github.com/abhiyan100/paperfence"
+    "url": "git+https://github.com/abhiyan100/paperfence.git"
   },
   "keywords": [
     "claude-code",
-    "agents",
-    "hooks",
+    "codex",
+    "ai-agent",
+    "agent-safety",
     "permissions",
+    "hooks",
     "security",
-    "harness",
-    "claude-md",
-    "agents-md"
+    "policy",
+    "guardrails",
+    "llm"
   ],
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.272",
@@ -51,5 +57,13 @@
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"
+  },
+  "homepage": "https://paperfence.vercel.app",
+  "bugs": {
+    "url": "https://github.com/abhiyan100/paperfence/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

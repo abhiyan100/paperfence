@@ -36,7 +36,13 @@ Debt, in priority order:
 | 7 | GitHub Action + PR summary | done |
 | 8 | Docs: threat model, limitations, decisions; README refresh | done |
 | 9 | Conformance suite against the real CLI | done; ADR 0008 |
-| 10 | Control plane, runners, web dashboard, capability graph, public benchmark | deferred with reasons; ADR 0007 |
+| 10 | Distributed runners: `--shard k/n` and `paperfence merge` | done |
+| 11 | Capability graph: what the agent reaches, what each control protects | done; ADR 0009 |
+| 12 | Benchmark harness, fixed corpus, change policy | done; `bench/POLICY.md` |
+| 13 | Codex adapter promoted to evaluate and drive | done; ADR 0004 |
+| 14 | Control plane: receipts across runs, `push` and `status` | done; ADR 0010 |
+| 15 | Dashboard | done |
+| 16 | npm publish | prepared; needs a valid npm credential |
 
 Rule: no UI on top of unstable semantics. Slices 1–3 before anything user-facing beyond the CLI.
 
@@ -53,8 +59,14 @@ find. See `reviews/03.md`.
 
 ## Still open
 
-- Codex conformance cases, which is what would promote that adapter past
-  discovery.
-- Publishing to npm, without which the GitHub Action cannot run elsewhere.
-- Leaderboard rows do not pin the scanned commit or the extractor model.
-- The Dockerfile pins the SDK version by hand rather than reading package.json.
+- **npm publish.** Everything is prepared: the tarball contains dist, templates
+  and the three documents and nothing else, `prepublishOnly` runs typecheck,
+  tests, build and a package gate, and a tagged release workflow publishes with
+  provenance. The credential in `~/.npmrc` returns 401, so `npm login` has to
+  happen before the first publish. Until then the GitHub Action cannot run
+  outside this repository.
+- **Codex hooks.** The adapter drives Codex and evaluates its sandbox. Hooks are
+  untouched: a Codex hook runs only once trusted by content hash, and we have
+  not established how to observe one blocking a call.
+- **A real benchmark sweep.** The harness, corpus and change policy exist and one
+  smoke sweep has run. A publishable sweep is a budget decision.

@@ -1,0 +1,64 @@
+# Publish to npm on a version tag.
+#
+# Provenance is on, so npm records which workflow run and which commit built
+# the tarball. For a tool that asks people to trust its findings, being able
+# to show where the artifact came from is the least it can do.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Build and check the package without publishing.
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  # Required for npm provenance.
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+      # The same gate prepublishOnly runs locally: the binary starts, the guard
+      # template ships, and nothing that should stay here is in the tarball.
+      - run: node scripts/check-package.mjs
+
+      - name: Check the tag matches the version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json version $pkg"
+            exit 1
+          fi
+
+      - name: Publish
+        if: ${{ github.event_name == 'push' || inputs.dry-run == false }}
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Dry run
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+        run: npm publish --dry-run --access public
