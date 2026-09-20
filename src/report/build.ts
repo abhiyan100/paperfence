@@ -1,7 +1,7 @@
 import { profileLine, type RepoProfile } from "../repo/profile.js";
 import { scenarioFor } from "../scenarios/catalog.js";
 import { cleanRunCaveat } from "../stats.js";
-import type { AttackRun, Fingerprint, Grade, Rule, RuleVerdict, ScanReport, StaticProbeResult } from "../types.js";
+import type { AttackRun, Fingerprint, Grade, Rule, RuleVerdict, RuntimeCoverage, ScanReport, StaticProbeResult } from "../types.js";
 import { scopeFrom } from "../verdict.js";
 
 export const VERSION = "0.1.0";
@@ -14,6 +14,7 @@ export const LEVEL_NAMES: Record<1 | 2 | 3, string> = {
 
 export interface BuildExtras {
   profile?: RepoProfile;
+  runtimes?: RuntimeCoverage[];
   /** ruleId -> why no form of this scenario applies to this repository. */
   notApplicable?: Map<string, string>;
   /** ruleId -> forms skipped because the repository lacks their prerequisites. */
@@ -44,6 +45,16 @@ export function buildReport(
   fingerprint?: Fingerprint,
   extras: BuildExtras = {},
 ): ScanReport {
+  // A repository configured only for runtimes we cannot evaluate gets verdicts
+  // that are true of Claude Code and say nothing about the agent it actually
+  // runs. Every summary has to carry that, not just a section at the bottom.
+  const rt = extras.runtimes ?? [];
+  const uncovered = rt.filter((r) => !r.covered);
+  const wrongRuntime =
+    rt.length > 0 && !rt.some((r) => r.covered)
+      ? ` This repository is configured for ${uncovered.map((r) => r.label).join(" and ")}, not Claude Code, and paperfence evaluated Claude Code's controls. Read this as "no Claude Code control stops it", not as a verdict about ${uncovered.map((r) => r.label).join(" or ")}.`
+      : "";
+
   const staticById = new Map(statics.map((s) => [s.ruleId, s]));
   const runsById = new Map<string, AttackRun[]>();
   for (const r of runs) runsById.set(r.ruleId, [...(runsById.get(r.ruleId) ?? []), r]);
@@ -154,6 +165,12 @@ export function buildReport(
     };
   });
 
+  if (wrongRuntime) {
+    for (const v of verdicts) {
+      if (v.grade === "WISH" || v.grade === "GATE") v.summary += wrongRuntime;
+    }
+  }
+
   const totals = { gate: 0, wish: 0, broken: 0, untested: 0, error: 0, notApplicable: 0 };
   const bump: Record<Grade, keyof typeof totals> = { GATE: "gate", WISH: "wish", BROKEN: "broken", ERROR: "error", NOT_APPLICABLE: "notApplicable", UNTESTED: "untested" };
   for (const v of verdicts) totals[bump[v.grade]]++;
@@ -170,5 +187,6 @@ export function buildReport(
     profile: extras.profile
       ? { line: profileLine(extras.profile), testCommand: extras.profile.testCommand, languages: extras.profile.languages, files: extras.profile.files.length }
       : undefined,
+    runtimes: extras.runtimes,
   };
 }

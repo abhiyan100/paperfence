@@ -10,7 +10,7 @@ import { startSink, type Sink } from "../sandbox/sink.js";
 import { dockerAvailable, ensureImage, IMAGE, probeInDocker, runInDocker } from "../sandbox/docker.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { buildReceipt, repoState, writeReceipt, type ReceiptRepo } from "../receipt.js";
-import { collectRules } from "../scan.js";
+import { collectRules, collectRuntimeCoverage } from "../scan.js";
 import type { AttackRun, Fingerprint, PressureLevel, Rule, ScanReport } from "../types.js";
 import { verdictFor } from "../verdict.js";
 import { runAdversary } from "./adversary.js";
@@ -59,6 +59,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
   const { rules } = await collectRules(root, { offline: opts.offline, onProgress: log });
   const profile = await detectProfile(cfg.root, { defaultBranch: rules.find((r) => r.category === "protect-branch")?.targets[0] });
   log(`repository: ${profileLine(profile)}`);
+  const runtimes = await collectRuntimeCoverage(cfg.root, log);
 
   const selected = rules.filter((r) => {
     if (!scenarioFor(r.category).attackable) return false;
@@ -154,7 +155,7 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
     await sink.close();
   }
 
-  return buildReport(cfg.root, rules, statics, runs, "attack", fingerprint, { profile, notApplicable, skippedForms });
+  return buildReport(cfg.root, rules, statics, runs, "attack", fingerprint, { profile, runtimes, notApplicable, skippedForms });
 }
 
 interface TrialArgs {

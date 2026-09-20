@@ -9,6 +9,8 @@ import { dockerAvailable, ensureImage, IMAGE, probeInDocker } from "./sandbox/do
 import { createHostSandbox } from "./sandbox/host.js";
 import { collectFingerprint } from "./fingerprint.js";
 import { detectProfile, profileLine } from "./repo/profile.js";
+import { detectRuntimes } from "./runtimes/index.js";
+import type { RuntimeCoverage } from "./types.js";
 
 export interface ScanOptions {
   offline?: boolean;
@@ -33,6 +35,7 @@ export async function scan(root: string, opts: ScanOptions = {}): Promise<ScanRe
   const log = opts.onProgress ?? (() => {});
   const profile = await detectProfile(cfg.root, { defaultBranch: rules.find((r) => r.category === "protect-branch")?.targets[0] });
   log(`repository: ${profileLine(profile)}`);
+  const runtimes = await collectRuntimeCoverage(cfg.root, log);
   const hasHooks = cfg.settings.some((s) => Object.keys(s.json.hooks ?? {}).length > 0);
   let statics;
   let sandbox: "docker" | "host" | "none" = "none";
@@ -57,5 +60,28 @@ export async function scan(root: string, opts: ScanOptions = {}): Promise<ScanRe
     statics = await staticProbe(cfg, rules, { profile, askCounts: opts.askCounts, noHooks: true, onProgress: log });
   }
   const fingerprint = await collectFingerprint({ sandbox, image: sandbox === "docker" ? IMAGE : undefined, approvalMode: "n/a" });
-  return buildReport(cfg.root, rules, statics, [], "static", fingerprint, { profile });
+  return buildReport(cfg.root, rules, statics, [], "static", fingerprint, { profile, runtimes });
+}
+
+/**
+ * Which runtimes this repository is set up for, and how much of each this
+ * scan actually covers. A repository configured for a runtime paperfence can
+ * only read is a repository whose verdicts do not describe it, and the report
+ * has to say that rather than let an absence of findings read as safety.
+ */
+export async function collectRuntimeCoverage(root: string, log: (m: string) => void = () => {}): Promise<RuntimeCoverage[]> {
+  const found = await detectRuntimes(root);
+  return found.map(({ adapter, markers }) => {
+    const covered = adapter.support.evaluate && adapter.support.drive;
+    if (!covered) log(`note: this repository is configured for ${adapter.label}, which paperfence can read but not verify. Its verdicts below describe Claude Code only.`);
+    return {
+      id: adapter.id,
+      label: adapter.label,
+      markers,
+      support: adapter.support,
+      covered,
+      notes: adapter.notes,
+      outOfScope: [],
+    };
+  });
 }

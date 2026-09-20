@@ -233,6 +233,22 @@ export interface ScanReport {
   fingerprint?: Fingerprint;
   /** What we saw in the repository, so a reader can tell applicable from missing. */
   profile?: { line: string; testCommand: string | null; languages: string[]; files: number };
+  /** Which agent runtimes this repository is configured for, and how much of each we covered. */
+  runtimes?: RuntimeCoverage[];
+}
+
+export interface RuntimeCoverage {
+  id: string;
+  label: string;
+  /** Files that identify this runtime in the repository. */
+  markers: string[];
+  /** What paperfence can do with this runtime. */
+  support: { discover: boolean; evaluate: boolean; probeHooks: boolean; drive: boolean; harden: boolean };
+  /** True when this scan's verdicts describe this runtime. */
+  covered: boolean;
+  notes: string;
+  /** Config this runtime reads that paperfence did not look at. */
+  outOfScope: string[];
 }
 
 // ---------- compare ----------

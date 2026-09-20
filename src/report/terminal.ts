@@ -79,6 +79,16 @@ export function renderTerminal(report: ScanReport): string {
     out.push(pc.dim(`Run ${pc.reset("paperfence harden")} to turn wishes into gates, then scan again.`));
     out.push("");
   }
+  const uncovered = (report.runtimes ?? []).filter((r) => !r.covered);
+  if (uncovered.length) {
+    out.push(pc.bold("Runtimes this report does not cover"));
+    for (const r of uncovered) {
+      out.push(`  ${pc.yellow(r.label)} ${pc.dim(`(${r.markers.join(", ")})`)}`);
+      out.push(`         ${wrap(r.notes, 90, "         ")}`);
+    }
+    out.push(pc.dim("  Nothing above is a verdict about these. paperfence read their configuration and stopped there."));
+    out.push("");
+  }
   if (report.fingerprint) {
     out.push(pc.dim(fingerprintLine(report.fingerprint)));
     out.push("");
