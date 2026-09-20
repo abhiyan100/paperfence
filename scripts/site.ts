@@ -1,10 +1,17 @@
 /**
- * Build the static site from data/leaderboard.json into site/.
+ * Build the site from data/leaderboard.json into site/.
+ *
  *   pnpm tsx scripts/site.ts
- * Deploy with: vercel deploy site --prod   (static, no functions, no keys)
+ *   cd site && vercel deploy --prod
+ *
+ * The pages here are generated and not committed; the control plane's source
+ * under site/api and site/lib is committed, because it is code. The deployment
+ * holds two secrets, the database URL and the admin token, set with
+ * `vercel env add` and never written to this repository.
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { dashboardHtml } from "./dashboard.js";
 
 interface Row {
   repo: string;
@@ -85,6 +92,9 @@ async function main(): Promise<void> {
   const date = new Date().toISOString().slice(0, 10);
 
   await fs.mkdir("site/r", { recursive: true });
+
+  // The dashboard reads the control plane from the same origin as this site.
+  await fs.writeFile("site/dashboard.html", dashboardHtml());
 
   // Live-attack demo: same repo, two models, side by side.
   let demoLink = "";

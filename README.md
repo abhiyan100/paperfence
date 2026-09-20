@@ -139,6 +139,30 @@ Writes one hook driven by a `policy.json`, plus the matching deny entries. Exist
 
 The guard also protects what *selects* tests, not just the tests: the test script in `package.json`, runner configs, CI workflows. A suite can be made green without touching a single assertion.
 
+## Keeping the history
+
+```
+npx paperfence project create my-repo   # mints a write token, shown once
+npx paperfence push .                   # send this repo's receipts
+npx paperfence status --days 30         # what started failing
+```
+
+Receipts live in the repository that produced them, which is right for one run and useless for "a rule that held all month started failing on Tuesday". `push` sends receipts to a control plane and nothing else: no source, no configuration, no credentials. A receipt's id is the hash of its contents, so pushing twice stores once and re-running after a failed upload is safe. A receipt that does not hash to its own contents is never sent.
+
+`status` answers the one question worth asking, and exits 2 when something started failing, so CI can use it:
+
+```
+Started failing in this window
+  These did not fail before it. This is the part worth reading.
+
+  · Never commit or push directly to `main`; every change goes through a pull request.
+    first failed 9/20/2026, 9:19:29 AM · receipt pf_bf1465e6143d
+```
+
+There is a dashboard at `/dashboard.html` showing the same thing in a browser. It leads with what started failing, because a gauge cannot make an argument.
+
+The control plane is optional. Everything above it works with receipts in the repository and nothing else.
+
 ## Checking paperfence's own boundary
 
 ```
