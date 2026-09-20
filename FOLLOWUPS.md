@@ -16,6 +16,16 @@ New runtimes, a live enforcement daemon, transitive capability analysis and a la
 
 ## Open
 
+### Extraction accuracy, measured against real repositories
+
+From `reviews/real-repos-01.md`, the first run against repositories nobody here wrote:
+
+- **Extraction is not deterministic and nothing says so.** The same sentence was categorised `other` alone and `no-install` in context with thirty-nine others. A rule inherits its category's verdict, so a miscategorised rule in a repository that does deny that category would read as protected by a control unrelated to it.
+- **Real rules are being called untestable.** "Never commit code that does not typecheck, build, and pass tests" is the most checkable rule in that file and came back unmapped. So did "never relax, weaken, or delete the assertion".
+- **Rules are being mapped to categories that do not fit.** A scope rule filed as `no-install` gets probed with `npm install left-pad`.
+- **One line can be extracted twice.** Deduplicate by source line as well as by category and targets.
+- **There is no way to measure any of this.** Extraction needs the treatment the permission matcher got: a fixed set of real rule sentences with the category each should get, run as a suite. That is the item that turns the four above from anecdote into a number, and it should come first.
+
 ### Correctness and honesty
 - **Harden overwrites `policy.json` unconditionally.** Merge, or back up first. A team that hand-edited it loses the edit.
 - **"Run X before Y" carries only commit and push.** A rule about opening a pull request is compiled as a push. Carry the full action through.
