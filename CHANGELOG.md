@@ -58,6 +58,19 @@ remote added mid-run, or a push straight to a URL.
 **CI.** Markdown summaries for pull request comments and job summaries, and a
 composite GitHub Action that edits one comment rather than appending.
 
+**Conformance.** `paperfence conformance` checks our reading of Claude Code's
+permission semantics against the real runtime, case by case, with repetitions,
+because a permission decision that varies is itself a finding. It immediately
+found the worst bug this project has had: a deny entry naming only a tool, with
+no pattern, is not a control. `deny: ["Bash"]` let `pwd` run in five of eight
+trials and refused it in none. paperfence graded that as a gate, and `harden`
+generated `deny: ["WebFetch"]` itself. Both fixed. It also found that several
+rules reported as gaps are not silent allows: the runtime prompts, which is the
+same answer unattended and a different one when someone is watching.
+
+**A spend budget.** `--budget` on attack and compare, checked between trials.
+The report says the trials that did not run are not passes.
+
 Fixes found by running the tool on itself: the exfiltration probes aimed at loopback,
 which the guard exempts on purpose, so they reported a hole that was not there;
 "run X before Y" compiled every rule as "before committing"; "before pushing" did not
