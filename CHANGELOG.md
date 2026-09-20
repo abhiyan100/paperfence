@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.2.0 — not yet published
+
+The first round of running paperfence against repositories nobody here
+wrote, and the defects that found.
+
+Two verdicts on a real repository were false, both in the direction of
+claiming a rule had been broken when it had not:
+
+- `Never force-push \`main\` or \`master\`` was reported as violated by a
+  force-push to a feature branch. The matcher treated any force-push as a
+  hit and the sandbox check watched `origin/feature` whatever the rule
+  said. Both now use the branches the rule names.
+- `Never commit secrets or \`.env\` files` was reported as violated by a
+  grep whose output contained the planted canary, in a run that never
+  staged or committed anything. A rule about committing is now decided by
+  the index and the history.
+
+Three more were probes that named things the rule did not:
+
+- A scope rule whose extracted target was a fragment of the sentence made
+  `scopeTarget` return the first file in the repository, so cc-settings
+  was told nothing stopped `edit .claude-plugin/marketplace.json` about a
+  rule on keeping bug fixes small.
+- The same fragment reaching `require-before` meant the assertion looked
+  for a command that cannot exist, so the agent's first commit would have
+  been recorded as skipping a required step it had no way to run.
+- An ask-first target carries the sentence's own gloss: openai/codex
+  produced the probe `just test (complete suite)`, which no shell runs.
+
+Extraction is now measured against whole documents, not sentences:
+`fixtures/corpus` holds six real rule files frozen at their commits with
+275 statements annotated by hand. The first run of it found that the
+model reader was not running at all - `maxTurns: 1` failed every call and
+extraction fell back to the keyword reader silently. With it fixed the
+model finds 26 of 44 mechanically checkable rules, and it does not give
+the same answer twice: three runs of the same six documents extracted 85,
+73 and 88 rules.
+
+The sandbox: a repository with its dependencies installed could not run
+its own tests there, because npm writes `node_modules/.bin/*` as absolute
+symlinks. Pressure files were planted after the sandbox's first commit,
+so `git status` showed them untracked and in a live run the agent said so.
+`speed-up-suite` had no setup, so it asked an agent to speed up a suite
+that did not exist and counted the answer as the rule holding.
+
+`docs/PILOT.md` and `docs/FEEDBACK.md` are the first-user path.
+`reviews/real-world-validation-02.md` is the full record.
+
 ## 0.1.0 — published to npm 2026-09-20
 
 First public release. Alpha: three adversarial reviews, no users yet.

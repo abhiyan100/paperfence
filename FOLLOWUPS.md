@@ -6,7 +6,11 @@ Completed work lives in `CHANGELOG.md`. This file is only the list of things sti
 
 ## The stance right now
 
-paperfence is alpha. It has had five adversarial reviews, one run against real repositories, and no users.
+paperfence is alpha. It has had five adversarial reviews, two rounds against real repositories, and no users.
+
+**Round two ran on 2026-09-20** and is written up in `reviews/real-world-validation-02.md`. Six public repositories across five ecosystems, every mapped rule checked by hand, one live `attack`. It found five defects, two of them false `BROKEN` verdicts — paperfence stating that a repository's rule had been violated when it had not. It also found that the model extractor had not been running at all: every call failed on `maxTurns: 1`, extraction fell back to the keyword reader, and nothing said so.
+
+That is the prediction of the stance below coming true. Running it against the world found things five code reviews did not, and the single worst one was invisible to every test because everything downstream of it kept working.
 
 Review 5 is the one to weigh. It was blind: the reviewer was given no steering, no list of recent changes, no hint where to look. It found nine more paths where paperfence reported evidence it had not earned, plus a credential exposure. Two of those are worth remembering:
 
@@ -19,25 +23,32 @@ So the next phase is not more surface area. It is:
 
 > build → **stop** → audit → attack paperfence → fix → real users → then expand
 
-Where that stands: audit has run five times and keeps finding things, so it has not converged. The next round should be a user, not another reviewer. A sixth review of the same code by the same method has a lower yield than one person running this on a repository we have never seen.
+Where that stands: audit has run five times and keeps finding things, so it has not converged. Real-world validation has now run twice and also keeps finding things, at a higher yield per hour than the reviews. The next round should be **a person who is not us**, running `npx paperfence scan .` on a repository we have never seen. `docs/PILOT.md` and `docs/FEEDBACK.md` exist for exactly that, and `0.2.0` is prepared but not published.
 
 New runtimes, a live enforcement daemon, transitive capability analysis and a large public benchmark are all real and all deferred until that loop has run at least once.
 
 ## Open
 
-### Extraction accuracy, measured against real repositories
+### Extraction accuracy
 
-From `reviews/real-repos-01.md`, the first run against repositories nobody here wrote:
+Now measured against whole documents: `fixtures/corpus` holds six real rule files frozen at their commits with 272 statements annotated by hand, scored by `scripts/corpus-accuracy.ts`. The model reader finds 26 of 44 mechanically checkable rules and gets 15 of 31 target sets exactly right. Still open:
 
-- **Context changes the reading, and the case set does not capture that.** Both readers now score every clear-cut sentence in `src/rules/extraction-cases.ts`, and two model runs agreed on every one. The three real repositories still produced misses on rules that set gets right, because a real rule file is long prose and the set is short sentences in a clean list. Scoring against whole documents rather than sentences is the next step and is not built.
-- **Real rules were being called untestable.** Fixed for the offline reader and covered by the case set: "never commit code that does not typecheck, build, and pass tests" is an ordering rule with the gate stated first, an assertion is a test, and "get approval before deploying" never reached the categoriser because the line filter had no word for it. Whether the model reader still misses them inside a long document is the open part.
-- **Rules are being mapped to categories that do not fit.** A scope rule filed as `no-install` gets probed with `npm install left-pad`.
-- **One line can be extracted twice.** Deduplicate by source line as well as by category and targets.
-- **Measured now, at the sentence level only.** `src/rules/extraction-cases.ts` is the fixed set, scored free and deterministically for the offline reader on every test run, and by `scripts/extraction-accuracy.ts` for the model reader when someone wants to spend the money. What it cannot yet measure is a whole document.
+- **Judgement filed under a category with a probe behind it: 23 instances.** `Do not add tests for values that are statically defined.` → `protect-tests`. `Target Rust modules under 500 LoC` → `scope`. In a repository with deny entries this is the path to a false `GATE`, which is the worst output paperfence can produce. The invented-target guard does not catch it, because the probe it builds names a file that really exists; the rule is simply read as the wrong kind of rule.
+- **Extraction is not reproducible at document length.** Three runs of the same six documents: 85, 73 and 88 rules. Two runs of the same scan can disagree on a category. Nothing in the output warns a reader of this, and it should.
+- **Targets are exactly right 48% of the time at best.** A rule naming two paths where paperfence found one is reported as fully handled. Partial target extraction should be visible in the report.
+- **A rule whose document names its own enforcement is reported as unenforced.** `Type checking: pyright (enforced in CI)`, airflow's `check-no-new-airflow-exceptions` prek hook, vercel's `require-validate-url` oxlint rule. paperfence models deny entries and hooks and has no notion of CI or a lint rule as a control. Either model them with their own evidence, or say "this rule names an enforcement paperfence does not check" instead of "nothing enforces this". Guessing is not an option.
+- **The sentence set is still worth keeping.** `src/rules/extraction-cases.ts` is the fast deterministic check that a change did not break the easy cases; the corpus is the evidence about real documents.
+
+### Coverage gaps found by running against real repositories
+
+- **Test-suite detection misses two common layouts.** `apache/airflow` (uv + pytest behind a `breeze` wrapper) and `openai/codex` (`just test` over cargo) both came back as "no test suite found". Nothing false is claimed, but every test-related scenario is skipped in both, and the reason is ours.
+- **A macOS developer with native npm dependencies gets no runnable test environment.** The copied `node_modules` is built for darwin and the sandbox is linux. Reported honestly as `platform-mismatch`; not solved.
+- **Rules an agent can mechanically violate that paperfence has no category for.** "Never run pytest directly on the host, always use breeze"; "No `assert` in production code"; "Never list an agent as a commit co-author". 14 of them across the corpus. Filing them as `other` is right today; whether any deserves a scenario is a product question, not a bug.
 
 ### Correctness and honesty
 - **Harden overwrites `policy.json` unconditionally.** Merge, or back up first. A team that hand-edited it loses the edit.
-- **"Run X before Y" carries only commit and push.** A rule about opening a pull request is compiled as a push. Carry the full action through.
+- **"Run X before Y" carries only commit and push.** A rule about opening a pull request is compiled as a push. Carry the full action through. Real repositories also state the ordering the other way round — grafana's "Backend service init changes require `make gen-go`", codex's "run `just fmt` after you have finished making code changes" — and paperfence records those as `before` because it has no other shape.
+- **Live coverage is one repository deep.** The static path has been checked against six repositories; `attack` has been run against one, in three categories. The two false `BROKEN` verdicts both came out of that single run, which is not a reassuring ratio.
 - **The host guard has known holes by design.** A symlink created during a run and then read through a relative path; anything spawning a program not in the network list. Docker is the answer; do not extend the regexes much further.
 
 ### Runtimes
