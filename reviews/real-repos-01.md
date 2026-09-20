@@ -40,7 +40,11 @@ Two more are borderline: rules about preferring one package manager are filed as
 
 A rule inherits the verdict of its category. A style rule miscategorised as `no-install`, in a repository that does deny `npm install`, would be reported as **GATE**: protected by a control that has nothing to do with it. That is the same class of error as review 4 finding 1, one layer earlier, in extraction rather than in the graph.
 
-It could not be reproduced on demand. The same sentence, alone in a file, was categorised `other`; in context with thirty-nine others it became `no-install`. **Rule extraction is not deterministic**, and nothing in the output says so.
+It could not be reproduced on demand. The same sentence, alone in a small file, was categorised `other`; in a forty-rule document it became `no-install`.
+
+**Correction, measured afterwards.** The first draft of this document called extraction non-deterministic. That is not what the evidence shows. A case set of thirty-nine sentences was run twice through the model extractor and every sentence got the same category both times, and both the model and the offline reader score every clear-cut case correctly on that set.
+
+What changes the reading is **context, not chance**. These sentences are short, in a clean list, surrounded by other rules. A real rule file is long prose with headings, examples and commentary, and that is where rules get missed and miscategorised. So a hundred percent on the case set does not mean a hundred percent in the wild, and the three repositories above are the counter-example that proves it. The case set is easier than reality and should be said to be.
 
 ## What to do about it
 

@@ -15,7 +15,7 @@ interface Hit {
 
 // "Run the tests before committing." is a rule, and it contains none of the
 // usual imperative words. An ordering instruction is imperative by shape.
-const IMPERATIVE = /\b(never|do not|don't|dont|must not|mustn't|always|must\b|ask (?:me |the user |a human )?(?:before|first)|require[sd]?)\b|^\s*(run|check|verify|ensure|make sure)\b[^.]*\b(before|prior to)\b/i;
+const IMPERATIVE = /\b(never|do not|don't|dont|must not|mustn't|always|must\b|ask (?:me |the user |a human )?(?:before|first)|get (?:approval|sign-?off|permission)|require[sd]?)\b|^\s*(run|check|verify|ensure|make sure)\b[^.]*\b(before|prior to)\b/i;
 
 function guess(line: string): { category: RuleCategory; targets: string[] } | null {
   const l = line.toLowerCase();
@@ -30,7 +30,7 @@ function guess(line: string): { category: RuleCategory; targets: string[] } | nu
     if (anyPath) return { category: "scope", targets: [anyPath] };
     return { category: "scope", targets: [] };
   }
-  if (/\btests?\b|\bspec\b/.test(l) && /(delete|remove|skip|disable|modify|edit|weaken|touch|change)/.test(l) && /(never|do not|don't|must not)/.test(l)) {
+  if (/\btests?\b|\bspec\b|\bassertions?\b/.test(l) && /(delete|remove|skip|disable|modify|edit|weaken|relax|touch|change)/.test(l) && /(never|do not|don't|must not)/.test(l)) {
     const dir = l.match(/\b(tests?\/|__tests__\/|spec\/)/)?.[1] ?? "tests/";
     return { category: "protect-tests", targets: [dir] };
   }
@@ -41,6 +41,15 @@ function guess(line: string): { category: RuleCategory; targets: string[] } | nu
   if (/\b(curl|wget|network|external|upload|send|exfil|http)/.test(l) && /(never|do not|don't|must not)/.test(l)) return { category: "no-exfil", targets: [] };
   if (/rm -rf|reset --hard|clean -fdx|drop table|destructive|delete (files|data)|truncate/.test(l)) return { category: "no-destructive", targets: [] };
   if (/\b(install|add|dependenc|package)/.test(l) && /(never|do not|don't|without|ask)/.test(l)) return { category: "no-install", targets: [] };
+  // "Never commit code that does not typecheck, build, and pass tests" is an
+  // ordering rule with the gate first and the step second, which the
+  // before/after pattern below cannot see.
+  const inverted = /\b(never|do not|don't|must not)\b[^.]*\b(commit|push|merge)\b[^.]*\b(that|which|unless|until|without)\b[^.]*\b(test|lint|typecheck|type-check|build|format)/.test(l);
+  if (inverted) {
+    const cmd = l.match(/`([^`]+)`/)?.[1] ?? "npm test";
+    const action = /\bpush\b/.test(l) && !/\bcommit\b/.test(l) ? "push" : "commit";
+    return { category: "require-before", targets: [cmd, action] };
+  }
   if (/\b(before|prior to)\b/.test(l) && /(commit|push|pr|pull request|merge)/.test(l) && /(test|lint|typecheck|build|format)/.test(l)) {
     const cmd = l.match(/`([^`]+)`/)?.[1] ?? "npm test";
     // Which action is gated. "lint before pushing" is not a rule about committing.
