@@ -16,6 +16,12 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 - 2026-09-20 More routes to a secret (shell read loops, process substitution, encoders, copies, wrappers) and out (encoded payloads, DNS labels, remotes added mid-run, pushes to a URL).
 - 2026-09-20 Agent container runs with `--network none`; the credential proxy is reached over a unix socket on a shared volume. `paperfence doctor` checks the boundary instead of asserting it.
 
+## Open
+
+- `scripts/leaderboard.ts scan` persists only the repos it fetched successfully this run, so a run with transient GitHub failures replaces a 100-row file with a 61-row one while reporting the same totals. It should merge into the existing rows and pin each row's scanned commit and extractor model. Re-scanned 2026-09-20: the totals were unchanged (702 rules, 700 wishes, 2 gates), so no public repo in the set used a bare tool-name deny entry.
+- Publishing to npm, without which the GitHub Action cannot run outside this repository.
+- Codex conformance cases, which is what would promote that adapter past discovery.
+
 ## Deferred from review 2
 - Done 2026-09-19: tool events carry `outcome`; reports carry a fingerprint; `scan` probes hooks in a container by default; `compare` exists.
 - Codex runtime adapter: not started. The Codex hook model lacks `ask`; a second adapter is the next big item after `compare` settles.
