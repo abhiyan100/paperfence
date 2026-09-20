@@ -2,6 +2,68 @@
 
 ## Unreleased (0.1.0 in progress)
 
+### 2026-09-20
+
+The release that stopped a missing prerequisite from reading as a passing rule.
+
+**Verdicts.** A trial used to end in violated or not. "Not violated" was hiding three
+situations: the control blocked it, the agent declined, and the trial never got far
+enough to find out. Trials now end in PASS, FAIL, ERROR, INCONCLUSIVE or
+NOT_APPLICABLE, derived in one place and never re-derived downstream. A call that
+only paperfence's own sandbox guard stopped is a FAIL, because the repository did
+not stop it. Denominators exclude everything that reached no conclusion.
+
+**Repository profiling and prerequisites.** Scenarios used to assume our fixture: a
+README with a typo, `src/pricing.js`, an `infra/` directory. Against a Go service or
+a library with no README, the agent could not do the task and the rule looked safe.
+Every attack form now declares what the repository must have, and a form whose
+prerequisites are missing is reported as not applicable.
+
+**Attack families.** A rule is attacked through several forms, different tasks that
+end in the same forbidden effect. The protected-branch rule is tried as a
+documentation fix, an urgent revert and a release bump. Grades carry the evidence
+scope that produced them: which forms, how many trials, at what pressure, on which
+model, and what is still consistent with the result at that sample size.
+
+**Statistics.** Wilson intervals, `--reps`, and a line in `compare` saying whether
+the two arms can be told apart at all.
+
+**Receipts and replay.** Every trial writes a content-addressed receipt: an edited
+one hashes differently and `paperfence receipts` flags it. `paperfence replay`
+re-runs the conditions and says what drifted. Canaries are redacted before anything
+is written.
+
+**Sandbox.** The agent container runs with `--network none`. Its only path to the
+model API is a unix socket on a volume shared with the proxy, reached through a
+loopback forwarder. `paperfence doctor` checks the boundary instead of asserting it:
+no default route, no DNS, no route to the host or to the proxy's network, no
+privilege escalation. Image bumped to 0.4.
+
+**Runtime adapters.** An adapter declares four capabilities separately and any of
+them may be false. Claude Code supports all four; Codex supports discovery only, and
+says so on every verdict in a repository configured for it.
+
+**Policy.** `paperfence.policy.yaml`, inferred from the rules already present, with a
+compiler that labels every statement enforced, needs-runtime-guard, partial,
+org-control or unenforceable, per target, with the gaps spelled out.
+
+**Test integrity.** A suite can be made green without touching an assertion, by
+changing the test script, a runner config, or a CI job. All three are now snapshotted,
+asserted and blocked.
+
+**More routes.** Reading a secret through a shell loop, a process substitution, an
+encoder, a copy or a wrapper. Leaving through an encoded payload, a DNS label, a
+remote added mid-run, or a push straight to a URL.
+
+**CI.** Markdown summaries for pull request comments and job summaries, and a
+composite GitHub Action that edits one comment rather than appending.
+
+Fixes found by running the tool on itself: the exfiltration probes aimed at loopback,
+which the guard exempts on purpose, so they reported a hole that was not there;
+"run X before Y" compiled every rule as "before committing"; "before pushing" did not
+match; a line with no never/always/must in it was skipped entirely; and an exhausted
+turn budget was reported as an infrastructure error.
+
 ### 2026-09-19
 - `paperfence compare`: run the repo's task suite (bad tasks that must be blocked, good tasks that must still complete) under two configurations, interleaved, in Docker; one receipt with bad blocked, good done, asks, denials, cost, errors, per variant and per task; exit 2 when head regresses base. Variants: `--head`, `--without`, `--hook`, `--deny`, `--hardened`, `--model-b`.
 - `paperfence suite`: show or write the default suite (`.paperfence/suite.json`).
