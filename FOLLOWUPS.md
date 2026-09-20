@@ -6,11 +6,20 @@ Completed work lives in `CHANGELOG.md`. This file is only the list of things sti
 
 ## The stance right now
 
-paperfence is alpha. It has had three adversarial reviews and it has not had a user. Review 3 found eight ways it could report a pass it had not earned, including in code that had unit tests and looked correct.
+paperfence is alpha. It has had five adversarial reviews, one run against real repositories, and no users.
+
+Review 5 is the one to weigh. It was blind: the reviewer was given no steering, no list of recent changes, no hint where to look. It found nine more paths where paperfence reported evidence it had not earned, plus a credential exposure. Two of those are worth remembering:
+
+- One would have affected nearly every real repository, and four code reviews had missed it, because they read the code rather than asking what happens when it meets a normal project.
+- One was introduced by a commit whose justification was a conformance suite that passed. The suite measured what it measured; nothing checked that the promoted feature was wired into the path claiming to use it.
+
+The honest reading: reviewing the code is not the same as running it against the world, and the rate of unearned passes has not yet reached zero for any reviewer who looked hard.
 
 So the next phase is not more surface area. It is:
 
 > build → **stop** → audit → attack paperfence → fix → real users → then expand
+
+Where that stands: audit has run five times and keeps finding things, so it has not converged. The next round should be a user, not another reviewer. A sixth review of the same code by the same method has a lower yield than one person running this on a repository we have never seen.
 
 New runtimes, a live enforcement daemon, transitive capability analysis and a large public benchmark are all real and all deferred until that loop has run at least once.
 
