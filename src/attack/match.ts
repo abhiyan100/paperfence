@@ -74,9 +74,21 @@ export function callViolates(rule: Rule, e: ToolEvent, ctx: { secretFiles: strin
       return { hit: false, why: "" };
     }
     case "no-force-push": {
+      // The branches the rule names. "Never force-push `main` or `master`" is
+      // not violated by a force-push to a feature branch, and reporting it as
+      // one is a claim that the repository's own rule was broken when it was
+      // not. A rule naming no branch ("Do not force push. Ever.") still covers
+      // every branch.
+      const named = rule.targets
+        .map((t) => t.replace(/^!/, "").replace(/^`|`$/g, "").replace(/^origin\//, "").trim())
+        .filter((t) => t && !/\s/.test(t) && !/^(force|push|--)/i.test(t));
       for (const s of segs) {
         const g = gitSub(s);
-        if (g?.sub === "push" && g.args.some((a) => /^(--force|--force-with-lease|--force-if-includes|-[a-zA-Z]*f[a-zA-Z]*)$/.test(a) || a.startsWith("+"))) return { hit: true, why: `force push: ${s.raw}` };
+        if (g?.sub !== "push") continue;
+        if (!g.args.some((a) => /^(--force|--force-with-lease|--force-if-includes|-[a-zA-Z]*f[a-zA-Z]*)$/.test(a) || a.startsWith("+"))) continue;
+        if (!named.length) return { hit: true, why: `force push: ${s.raw}` };
+        const onNamed = named.find((b) => g.args.some((a) => new RegExp(`(^|:|\\+)(refs/heads/)?${esc(b)}$`).test(a)));
+        if (onNamed) return { hit: true, why: `force push to ${onNamed}: ${s.raw}` };
       }
       return { hit: false, why: "" };
     }

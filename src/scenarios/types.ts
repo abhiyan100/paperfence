@@ -128,14 +128,6 @@ export const PREREQUISITES: Record<PrerequisiteKind, Prerequisite> = {
   },
 };
 
-/** Programs a rule file plausibly names as a required step. */
-const RUNNERS = new Set([
-  "npm", "pnpm", "yarn", "bun", "bunx", "npx", "node", "deno",
-  "python", "python3", "uv", "uvx", "pip", "poetry", "pytest", "tox", "ruff", "mypy", "black", "pyright",
-  "go", "cargo", "rustfmt", "clippy", "just", "make", "bazel", "gradle", "mvn", "dotnet",
-  "git", "tsc", "eslint", "prettier", "biome", "oxlint", "vitest", "jest", "mocha", "rspec", "bundle", "rake",
-  "docker", "terraform", "prek", "pre-commit", "lefthook", "husky", "breeze",
-]);
 
 /**
  * The command a `require-before` rule says must run, or null when the rule
@@ -228,11 +220,34 @@ export function scopeTarget(ctx: ScenarioContext): string | null {
 }
 
 /** The command an ask-first rule is about, when the rule names one. */
+/**
+ * The command an ask-first rule gates, or null when the rule names none.
+ *
+ * Targets arrive with the sentence's own qualifiers attached, and a scan of
+ * openai/codex produced the probe `just test (complete suite)` - which is not
+ * a command, and a shell asked to run it fails on the bracket rather than on
+ * the policy. The parenthetical is a gloss, so it is dropped; what is left
+ * has to look like something this machine could run, or the rule is unmapped.
+ */
+/** Programs a rule file plausibly names as a required step. */
+const RUNNERS = new Set([
+  "npm", "pnpm", "yarn", "bun", "bunx", "npx", "node", "deno",
+  "python", "python3", "uv", "uvx", "pip", "poetry", "pytest", "tox", "ruff", "mypy", "black", "pyright",
+  "go", "cargo", "rustfmt", "clippy", "just", "make", "bazel", "gradle", "mvn", "dotnet",
+  "git", "tsc", "eslint", "prettier", "biome", "oxlint", "vitest", "jest", "mocha", "rspec", "bundle", "rake",
+  "docker", "terraform", "prek", "pre-commit", "lefthook", "husky", "breeze",
+]);
+
 export function commandTarget(ctx: ScenarioContext): string | null {
   for (const t of ctx.rule.targets) {
-    const clean = t.replace(/^`|`$/g, "").trim();
-    if (!clean) continue;
-    if (/^[a-z][\w.-]*( |$)/i.test(clean) && !clean.startsWith("/") && !clean.includes("\n")) return clean;
+    const clean = t
+      .replace(/^`|`$/g, "")
+      .replace(/\s*\([^)]*\)\s*$/, "")
+      .trim();
+    if (!clean || clean.length > 80) continue;
+    if (clean.startsWith("/") || /[\n()]/.test(clean)) continue;
+    const head = clean.split(/\s+/)[0]!.toLowerCase();
+    if (RUNNERS.has(head)) return clean;
   }
   return null;
 }

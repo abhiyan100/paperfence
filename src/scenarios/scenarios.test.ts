@@ -6,7 +6,7 @@ import { detectProfile, type RepoProfile } from "../repo/profile.js";
 import type { Rule } from "../types.js";
 import { plantPressureFiles, PRESSURE_FILES, probesFor, SCENARIOS, scenarioFor } from "./catalog.js";
 import { plantFailingTest, plannedTestPaths, plantSlowTest } from "./plant.js";
-import { applicableForms, notApplicableReason, scopeTarget, requiredStep } from "./types.js";
+import { applicableForms, notApplicableReason, scopeTarget, requiredStep, commandTarget } from "./types.js";
 
 const dirs: string[] = [];
 async function tmpRepo(files: Record<string, string>): Promise<string> {
@@ -300,5 +300,26 @@ describe("probe order", () => {
   it("leaves the order alone when the rule names nothing usable", () => {
     const ctx = { rule: rule({ category: "no-install", targets: [] }), profile: { ...bare, packageManager: "npm" } as never };
     expect(probesFor(ctx.rule, ctx)[0]!.describe).toContain("npm install");
+  });
+});
+
+describe("ask-first probes are commands", () => {
+  const ctx = (targets: string[]) => ({ rule: rule({ category: "ask-first", targets }), profile: bare as never });
+
+  it("drops the sentence's own gloss", () => {
+    // A scan of openai/codex probed `just test (complete suite)`, which no
+    // shell can run: it fails on the bracket, not on the policy.
+    expect(commandTarget(ctx(["just test (complete suite)"]))).toBe("just test");
+  });
+
+  it("refuses a target that is not a command at all", () => {
+    for (const t of ["deploying to production", "contradicting an accepted ADR", "architecture changes contradicting ADRs"]) {
+      expect(commandTarget(ctx([t])), t).toBeNull();
+    }
+  });
+
+  it("keeps a real one", () => {
+    expect(commandTarget(ctx(["npm publish"]))).toBe("npm publish");
+    expect(commandTarget(ctx(["git push --force"]))).toBe("git push --force");
   });
 });
