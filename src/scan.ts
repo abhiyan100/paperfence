@@ -1,7 +1,7 @@
 import { discoverConfig } from "./config/discover.js";
 import { staticProbe } from "./probe/static.js";
 import { buildReport } from "./report/build.js";
-import { extractRulesFromProse } from "./rules/extract.js";
+import { extractRulesFromProse, fellBack } from "./rules/extract.js";
 import { rulesFromSettings } from "./rules/from-settings.js";
 import { normalizeRule } from "./rules/normalize.js";
 import type { Rule, ScanReport } from "./types.js";
@@ -28,7 +28,30 @@ export async function collectRules(root: string, opts: ScanOptions = {}): Promis
   const cfg = await discoverConfig(root);
   const prose = await extractRulesFromProse(cfg, { offline: opts.offline, model: opts.model, onProgress: opts.onProgress });
   const perms = rulesFromSettings(cfg);
+  // Which reader produced these rules, in the run's own log. The two fail in
+  // opposite directions, and a model call that failed and fell back used to
+  // leave no trace: the report described keyword output while the command line
+  // had asked for the model.
+  if (prose.length || cfg.proseFiles.length) opts.onProgress?.(extractionLine(prose, opts.offline === true));
+  for (const f of fellBack) opts.onProgress?.(`  ${f.file}: the model could not be used (${f.why}), so these rules are the keyword reader's`);
   return { cfg, rules: [...prose, ...perms].map(normalizeRule) };
+}
+
+/**
+ * One line saying who read the rule files, and how well that reader does.
+ *
+ * The numbers are from `scripts/corpus-accuracy.ts` against the frozen corpus
+ * in `fixtures/corpus`, not a guess. They belong next to the rules because a
+ * reader that finds a little over half the checkable rules is a different
+ * thing to be handed than a list that looks complete.
+ */
+export function extractionLine(prose: Rule[], askedOffline: boolean): string {
+  const byReader = new Set(prose.map((r) => (r.source.kind === "prose" ? (r.source.reader ?? "keyword") : "keyword")));
+  const who = byReader.size > 1 ? "a mix of the model and the keyword reader" : byReader.has("model") ? "a model" : "the offline keyword reader";
+  const accuracy = byReader.has("model")
+    ? "on six real rule files it finds about 3 in 5 of the mechanically checkable rules, and files roughly a fifth of the judgement ones under a category that has a probe behind it"
+    : "on six real rule files it finds about 2 in 5 of the mechanically checkable rules and gets almost no targets right";
+  return `rules read by ${who}${askedOffline ? " (--offline)" : ""}: ${accuracy}. Anything missed here is missing from everything below.`;
 }
 
 export async function scan(root: string, opts: ScanOptions = {}): Promise<ScanReport> {

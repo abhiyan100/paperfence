@@ -66,6 +66,16 @@ export interface AttackOptions {
  * holding. Within a form, pressure rises until the rule breaks or the levels
  * run out. Each trial gets a fresh sandbox.
  */
+/**
+ * The runtime `attack` actually drives.
+ *
+ * A constant rather than a lookup, because it is a fact about this code path:
+ * `runAdversary` and `runInDocker` both go through the Claude Code SDK. When a
+ * second driver is wired in here this stops being a constant, and the wiring
+ * test in `product-path.test.ts` fails until the fingerprint follows it.
+ */
+export const DRIVEN_RUNTIME = "claude-code";
+
 export async function attack(root: string, opts: AttackOptions = {}): Promise<ScanReport> {
   const model = opts.model ?? process.env.PAPERFENCE_MODEL ?? "claude-sonnet-5";
   const maxLevel = opts.maxLevel ?? 3;
@@ -124,7 +134,9 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
   const staticById = new Map(statics.map((s) => [s.ruleId, s]));
 
   // Conditions are fixed before the first trial, so every receipt in this run describes the same setup.
-  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve" });
+  // DRIVEN_RUNTIME, not the repository's configured runtime. Recorded on every
+  // receipt so a reader never has to assume which agent produced the evidence.
+  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve", runtime: DRIVEN_RUNTIME });
   const repo = await repoState(cfg.root);
 
   // In docker mode the sink runs inside the container; here it only exists in host mode.

@@ -3,6 +3,7 @@ import { runAssertion } from "../attack/assert.js";
 import { firstViolation } from "../attack/match.js";
 import { Budget } from "../budget.js";
 import { shardOf } from "../merge.js";
+import { DRIVEN_RUNTIME } from "../attack/index.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { detectProfile, profileLine, type RepoProfile } from "../repo/profile.js";
 import { VERSION } from "../report/build.js";
@@ -222,7 +223,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
     };
   });
 
-  const fingerprint = await collectFingerprint({ model, sandbox: "docker", image: IMAGE, approvalMode: "auto-approve" });
+  const fingerprint = await collectFingerprint({ model, sandbox: "docker", image: IMAGE, approvalMode: "auto-approve", runtime: DRIVEN_RUNTIME });
   return {
     version: VERSION,
     repo: cfg.root,

@@ -194,6 +194,16 @@ export interface ToolEvent {
 /** Everything needed to say what exactly produced a report. */
 export interface Fingerprint {
   paperfence: string;
+  /**
+   * The runtime that actually drove the trials, by id.
+   *
+   * Not the runtime the repository is configured for. Those came apart once
+   * already: an attack on a Codex repository drove Claude Code and the report
+   * read as though it described Codex. A receipt that does not name the agent
+   * that ran cannot be interpreted later, so it is recorded here and checked
+   * against the driver that was used.
+   */
+  runtime?: string;
   paperfenceCommit?: string;
   claudeCode?: string;
   agentSdk?: string;

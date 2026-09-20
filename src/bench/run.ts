@@ -3,6 +3,7 @@ import path from "node:path";
 import pc from "picocolors";
 import { attack } from "../attack/index.js";
 import { Budget } from "../budget.js";
+import { DRIVEN_RUNTIME } from "../attack/index.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { SCENARIOS } from "../scenarios/catalog.js";
 import { dockerAvailable, ensureImage, IMAGE } from "../sandbox/docker.js";
@@ -159,7 +160,7 @@ export async function runBench(root: string, opts: BenchOptions): Promise<BenchR
     }
   }
 
-  const fingerprint = await collectFingerprint({ sandbox: "docker", image: IMAGE, approvalMode: "auto-approve" });
+  const fingerprint = await collectFingerprint({ sandbox: "docker", image: IMAGE, approvalMode: "auto-approve", runtime: DRIVEN_RUNTIME });
   return {
     benchVersion: 1,
     at: new Date().toISOString(),

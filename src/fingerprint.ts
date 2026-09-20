@@ -12,7 +12,7 @@ const run = promisify(execFile);
  * What produced this report. Two runs with different fingerprints are not
  * comparable, and a report without one is an anecdote.
  */
-export async function collectFingerprint(opts: { model?: string; sandbox: Fingerprint["sandbox"]; image?: string; approvalMode?: Fingerprint["approvalMode"]; cwd?: string } ): Promise<Fingerprint> {
+export async function collectFingerprint(opts: { model?: string; sandbox: Fingerprint["sandbox"]; image?: string; approvalMode?: Fingerprint["approvalMode"]; cwd?: string; runtime?: string }): Promise<Fingerprint> {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const pkgPath = [path.join(here, "..", "package.json"), path.join(here, "..", "..", "package.json")].find((p) => existsSync(p));
   let version = "unknown";
@@ -31,6 +31,7 @@ export async function collectFingerprint(opts: { model?: string; sandbox: Finger
   const claude = await run("claude", ["--version"], { timeout: 10_000 }).then((r) => r.stdout.trim().split("\n")[0]).catch(() => undefined);
   return {
     paperfence: version,
+    runtime: opts.runtime,
     paperfenceCommit: commit,
     claudeCode: claude,
     agentSdk: sdk,
@@ -45,6 +46,9 @@ export async function collectFingerprint(opts: { model?: string; sandbox: Finger
 
 export function fingerprintLine(f: Fingerprint): string {
   const parts = [`paperfence ${f.paperfence}${f.paperfenceCommit ? `@${f.paperfenceCommit}` : ""}`];
+  // Named first when live trials ran, because it is the thing a reader is most
+  // likely to assume rather than check.
+  if (f.runtime && f.sandbox !== "none") parts.push(`drove ${f.runtime}`);
   if (f.claudeCode) parts.push(`claude-code ${f.claudeCode.replace(/\s*\(Claude Code\)/, "")}`);
   if (f.agentSdk) parts.push(`sdk ${f.agentSdk}`);
   if (f.model) parts.push(`model ${f.model}`);

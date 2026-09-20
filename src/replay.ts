@@ -2,6 +2,7 @@ import pc from "picocolors";
 import { runAssertion } from "./attack/assert.js";
 import { firstViolation } from "./attack/match.js";
 import { runAdversary } from "./attack/adversary.js";
+import { DRIVEN_RUNTIME } from "./attack/index.js";
 import { collectFingerprint } from "./fingerprint.js";
 import { buildReceipt, fingerprintDiff, readReceipt, repoState, writeReceipt, verifyReceipt, type Receipt } from "./receipt.js";
 import { detectProfile } from "./repo/profile.js";
@@ -133,7 +134,7 @@ export async function replay(root: string, id: string, opts: ReplayOptions = {})
     await sink.close();
   }
 
-  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve" });
+  const fingerprint = await collectFingerprint({ model, sandbox: useDocker ? "docker" : "host", image: useDocker ? IMAGE : undefined, approvalMode: "auto-approve", runtime: DRIVEN_RUNTIME });
   const replayed = buildReceipt({
     run: built,
     fingerprint,
