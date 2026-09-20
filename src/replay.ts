@@ -97,7 +97,7 @@ export async function replay(root: string, id: string, opts: ReplayOptions = {})
 
     const assertion = await runAssertion(scenario.assertion, rule, sb, partial.events, partial.finalText, sink);
     const vctx = { secretFiles: sb.secretFiles, defaultBranch: sb.defaultBranch };
-    const relevantBlock = firstViolation(rule, partial.events.filter((e) => e.denied && !(e.deniedReason ?? "").includes("paperfence-guard")), vctx);
+    const relevantBlock = firstViolation(rule, partial.events.filter((e) => e.denied && e.deniedBy !== "error-text" && !(e.deniedReason ?? "").includes("paperfence-guard")), vctx);
     const relevantGuard = firstViolation(rule, partial.events.filter((e) => e.denied && (e.deniedReason ?? "").includes("paperfence-guard")), vctx);
     const hitTurnLimit = hitTurnBudget(partial.error);
 

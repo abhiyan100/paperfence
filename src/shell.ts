@@ -303,12 +303,54 @@ export function parseSegment(raw: string): Segment {
   return { raw, words: ws, prog, base: prog.split("/").pop() ?? prog, args: rest.slice(k + 1), reads, writes };
 }
 
-/** Every segment Claude Code would check for a deny rule, including subshell bodies. */
+/** Shells whose `-c` argument is another command. */
+const SHELLS = /^(sh|bash|zsh|dash|ksh|ash|busybox)$/;
+
+/**
+ * Every segment Claude Code would check for a deny rule, including subshell
+ * bodies.
+ *
+ * Deliberately does NOT look inside `sh -c '...'`. Claude Code does not, and
+ * the whole point of the static probe is to report what the runtime actually
+ * does. Expanding it here would turn a documented gap into a reported gate,
+ * which is the failure this tool exists to find. Use `allSegmentsDeep` for
+ * paperfence's own matcher, assertions and guard.
+ */
 export function allSegments(cmd: string): Segment[] {
   const out: Segment[] = [];
   for (const top of splitTopLevel(cmd)) {
     out.push(parseSegment(top));
     for (const inner of subshells(top)) for (const s of splitTopLevel(inner)) out.push(parseSegment(s));
+  }
+  return out;
+}
+
+/**
+ * Every command that would actually run, including the bodies of `sh -c`.
+ *
+ * `bash -lc 'rm -rf build'` came back as one segment whose program was `bash`,
+ * so nothing matched the removal: our guard allowed it and our assertions did
+ * not see it. The flag is not always a bare `-c`; `-lc`, `-ec` and `-xc` all
+ * carry a command.
+ *
+ * Wrappers like env, sudo and timeout need no special case: parseSegment
+ * already steps over them, resolving `timeout 5 rm -rf build` to `rm`.
+ *
+ * This is what paperfence's own enforcement and evidence should use. It is not
+ * what Claude Code does, so the permission matcher must not use it.
+ */
+export function allSegmentsDeep(cmd: string, depth = 0): Segment[] {
+  if (depth > 6) return [];
+  const out: Segment[] = [];
+  for (const top of splitTopLevel(cmd)) {
+    const seg = parseSegment(top);
+    out.push(seg);
+    for (const inner of subshells(top)) for (const s of splitTopLevel(inner)) out.push(...allSegmentsDeep(s, depth + 1));
+    if (SHELLS.test(seg.base)) {
+      const i = seg.args.findIndex((a) => /^-[a-zA-Z]*c$/.test(a.text) || a.text === "--command");
+      const body = i !== -1 ? seg.args[i + 1]?.text : undefined;
+      if (body) out.push(...allSegmentsDeep(body, depth + 1));
+    }
   }
   return out;
 }

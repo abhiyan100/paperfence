@@ -12,6 +12,7 @@ import type { Sink } from "../sandbox/sink.js";
 import { collectRules } from "../scan.js";
 import type { CompareReport, PressureLevel, Rule, Suite, TaskRun, Variant, VariantSummary, VerdictDetail } from "../types.js";
 import { hitTimeLimit, hitTurnBudget, verdictFor } from "../verdict.js";
+import { redact } from "../receipt.js";
 import { runChecks } from "./checks.js";
 import { formFor, loadSuite, objectiveFor, resolveRule } from "./suite.js";
 import { materialize, type VariantSpec } from "./variants.js";
@@ -122,7 +123,8 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
                 const a = await runAssertion(scenarioFor(badRule.category).assertion, badRule, sb, partial.events, partial.finalText, sink);
                 const vctx = { secretFiles: sb.secretFiles, defaultBranch: sb.defaultBranch };
                 const denied = partial.events.filter((e) => e.denied).length;
-                const relevantBlock = firstViolation(badRule, partial.events.filter((e) => e.denied), vctx);
+                // Only a refusal from the runtime or a hook counts as a control.
+                const relevantBlock = firstViolation(badRule, partial.events.filter((e) => e.denied && e.deniedBy !== "error-text"), vctx);
                 const hitTurnLimit = hitTurnBudget(partial.error);
                 const verdict = verdictFor({
                   effectOccurred: a.violated,
@@ -167,6 +169,9 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
                 error: partial.error, events: partial.events, finalText: partial.finalText,
               };
             }
+            // Redact at the sandbox boundary: the assertions are done and
+            // everything from here ends up in a report or an HTML file.
+            run = redact(run, sb.canary);
             runs.push(run);
             const tag =
               run.verdict?.verdict === "PASS" ? pc.green("pass")

@@ -28,12 +28,21 @@ export function scanMarkdown(report: ScanReport): string {
   const tested = t.gate + t.wish + t.broken;
   const out: string[] = [];
 
+  // Nothing concluded is not the same as nothing wrong. A report where every
+  // trial errored used to read "All 0 testable rules have a control behind
+  // them", which is a green headline for a run that measured nothing.
   const headline =
     t.broken > 0
       ? `**${t.broken} of ${tested} rule${tested === 1 ? "" : "s"} ${t.broken === 1 ? "was" : "were"} broken in a live run.**`
-      : t.wish > 0
-        ? `**${t.wish} of ${tested} rule${tested === 1 ? "" : "s"} ${t.wish === 1 ? "has" : "have"} nothing mechanical behind ${t.wish === 1 ? "it" : "them"}.**`
-        : `**All ${tested} testable rule${tested === 1 ? " has" : "s have"} a control behind ${tested === 1 ? "it" : "them"}.**`;
+      : tested === 0
+        ? t.error > 0
+          ? `**Nothing was measured: ${t.error} rule${t.error === 1 ? "" : "s"} could not be checked because the trials did not complete.**`
+          : t.notApplicable > 0
+            ? `**Nothing was measured: this repository has none of the prerequisites the ${t.notApplicable} rule${t.notApplicable === 1 ? "" : "s"} would need.**`
+            : `**No rule in this repository could be mapped to a mechanical check.**`
+        : t.wish > 0
+          ? `**${t.wish} of ${tested} rule${tested === 1 ? "" : "s"} ${t.wish === 1 ? "has" : "have"} nothing mechanical behind ${t.wish === 1 ? "it" : "them"}.**`
+          : `**All ${tested} testable rule${tested === 1 ? " has" : "s have"} a control behind ${tested === 1 ? "it" : "them"}.**`;
 
   out.push(`### paperfence`);
   out.push("");
@@ -45,6 +54,14 @@ export function scanMarkdown(report: ScanReport): string {
   const order: Grade[] = ["BROKEN", "WISH", "GATE", "ERROR", "NOT_APPLICABLE", "UNTESTED"];
   const sorted = [...report.verdicts].sort((a, b) => order.indexOf(a.grade) - order.indexOf(b.grade));
   const shown = sorted.filter((v) => v.grade === "BROKEN" || v.grade === "WISH").slice(0, 10);
+
+  const errored = sorted.filter((v) => v.grade === "ERROR");
+  if (errored.length) {
+    out.push(`> **${errored.length} rule${errored.length === 1 ? "" : "s"} could not be checked.** The trials did not complete, so nothing below is a statement about ${errored.length === 1 ? "it" : "them"}.`);
+    out.push("");
+    for (const v of errored.slice(0, 5)) out.push(`- ${esc(v.rule.text)}: ${esc(v.summary.slice(0, 180))}`);
+    out.push("");
+  }
 
   if (shown.length) {
     out.push("| | rule | what stops it |");
@@ -97,7 +114,12 @@ export function compareMarkdown(r: CompareReport): string {
   out.push("### paperfence compare");
   out.push("");
 
-  if (base && head) {
+  const nothingRan = r.summaries.every((s) => s.badTotal === 0 && s.goodTotal === 0);
+  if (nothingRan) {
+    const lost = r.summaries.reduce((a, s) => a + s.errors + s.inconclusive + s.notApplicable, 0);
+    out.push(`**Nothing was measured.** No task reached a conclusion in either arm${lost ? ` (${lost} errored, ran out of turns, or needed something this repository does not have)` : ""}, so this run says nothing about the change.`);
+    out.push("");
+  } else if (base && head) {
     const badWorse = head.badBlocked < base.badBlocked;
     const goodWorse = head.goodCompleted < base.goodCompleted;
     out.push(

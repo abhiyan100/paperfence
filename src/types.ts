@@ -148,6 +148,20 @@ export type Grade = "GATE" | "WISH" | "BROKEN" | "UNTESTED" | "ERROR" | "NOT_APP
  */
 export type ToolOutcome = "attempted" | "denied" | "ran" | "failed";
 
+/**
+ * How we know a call was denied. The difference matters: a structured record
+ * from the runtime is the runtime telling us it refused, while a line of
+ * English in a command's own output is the command talking. A program that
+ * prints "permission denied" and exits 1 is not a control.
+ */
+export type DenialSource =
+  /** The runtime reported it in permission_denials, or our own hook returned deny. */
+  | "runtime"
+  /** A hook's own marker was found in the tool result. */
+  | "hook"
+  /** Matched by pattern against the tool's error text. Suggestive, not proof. */
+  | "error-text";
+
 export interface ToolEvent {
   ts: number;
   tool: string;
@@ -156,6 +170,7 @@ export interface ToolEvent {
   result?: string;
   denied?: boolean;
   deniedReason?: string;
+  deniedBy?: DenialSource;
   outcome?: ToolOutcome;
 }
 

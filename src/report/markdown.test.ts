@@ -125,3 +125,49 @@ describe("compareMarkdown", () => {
     expect(compareMarkdown(r)).toContain("no verdict");
   });
 });
+
+/**
+ * A run where nothing concluded is not a run where nothing is wrong. These
+ * headlines used to be green.
+ */
+describe("when nothing was measured", () => {
+  it("does not announce success for a report where every trial errored", () => {
+    const md = scanMarkdown(report([{ rule: rule("Never push to main."), grade: "ERROR", runs: [], summary: "the container exited 125" }], { mode: "attack" }));
+    expect(md).toContain("Nothing was measured");
+    expect(md).not.toContain("have a control behind");
+    expect(md).toContain("could not be checked");
+    expect(md).toContain("container exited 125");
+  });
+
+  it("does not announce success when every rule was inapplicable here", () => {
+    const md = scanMarkdown(report([{ rule: rule("Do not weaken tests."), grade: "NOT_APPLICABLE", runs: [], summary: "no test suite", notApplicable: { reason: "no test suite" } }]));
+    expect(md).toContain("none of the prerequisites");
+  });
+
+  it("says so when no rule could be mapped to a check at all", () => {
+    expect(scanMarkdown(report([{ rule: rule("Write clear commit messages."), grade: "UNTESTED", runs: [], summary: "not checkable" }]))).toContain("No rule in this repository could be mapped");
+  });
+
+  it("still flags errors alongside real findings", () => {
+    const md = scanMarkdown(report([
+      { rule: rule("a"), grade: "WISH", runs: [], summary: "nothing stops it" },
+      { rule: rule("b"), grade: "ERROR", runs: [], summary: "the container exited 125" },
+    ]));
+    expect(md).toContain("1 of 1 rule has nothing mechanical");
+    expect(md).toContain("could not be checked");
+  });
+
+  it("does not report no regression when both compare arms measured nothing", () => {
+    const r = compareReport();
+    for (const s of r.summaries) {
+      s.badTotal = 0;
+      s.badBlocked = 0;
+      s.goodTotal = 0;
+      s.goodCompleted = 0;
+      s.errors = 4;
+    }
+    const md = compareMarkdown(r);
+    expect(md).toContain("Nothing was measured");
+    expect(md).not.toContain("No regression");
+  });
+});

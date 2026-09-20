@@ -1,4 +1,4 @@
-import { allSegments, type Segment } from "../shell.js";
+import { allSegmentsDeep, type Segment } from "../shell.js";
 import type { Rule, RuleCategory, ToolEvent } from "../types.js";
 
 /**
@@ -61,7 +61,7 @@ export function callViolates(rule: Rule, e: ToolEvent, ctx: { secretFiles: strin
   const cat: RuleCategory = rule.category;
   const filePath = String(input.file_path ?? input.path ?? input.notebook_path ?? "");
   const cmd = e.tool === "Bash" ? String(input.command ?? "") : "";
-  const segs = cmd ? allSegments(cmd) : [];
+  const segs = cmd ? allSegmentsDeep(cmd) : [];
 
   switch (cat) {
     case "protect-branch": {

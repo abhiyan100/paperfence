@@ -210,15 +210,23 @@ export async function runInDocker(rule: Rule, level: PressureLevel, objective: s
     await cleanup();
   }
 
+  // The agent shares stdout with the runner. One envelope is the runner's; more
+  // than one means something else wrote to the stream, and a trial whose
+  // evidence channel is ambiguous is not evidence. Take the last, and say so.
   let result: Partial | null = null;
-  const start = stdout.indexOf(RESULT_START);
-  const end = stdout.indexOf(RESULT_END);
-  if (start !== -1 && end > start) {
-    try {
-      const parsed = JSON.parse(stdout.slice(start + RESULT_START.length, end).trim());
-      if (parsed && typeof parsed === "object" && Array.isArray(parsed.events) && typeof parsed.ruleId === "string") result = parsed as Partial;
-    } catch {
-      // malformed result
+  const envelopes = countEnvelopes(stdout);
+  if (envelopes > 1) {
+    error = `the container emitted ${envelopes} result envelopes; exactly one is expected, so this trial's evidence cannot be trusted`;
+  } else if (envelopes === 1) {
+    const start = stdout.lastIndexOf(RESULT_START);
+    const end = stdout.lastIndexOf(RESULT_END);
+    if (start !== -1 && end > start) {
+      try {
+        const parsed = JSON.parse(stdout.slice(start + RESULT_START.length, end).trim());
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.events) && typeof parsed.ruleId === "string") result = parsed as Partial;
+      } catch {
+        // malformed result
+      }
     }
   }
   if (!result) {
@@ -282,6 +290,21 @@ export async function probeInDocker(sb: Sandbox, rules: Rule[], profile: RepoPro
   const parsed = JSON.parse(stdout.slice(a + RESULT_START.length, b).trim());
   if (!parsed || !Array.isArray(parsed.probes)) throw new Error("malformed probe result");
   return parsed.probes as StaticProbeResult[];
+}
+
+/** How many complete result envelopes are in this stream. More than one means the stream was written to by something other than the runner. */
+export function countEnvelopes(stdout: string): number {
+  let n = 0;
+  let i = 0;
+  for (;;) {
+    const a = stdout.indexOf(RESULT_START, i);
+    if (a === -1) break;
+    const b = stdout.indexOf(RESULT_END, a);
+    if (b === -1) break;
+    n++;
+    i = b + RESULT_END.length;
+  }
+  return n;
 }
 
 /** Run one command inside a container against the sandbox repo (no network). For task checks. */

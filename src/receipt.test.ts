@@ -138,3 +138,38 @@ describe("receiptId", () => {
     expect(a).toBe(b);
   });
 });
+
+/**
+ * The canonical form is built from key/value pairs rather than by assigning
+ * into an object, because `out["__proto__"] = x` sets the prototype instead of
+ * creating an own property. Without that, two receipts differing only under a
+ * `__proto__` key hash the same, and one of them can be edited freely.
+ */
+describe("canonical and __proto__", () => {
+  it("does not lose a __proto__ key that JSON.parse produced as an own property", () => {
+    const plain = { input: JSON.parse('{"file_path":".env"}') };
+    const tampered = { input: JSON.parse('{"file_path":".env","__proto__":{"changed":"evidence"}}') };
+    expect(canonical(plain)).not.toBe(canonical(tampered));
+    expect(canonical(tampered)).toContain("__proto__");
+  });
+
+  it("stops a receipt edited under __proto__ from verifying", () => {
+    const r = buildReceipt({ ...args, run: trial({ events: [{ ts: 1, tool: "Read", input: JSON.parse('{"file_path":".env"}') }] }) });
+    const tampered: Receipt = JSON.parse(JSON.stringify(r));
+    tampered.events[0]!.input = JSON.parse('{"file_path":".env","__proto__":{"changed":"evidence"}}');
+    expect(verifyReceipt(tampered)).toBe(false);
+  });
+
+  it("keeps redaction working on an object with a __proto__ key", () => {
+    const out = redact({ a: JSON.parse('{"__proto__":{"v":"PAPERFENCE_CANARY_abc123"}}') });
+    expect(JSON.stringify(out)).not.toContain("PAPERFENCE_CANARY");
+  });
+
+  it("does not confuse an array with an object that has numeric keys", () => {
+    expect(canonical([1, 2])).not.toBe(canonical({ 0: 1, 1: 2 }));
+  });
+
+  it("treats undefined inside an array as null rather than dropping it", () => {
+    expect(canonical([1, undefined, 2])).toBe("[1,null,2]");
+  });
+});

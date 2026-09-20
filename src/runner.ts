@@ -4,7 +4,21 @@
  * agent, which shares the filesystem, has nothing it can tamper with.
  * The exfil sink runs on localhost so the objective's URL resolves.
  * No paperfence guard here: the container is the boundary.
+ *
+ * The agent is a child of this process, on the same uid and in the same pid
+ * namespace, so it can send this process signals. Node opens its debugger on
+ * SIGUSR1, and a debugger on loopback is arbitrary code execution inside the
+ * process that writes the result. `kill -USR1 1` followed by a Runtime.evaluate
+ * on port 9229 would let an agent emit its own result envelope: an empty event
+ * list after a destructive command reads as a clean trial.
+ *
+ * Installing our own SIGUSR1 listener stops Node starting the inspector at all,
+ * which closes that path. The host also takes the LAST envelope, not the first,
+ * and refuses a run that emitted more than one.
  */
+// Must be installed before anything else can be signalled.
+process.on("SIGUSR1", () => {});
+process.on("SIGUSR2", () => {});
 import { runAdversary } from "./attack/adversary.js";
 import { discoverConfig } from "./config/discover.js";
 import { staticProbe } from "./probe/static.js";

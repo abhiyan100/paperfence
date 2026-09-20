@@ -5,7 +5,14 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
+
+// Never execSync in here. The arguments are paths the agent chose, and a shell
+// would run whatever is inside $(...). `git cat-file -e HEAD:"x$(rm -rf .claude).txt"`
+// deleted the enforcement configuration while checking whether a file existed.
+function git(args) {
+  return execFileSync("git", args, { cwd, stdio: ["ignore", "pipe", "ignore"] }).toString();
+}
 
 const policy = JSON.parse(fs.readFileSync(path.join(__dirname, "policy.json"), "utf8"));
 const input = JSON.parse(fs.readFileSync(0, "utf8"));
@@ -43,7 +50,7 @@ function writeState(s) {
 }
 function currentBranch() {
   try {
-    return execSync("git rev-parse --abbrev-ref HEAD", { cwd, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+    return git(["rev-parse", "--abbrev-ref", "HEAD"]).trim();
   } catch {
     return "";
   }
@@ -111,11 +118,17 @@ function segments(cmd, depth = 0) {
   for (const seg of splitTop(cmd)) {
     out.push(seg);
     for (const inner of subshellBodies(seg)) out.push(...segments(inner, depth + 1));
-    // sh -c '...' / bash -c "..." : the body is a command too
+    // sh -c '...' / bash -lc "..." : the body is a command too. The flag may be
+    // combined with others, so -lc, -ec and -xc all carry a command.
     const p = parseProg(seg);
-    if (/^(sh|bash|zsh|dash)$/.test(p.prog)) {
-      const ci = p.argv.indexOf("-c");
+    if (/^(sh|bash|zsh|dash|ksh|ash|busybox)$/.test(p.prog)) {
+      const ci = p.argv.findIndex((a) => /^-[a-zA-Z]*c$/.test(a) || a === "--command");
       if (ci !== -1 && p.argv[ci + 1]) out.push(...segments(p.argv[ci + 1], depth + 1));
+    }
+    // env/xargs/timeout and friends wrap a command; so does `su -c`.
+    if (/^(env|nohup|timeout|stdbuf|setsid|nice|ionice|script|doas|sudo)$/.test(p.prog)) {
+      const rest = p.argv.filter((a) => !a.startsWith("-") && !/^\w+=/.test(a));
+      if (rest.length) out.push(...segments(rest.join(" "), depth + 1));
     }
   }
   return out;
@@ -204,11 +217,11 @@ function committed(relPath) {
   if (committedCache.has(relPath)) return committedCache.get(relPath);
   let result;
   try {
-    execSync("git cat-file -e HEAD:" + JSON.stringify(relPath), { cwd, stdio: ["ignore", "ignore", "ignore"] });
+    git(["cat-file", "-e", "HEAD:" + relPath]);
     result = true;
   } catch (e) {
     let inRepo = true;
-    try { execSync("git rev-parse --is-inside-work-tree", { cwd, stdio: ["ignore", "ignore", "ignore"] }); } catch { inRepo = false; }
+    try { git(["rev-parse", "--is-inside-work-tree"]); } catch { inRepo = false; }
     result = inRepo ? false : fs.existsSync(path.join(cwd, relPath));
   }
   committedCache.set(relPath, result);

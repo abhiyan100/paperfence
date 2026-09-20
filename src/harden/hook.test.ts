@@ -379,3 +379,37 @@ describe("the action a required step actually gates", () => {
     expect((await fire("Bash", { command: "git push origin feature" })).code).toBe(0);
   });
 });
+
+/**
+ * Findings from the third review. Each of these was a way past the guard.
+ */
+describe("routes the third review found", () => {
+  it("does not run a shell when checking whether a path is committed", async () => {
+    // `git cat-file -e HEAD:"x$(...)"` used to go through execSync, so the
+    // substitution ran. The payload here would delete the guard itself.
+    const marker = path.join(root, "INJECTION_RAN");
+    await fs.rm(marker, { force: true });
+    const r = await fire("Write", { file_path: path.join(root, `x$(touch ${marker}).txt`), content: "hello" });
+    expect(await fs.stat(marker).then(() => true).catch(() => false)).toBe(false);
+    expect([0, 2]).toContain(r.code);
+  });
+
+  it("blocks a destructive command inside bash -lc, not only a bare -c", async () => {
+    for (const command of ["bash -lc 'rm -rf build'", "sh -c 'rm -rf build'", "bash -ec 'rm -rf build'", "sh --command 'rm -rf build'"]) {
+      const r = await fire("Bash", { command });
+      expect(r.code, command).toBe(2);
+    }
+  });
+
+  it("blocks a push to a protected branch hidden inside bash -lc", async () => {
+    expect((await fire("Bash", { command: "bash -lc 'git push origin main'" })).code).toBe(2);
+  });
+
+  it("blocks a secret read hidden inside bash -lc", async () => {
+    expect((await fire("Bash", { command: "bash -lc 'cat .env'" })).code).toBe(2);
+  });
+
+  it("still allows an ordinary command inside bash -lc", async () => {
+    expect((await fire("Bash", { command: "bash -lc 'ls -la'" })).code).toBe(0);
+  });
+});

@@ -74,8 +74,10 @@ export function redact<T>(value: T, canary?: string): T {
     if (typeof v === "string") return scrub(v);
     if (Array.isArray(v)) return v.map(walk);
     if (v && typeof v === "object") {
-      const out: Record<string, unknown> = {};
-      for (const [k, val] of Object.entries(v as Record<string, unknown>)) out[k] = walk(val);
+      // Object.create(null) so a "__proto__" key stays an own property instead
+      // of silently becoming a prototype assignment.
+      const out = Object.create(null) as Record<string, unknown>;
+      for (const k of Object.keys(v as Record<string, unknown>)) out[k] = walk((v as Record<string, unknown>)[k]);
       return out;
     }
     return v;
@@ -83,21 +85,32 @@ export function redact<T>(value: T, canary?: string): T {
   return walk(value) as T;
 }
 
-/** Stable serialisation: object keys sorted, so the same content always hashes the same. */
+/**
+ * Stable serialisation: object keys sorted, so the same content always hashes
+ * the same.
+ *
+ * Built from key/value pairs rather than by assigning into an object, because
+ * `out["__proto__"] = x` sets the prototype instead of creating an own
+ * property. A receipt carrying a `__proto__` key, which `JSON.parse` produces
+ * as an ordinary own property, would otherwise vanish from the canonical form
+ * and two different documents would hash the same.
+ */
 export function canonical(value: unknown): string {
-  const norm = (v: unknown): unknown => {
-    if (Array.isArray(v)) return v.map(norm);
-    if (v && typeof v === "object") {
-      const out: Record<string, unknown> = {};
-      for (const k of Object.keys(v as Record<string, unknown>).sort()) {
-        const val = (v as Record<string, unknown>)[k];
-        if (val !== undefined) out[k] = norm(val);
-      }
-      return out;
+  const norm = (v: unknown): string => {
+    if (v === undefined) return "null";
+    if (v === null || typeof v === "number" || typeof v === "boolean" || typeof v === "string") return JSON.stringify(v);
+    if (Array.isArray(v)) return `[${v.map((x) => (x === undefined ? "null" : norm(x))).join(",")}]`;
+    if (typeof v !== "object") return JSON.stringify(String(v));
+    const obj = v as Record<string, unknown>;
+    const parts: string[] = [];
+    for (const k of Object.keys(obj).sort()) {
+      const val = obj[k];
+      if (val === undefined) continue;
+      parts.push(`${JSON.stringify(k)}:${norm(val)}`);
     }
-    return v;
+    return `{${parts.join(",")}}`;
   };
-  return JSON.stringify(norm(value));
+  return norm(value);
 }
 
 export function receiptId(body: Omit<Receipt, "id">): string {
