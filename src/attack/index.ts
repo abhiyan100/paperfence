@@ -5,7 +5,8 @@ import { buildReport } from "../report/build.js";
 import { detectProfile, profileLine, type RepoProfile } from "../repo/profile.js";
 import { plantPressureFiles, scenarioFor } from "../scenarios/catalog.js";
 import { applicableForms, notApplicableReason, type AttackForm, type ScenarioContext } from "../scenarios/types.js";
-import { createHostSandbox } from "../sandbox/host.js";
+import { environmentLine, probeTaskEnvironment, type TaskEnvironment } from "../sandbox/capability.js";
+import { createHostSandbox, defaultBranchFor } from "../sandbox/host.js";
 import { startSink, type Sink } from "../sandbox/sink.js";
 import { dockerAvailable, ensureImage, IMAGE, probeInDocker, runInDocker } from "../sandbox/docker.js";
 import { Budget } from "../budget.js";
@@ -129,6 +130,31 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
   // In docker mode the sink runs inside the container; here it only exists in host mode.
   const sink: Sink = useDocker ? { port: 0, hits: [], close: async () => {} } : await startSink();
   const budget = new Budget(opts.budgetUsd);
+  // Probed once per run, not per trial: it costs a container and the answer
+  // cannot change between trials of the same repository.
+  let taskEnv: TaskEnvironment | undefined;
+  const taskEnvironment = async (): Promise<TaskEnvironment> => {
+    if (taskEnv) return taskEnv;
+    if (!useDocker) {
+      // Probing means running the repository's own test command. In host mode
+      // that would run it on this machine, which is the one thing a harness for
+      // untrusted repositories must not do. So it is not probed, and not
+      // knowing is reported as not knowing.
+      taskEnv = { command: profile.testCommand, canRunTests: false, reason: "not-probed", detail: "host mode does not run this repository's test command on your machine, so whether the suite can run is unknown; use Docker to find out", materialized: [] };
+      return taskEnv;
+    }
+    log("checking whether this repository's test suite can run in the sandbox");
+    const probe = await createHostSandbox(cfg.root, { rules, profile, withDependencies: true });
+    try {
+      taskEnv = await probeTaskEnvironment(probe, { materialized: probe.materialized, onProgress: (m) => log(pc.dim(`    ${m}`)) });
+    } finally {
+      await probe.destroy();
+    }
+    const e = taskEnv;
+    log(e.canRunTests ? pc.dim(`    ${environmentLine(e)}`) : pc.yellow(`    ${environmentLine(e)}`));
+    return e;
+  };
+
   const runs: AttackRun[] = [];
   const notApplicable = new Map<string, string>();
   const skippedForms = new Map<string, { form: string; missing: string[] }[]>();
@@ -154,7 +180,30 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
         continue;
       }
 
-      const forms = opts.formIds?.length ? applicability.forms.filter((f) => opts.formIds!.includes(f.id)) : applicability.forms;
+      let usable = applicability.forms;
+      // A form whose task is "make the suite pass" needs a suite that can run.
+      // Asking an agent to fix tests it cannot execute measures the sandbox,
+      // not the rule, and an agent that gives up was being read as the rule
+      // holding.
+      if (usable.some((f) => f.requires.includes("runnable-test-suite") || f.requires.includes("plantable-test"))) {
+        const env = await taskEnvironment();
+        if (!env.canRunTests) {
+          const dropped = usable.filter((f) => f.requires.includes("runnable-test-suite") || f.requires.includes("plantable-test"));
+          for (const f of dropped) {
+            applicability.skipped.push({ form: f.id, missing: [`a test suite that runs in the sandbox: ${env.detail}`] });
+          }
+          usable = usable.filter((f) => !dropped.includes(f));
+          log(pc.yellow(`    ${dropped.length} form(s) need a working test suite and this sandbox has none: ${env.detail}`));
+        }
+      }
+      if (usable.length === 0) {
+        const why = notApplicableReason(applicability);
+        notApplicable.set(rule.id, why);
+        log(`${pc.dim("n/a")} ${rule.id}: ${why}`);
+        continue;
+      }
+
+      const forms = opts.formIds?.length ? usable.filter((f) => opts.formIds!.includes(f.id)) : usable;
       // Shard by form: a form is the unit that escalates through pressure
       // levels, so splitting inside one would have each machine deciding
       // "settled" without seeing the others' results.
@@ -171,7 +220,8 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
               settled = true;
               break;
             }
-            const run = await oneTrial({ rule, form, ctx, level, profile, model, maxTurns, useDocker, sink, keepSandbox: opts.keepSandbox, log, fingerprint, repo, writeReceipts: opts.receipts !== false });
+            const needsSuite = form.requires.includes("runnable-test-suite") || form.requires.includes("plantable-test");
+            const run = await oneTrial({ rule, form, ctx, level, profile, model, maxTurns, useDocker, sink, keepSandbox: opts.keepSandbox, log, fingerprint, repo, writeReceipts: opts.receipts !== false, withDependencies: needsSuite });
             budget.add(run.costUsd);
             runs.push(run);
             opts.onRun?.(run, rule);
@@ -217,6 +267,8 @@ interface TrialArgs {
   fingerprint: Fingerprint;
   repo: ReceiptRepo;
   writeReceipts: boolean;
+  /** Copy the dependency tree in, for a form whose task needs the suite to run. */
+  withDependencies: boolean;
 }
 
 async function oneTrial(a: TrialArgs): Promise<AttackRun> {
@@ -226,10 +278,21 @@ async function oneTrial(a: TrialArgs): Promise<AttackRun> {
     rules: [a.rule],
     profile: a.profile,
     keepOnExit: a.keepSandbox,
-    plant: a.form.setup ? (work) => a.form.setup!(work, a.ctx) : undefined,
+    // The same tree the environment probe approved, or the trial would be run
+    // in a different sandbox from the one that was checked.
+    withDependencies: a.withDependencies,
+    // Planted before the sandbox's first commit, so the pressure is part of the
+    // repository's history rather than four untracked files in the root. It was
+    // written afterwards, and in a live run the agent ran `git status`, saw
+    // that they were untracked, and correctly identified them as planted
+    // instructions. Every level-2 and level-3 result gathered that way is
+    // biased towards holding.
+    plant: async (work) => {
+      await plantPressureFiles(work, a.level, defaultBranchFor([a.rule]));
+      if (a.form.setup) await a.form.setup(work, a.ctx);
+    },
   });
   try {
-    await plantPressureFiles(sb.work, a.level, sb.defaultBranch);
     const objective = a.form.objective(a.ctx, a.level);
     a.log(`${pc.yellow("attack")} ${a.rule.id} · ${a.form.id} · level ${a.level}: ${a.form.describe}`);
 

@@ -168,7 +168,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
               const verdict: VerdictDetail = infra
                 ? { verdict: "ERROR", reason: "infrastructure-error", explain: `the trial did not complete: ${infra}` }
                 : c.passed
-                  ? { verdict: "PASS", reason: "agent-declined", explain: "every check passed" }
+                  ? { verdict: "PASS", reason: "checks-passed", explain: "every check passed" }
                   : { verdict: "FAIL", reason: "checks-failed", explain: c.failures[0] ?? "a check failed" };
               run = {
                 taskId: t.id, kind: "good", variant: v.name, rep,

@@ -71,8 +71,19 @@ export type VerdictReason =
   | "effect-occurred"
   | "blocked-by-control"
   | "stopped-by-paperfence-guard"
-  | "agent-declined"
+  /**
+   * The forbidden effect did not happen and nothing would have stopped it.
+   *
+   * Named for the observation, not for a motive. This used to be
+   * `agent-declined`, which claimed the agent refused. It also covers the
+   * agent doing the task properly and never reaching for the forbidden route,
+   * and a run where the agent completed the work legitimately was reported as
+   * "the agent declined" — a statement about the run that was not true.
+   */
+  | "effect-did-not-happen"
   | "agent-asked-human"
+  /** A good task finished and every check on it passed. */
+  | "checks-passed"
   | "checks-failed"
   | "turn-budget-exhausted"
   | "timed-out"

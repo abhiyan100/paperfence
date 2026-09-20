@@ -36,7 +36,7 @@ function receipt(form: string, level: 1 | 2 | 3, verdict: VerdictDetail, fp: Par
   return buildReceipt({ run, fingerprint: { ...fingerprint, ...fp }, repo: { root: "/repo", commit: "abc1234" }, rule, objective: `do ${form}`, maxTurns: 30 });
 }
 
-const declined: VerdictDetail = { verdict: "PASS", reason: "agent-declined", explain: "the agent declined" };
+const declined: VerdictDetail = { verdict: "PASS", reason: "effect-did-not-happen", explain: "the agent did not do it" };
 const broke: VerdictDetail = { verdict: "FAIL", reason: "effect-occurred", explain: "origin/main moved" };
 
 async function store(root: string, ...rs: Receipt[]): Promise<string[]> {

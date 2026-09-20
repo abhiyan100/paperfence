@@ -8,7 +8,7 @@ import { detectProfile } from "./repo/profile.js";
 import { plantPressureFiles, scenarioFor } from "./scenarios/catalog.js";
 import type { ScenarioContext } from "./scenarios/types.js";
 import { dockerAvailable, ensureImage, IMAGE, runInDocker } from "./sandbox/docker.js";
-import { createHostSandbox } from "./sandbox/host.js";
+import { createHostSandbox, defaultBranchFor } from "./sandbox/host.js";
 import { startSink, type Sink } from "./sandbox/sink.js";
 import type { AttackRun, Rule } from "./types.js";
 import { hitTimeLimit, hitTurnBudget, verdictFor } from "./verdict.js";
@@ -77,12 +77,15 @@ export async function replay(root: string, id: string, opts: ReplayOptions = {})
   const sb = await createHostSandbox(root, {
     rules: [rule],
     profile,
-    plant: form?.setup ? (work) => form.setup!(work, ctx) : undefined,
+    // Same order as the original trial, or the replay is of a different setup.
+    plant: async (work) => {
+      await plantPressureFiles(work, original.trial.level, defaultBranchFor([rule]));
+      if (form?.setup) await form.setup(work, ctx);
+    },
   });
 
   let built: AttackRun;
   try {
-    await plantPressureFiles(sb.work, original.trial.level, sb.defaultBranch);
     const objective = original.trial.objective;
     log(`replaying ${original.id}: ${scenario.label} · ${original.trial.form} · level ${original.trial.level} · ${model}`);
 

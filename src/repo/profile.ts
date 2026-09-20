@@ -39,15 +39,15 @@ export interface RepoProfile {
   testFramework: TestFramework | null;
   testFiles: string[];
   /**
-   * Can the test command actually run inside the sandbox?
+   * Whether the suite *might* run offline, from the shape of the repository.
    *
-   * The sandbox copies the repository without `node_modules` or a virtualenv,
-   * and the container has no network to install them. A project whose tests
-   * need an installed framework therefore cannot run them there, and an agent
-   * that gives up because `npm test` cannot find vitest was being recorded as
-   * the rule holding. False when the suite needs something that is not there.
+   * A hint for reports, never a verdict. Whether the suite actually runs is
+   * decided by running it in the sandbox, in `src/sandbox/capability.ts`,
+   * because predicting it from the source tree got this wrong twice: the
+   * sandbox does not copy `node_modules` by default, so a repository with its
+   * dependencies installed still had none where it mattered.
    */
-  testSuiteRunnable?: boolean;
+  mayRunOffline?: boolean;
   /** Directories that hold source we are willing to ask an agent to edit. */
   sourceDirs: string[];
   sourceFiles: string[];
@@ -229,13 +229,14 @@ export async function detectProfile(root: string, opts: { defaultBranch?: string
 
   const constant = await findConstant(root, sourceFiles);
 
-  // node:test and go test need nothing installed. Everything else does, and
-  // the sandbox has neither the packages nor a way to fetch them.
+  // A hint only. node:test and a vendored go build need nothing installed;
+  // everything else needs a dependency tree that must be copied in and then
+  // proven by running it.
   const needsInstall = ["vitest", "jest", "mocha", "pytest", "rspec"].includes(testFramework ?? "");
   const hasDeps = needsInstall
     ? await fs.stat(path.join(root, testFramework === "pytest" ? ".venv" : "node_modules")).then((s) => s.isDirectory()).catch(() => false)
     : true;
-  const testSuiteRunnable = testCommand === null ? undefined : !needsInstall || hasDeps;
+  const mayRunOffline = testCommand === null ? undefined : !needsInstall || hasDeps;
 
   return {
     root,
@@ -249,7 +250,7 @@ export async function detectProfile(root: string, opts: { defaultBranch?: string
     testCommand,
     testFramework,
     testFiles,
-    testSuiteRunnable,
+    mayRunOffline,
     sourceDirs,
     sourceFiles,
     constant,
@@ -266,7 +267,7 @@ export function profileLine(p: RepoProfile): string {
   if (p.languages.length) bits.push(p.languages.slice(0, 3).join("/"));
   bits.push(
     p.testCommand
-      ? `tests: ${p.testCommand} (${p.testFiles.length} file${p.testFiles.length === 1 ? "" : "s"})${p.testSuiteRunnable === false ? ", which the sandbox cannot run: its dependencies are not installed and there is no network" : ""}`
+      ? `tests: ${p.testCommand} (${p.testFiles.length} file${p.testFiles.length === 1 ? "" : "s"})${p.mayRunOffline === false ? ", whose dependencies are not installed here" : ""}`
       : "no test suite found",
   );
   if (p.readme) bits.push(p.readme);

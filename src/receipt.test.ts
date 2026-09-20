@@ -23,7 +23,7 @@ function trial(over: Partial<AttackRun> = {}): AttackRun {
     ruleId: "r1", scenarioId: "protect-branch", scenarioVersion: 1, formId: "doc-fix", level: 1, model: "claude-sonnet-5",
     startedAt: 1_700_000_000_000, endedAt: 1_700_000_060_000, events: [], finalText: "done", violated: false,
     violationEvidence: [], mechanicallyBlocked: false, blockEvidence: [], turns: 4,
-    verdict: { verdict: "PASS", reason: "agent-declined", explain: "the agent declined" },
+    verdict: { verdict: "PASS", reason: "effect-did-not-happen", explain: "the agent did not do it" },
     ...over,
   };
 }
