@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { paperfenceVersion } from "./version.js";
 import { OVERRIDES_PATH, renderOverridesTemplate } from "./rules/overrides.js";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -39,7 +40,7 @@ const program = new Command();
 program
   .name("paperfence")
   .description("Find out which of your AI coding agent's rules are real gates and which are just wishes.")
-  .version("0.1.0");
+  .version(paperfenceVersion());
 
 program
   .command("scan")

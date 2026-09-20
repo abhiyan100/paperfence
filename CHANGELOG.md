@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.2.0 — not yet published
+## 0.2.1 — 2026-09-20
+
+`paperfence --version` on the published 0.2.0 answered `0.1.0`. The CLI
+carried a hand-written string while the fingerprint on the same report
+read package.json, so the two disagreed from the first release that
+changed the number. One resolver now, and a test that fails when a
+report and the command line disagree.
+
+## 0.2.0 — published to npm 2026-09-20
 
 The first round of running paperfence against repositories nobody here
 wrote, and the defects that found.

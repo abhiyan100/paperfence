@@ -1,6 +1,6 @@
 {
   "name": "paperfence",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Find out which of your AI coding agent's rules are real gates and which are just wishes.",
   "type": "module",
   "bin": {

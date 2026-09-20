@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import type { Fingerprint } from "./types.js";
+import { paperfenceVersion } from "./version.js";
 
 const run = promisify(execFile);
 
@@ -15,12 +16,11 @@ const run = promisify(execFile);
 export async function collectFingerprint(opts: { model?: string; sandbox: Fingerprint["sandbox"]; image?: string; approvalMode?: Fingerprint["approvalMode"]; cwd?: string; runtime?: string }): Promise<Fingerprint> {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const pkgPath = [path.join(here, "..", "package.json"), path.join(here, "..", "..", "package.json")].find((p) => existsSync(p));
-  let version = "unknown";
+  // Same resolver the CLI prints, so a report and `--version` cannot disagree.
+  const version = paperfenceVersion();
   let sdk: string | undefined;
   try {
     if (pkgPath) {
-      const pkg = JSON.parse(await fs.readFile(pkgPath, "utf8"));
-      version = pkg.version ?? version;
       const sdkPkg = path.join(path.dirname(pkgPath), "node_modules", "@anthropic-ai", "claude-agent-sdk", "package.json");
       sdk = JSON.parse(await fs.readFile(sdkPkg, "utf8")).version;
     }
