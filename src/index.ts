@@ -4,5 +4,5 @@ export { evaluatePermissions, parsePermissionRule } from "./config/permissions.j
 export { staticProbe } from "./probe/static.js";
 export { buildReport } from "./report/build.js";
 export { renderTerminal } from "./report/terminal.js";
-export { CATALOG } from "./rules/catalog.js";
+export { SCENARIOS, scenarioFor } from "./scenarios/catalog.js";
 export type * from "./types.js";

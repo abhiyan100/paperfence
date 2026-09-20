@@ -10,6 +10,7 @@ import { discoverConfig } from "./config/discover.js";
 import { staticProbe } from "./probe/static.js";
 import { startSink } from "./sandbox/sink.js";
 import type { Sandbox } from "./sandbox/host.js";
+import type { RepoProfile } from "./repo/profile.js";
 import type { PressureLevel, Rule } from "./types.js";
 
 interface AttackJob {
@@ -25,6 +26,7 @@ interface AttackJob {
 interface ProbeJob {
   kind: "probe";
   rules: Rule[];
+  profile: RepoProfile;
   work: string;
 }
 interface ExecJob {
@@ -65,7 +67,7 @@ if (job.kind === "exec") {
 if (job.kind === "probe") {
   // Static probe with the repo's own hooks executed here, in the container, not on the host.
   const cfg = await discoverConfig(job.work);
-  const results = await staticProbe(cfg, job.rules, { onProgress: (m) => process.stderr.write(`    ${m}\n`) });
+  const results = await staticProbe(cfg, job.rules, { profile: job.profile, onProgress: (m) => process.stderr.write(`    ${m}\n`) });
   process.stdout.write(`\n${RESULT_START}\n${JSON.stringify({ probes: results })}\n${RESULT_END}\n`);
   process.exit(0);
 }

@@ -1,7 +1,8 @@
 import { effectiveSettings, type AgentConfig } from "../config/discover.js";
 import { firePreToolUseHooks } from "../config/hooks.js";
 import { evaluatePermissions, inertRules } from "../config/permissions.js";
-import { specFor } from "../rules/catalog.js";
+import type { RepoProfile } from "../repo/profile.js";
+import { probesFor, scenarioFor } from "../scenarios/catalog.js";
 import type { EnforcementLayer, ProbeCall, ProbeOutcome, Rule, StaticProbeResult } from "../types.js";
 
 /**
@@ -18,6 +19,8 @@ import type { EnforcementLayer, ProbeCall, ProbeOutcome, Rule, StaticProbeResult
  */
 
 export interface StaticProbeOptions {
+  /** What this repository contains. Probes are written against it, not against a fixture. */
+  profile: RepoProfile;
   /** Treat "ask" as a gate. Default false, because the whole point is unattended runs. */
   askCounts?: boolean;
   /** Do not execute the repo's hook scripts (for repos you do not trust). Matching hooks are reported as "present, not run". */
@@ -26,15 +29,15 @@ export interface StaticProbeOptions {
   onProgress?: (msg: string) => void;
 }
 
-export async function staticProbe(cfg: AgentConfig, rules: Rule[], opts: StaticProbeOptions = {}): Promise<StaticProbeResult[]> {
+export async function staticProbe(cfg: AgentConfig, rules: Rule[], opts: StaticProbeOptions): Promise<StaticProbeResult[]> {
   const settings = effectiveSettings(cfg);
   const results: StaticProbeResult[] = [];
   const inert = inertRules(settings.permissions ?? {});
   for (const i of inert) opts.onProgress?.(`note: ${i.raw}: ${i.why}`);
   for (const rule of rules) {
-    const spec = specFor(rule.category);
+    const spec = scenarioFor(rule.category);
     if (!spec.attackable) continue;
-    const probes = spec.probes(rule);
+    const probes = probesFor(rule, { rule, profile: opts.profile });
     // A rule is gated if *every* canonical probe is blocked. One open door is enough to lose.
     const outcomes: ProbeOutcome[] = [];
     for (const probe of probes) {

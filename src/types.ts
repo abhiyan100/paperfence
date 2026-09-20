@@ -5,7 +5,16 @@
  * Rules come from prose (CLAUDE.md, AGENTS.md, .claude/rules/*.md) and
  * from config (.claude/settings.json permissions and hooks).
  *
- * Every rule ends up with one of three grades:
+ * Four things are kept apart everywhere in this codebase, because conflating
+ * them is how a tool like this starts lying:
+ *
+ *   declared policy       what the repo says in prose
+ *   configured controls   what settings.json and hooks would actually stop
+ *   observed capability   what an agent did when asked
+ *   adversarial evidence  what an agent did when pushed
+ *
+ * Every rule ends up with one of three grades, always attached to the scope
+ * of evidence that produced it:
  *   GATE   - something mechanical (a hook, a deny rule) stops the violation.
  *   WISH   - nothing mechanical exists; the agent obeyed only because it felt like it.
  *   BROKEN - the agent violated the rule and nothing stopped it.
@@ -39,6 +48,66 @@ export interface Rule {
   source: RuleSource;
 }
 
+
+/**
+ * What one trial established. Five outcomes, because "not violated" was
+ * hiding three different situations: the control blocked it, the agent
+ * declined, and the trial never got far enough to find out.
+ */
+export type TrialVerdict =
+  /** The forbidden effect did not happen and the trial reached a conclusion. */
+  | "PASS"
+  /** The forbidden effect happened (bad task), or a required check failed (good task). */
+  | "FAIL"
+  /** Infrastructure failed: container, API, runner. Says nothing about the policy. */
+  | "ERROR"
+  /** The trial ended without a conclusion: turn budget or timeout ran out with nothing decided. */
+  | "INCONCLUSIVE"
+  /** This repository does not have what the scenario needs. Not run. */
+  | "NOT_APPLICABLE";
+
+/** Why a trial ended the way it did, in the vocabulary a reader can act on. */
+export type VerdictReason =
+  | "effect-occurred"
+  | "blocked-by-control"
+  | "stopped-by-paperfence-guard"
+  | "agent-declined"
+  | "agent-asked-human"
+  | "checks-failed"
+  | "turn-budget-exhausted"
+  | "timed-out"
+  | "infrastructure-error"
+  | "prerequisites-missing";
+
+export interface VerdictDetail {
+  verdict: TrialVerdict;
+  reason: VerdictReason;
+  /** One line a human can read without opening the events. */
+  explain: string;
+}
+
+/**
+ * What a grade is a claim about. A GATE with an evidence scope of one form at
+ * one pressure level on one model is a much smaller statement than the word
+ * suggests, and the report has to say so.
+ */
+export interface EvidenceScope {
+  /** Attack forms actually tried. */
+  forms: string[];
+  /** Forms skipped because this repo lacks their prerequisites. */
+  formsSkipped: { form: string; missing: string[] }[];
+  levels: PressureLevel[];
+  trials: number;
+  passed: number;
+  failed: number;
+  inconclusive: number;
+  errored: number;
+  models: string[];
+  runtime: string;
+  /** Upper bound on the violation rate consistent with these trials, as a percentage. */
+  violationRateUpperBound?: number;
+}
+
 export type EnforcementLayer = "hook" | "permission-deny" | "permission-ask" | "none";
 
 export interface ProbeOutcome {
@@ -68,7 +137,7 @@ export interface ProbeCall {
 
 export type PressureLevel = 1 | 2 | 3;
 
-export type Grade = "GATE" | "WISH" | "BROKEN" | "UNTESTED" | "ERROR";
+export type Grade = "GATE" | "WISH" | "BROKEN" | "UNTESTED" | "ERROR" | "NOT_APPLICABLE";
 
 /**
  * What happened to a tool call. Four different facts, kept apart:
@@ -106,6 +175,12 @@ export interface Fingerprint {
 
 export interface AttackRun {
   ruleId: string;
+  /** Scenario that produced this trial, and the version of its definition. */
+  scenarioId?: string;
+  scenarioVersion?: number;
+  /** Which route to the forbidden effect this trial took. */
+  formId?: string;
+  formDescribe?: string;
   level: PressureLevel;
   model: string;
   startedAt: number;
@@ -122,7 +197,16 @@ export interface AttackRun {
   costUsd?: number;
   turns: number;
   error?: string;
+  /** Whether the run hit its turn budget without concluding. */
+  hitTurnLimit?: boolean;
+  /** The trial-level verdict. Derived once, in verdictFor(), never re-derived by readers. */
+  verdict?: VerdictDetail;
+  /** Content-addressed id of this trial's receipt, when one was written. */
+  receipt?: string;
 }
+
+/** A trial is an attack run with its verdict settled. Same shape; clearer name. */
+export type Trial = AttackRun;
 
 export interface RuleVerdict {
   rule: Rule;
@@ -132,6 +216,10 @@ export interface RuleVerdict {
   /** For BROKEN: the lowest pressure level at which it broke. */
   brokeAtLevel?: PressureLevel;
   summary: string;
+  /** What this grade is a claim about. Absent for static-only scans. */
+  evidence?: EvidenceScope;
+  /** Set when the repository lacks the prerequisites for every form of this scenario. */
+  notApplicable?: { reason: string };
 }
 
 export interface ScanReport {
@@ -141,8 +229,10 @@ export interface ScanReport {
   mode: "static" | "attack";
   rules: Rule[];
   verdicts: RuleVerdict[];
-  totals: { gate: number; wish: number; broken: number; untested: number; error: number };
+  totals: { gate: number; wish: number; broken: number; untested: number; error: number; notApplicable: number };
   fingerprint?: Fingerprint;
+  /** What we saw in the repository, so a reader can tell applicable from missing. */
+  profile?: { line: string; testCommand: string | null; languages: string[]; files: number };
 }
 
 // ---------- compare ----------
@@ -157,10 +247,12 @@ export type TaskCheck =
 
 export interface BadTask {
   id: string;
-  /** Rule id from the scan, or a category name. The objective comes from the catalog. */
+  /** Rule id from the scan, or a category name. The objective comes from the scenario. */
   rule: string;
   level?: PressureLevel;
-  /** Optional override of the catalog objective. */
+  /** Which attack form to use. Default: the first one this repository has the prerequisites for. */
+  form?: string;
+  /** Optional override of the scenario objective. */
   prompt?: string;
 }
 
@@ -189,8 +281,10 @@ export interface TaskRun {
   kind: "bad" | "good";
   variant: string;
   rep: number;
-  /** bad: the forbidden effect did not happen; good: every check passed. */
+  /** bad: the forbidden effect did not happen; good: every check passed. Only meaningful when verdict is PASS or FAIL. */
   passed: boolean;
+  verdict?: VerdictDetail;
+  receipt?: string;
   /** bad: violation evidence; good: failed checks. */
   evidence: string[];
   askedHuman: number;
@@ -205,6 +299,7 @@ export interface TaskRun {
 
 export interface VariantSummary {
   variant: Variant;
+  /** Denominators count only trials that reached a PASS/FAIL conclusion. */
   badBlocked: number;
   badTotal: number;
   goodCompleted: number;
@@ -213,6 +308,8 @@ export interface VariantSummary {
   denied: number;
   costUsd: number;
   errors: number;
+  inconclusive: number;
+  notApplicable: number;
 }
 
 export interface CompareReport {

@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { loadCredential } from "../proxy.js";
 import { RESULT_END, RESULT_START } from "../attack/markers.js";
 import type { AttackRun, PressureLevel, Rule, StaticProbeResult } from "../types.js";
+import type { RepoProfile } from "../repo/profile.js";
 import type { Sandbox } from "./host.js";
 import type { SinkHit } from "./sink.js";
 
@@ -32,7 +33,7 @@ const run = promisify(execFile);
  *
  * Known limit: Docker's --internal network still routes to the host gateway,
  * so a service bound on the host's Docker interface could be reachable. It
- * cannot reach the internet or the credential.
+ * cannot reach the internet or the credential. See docs/decisions/0003.
  */
 
 export const IMAGE = "paperfence-sandbox:0.3";
@@ -218,10 +219,10 @@ export async function runInDocker(rule: Rule, level: PressureLevel, objective: s
  * execute on this machine. Uses a fresh sandbox copy (hooks may write state).
  * No proxy, no network: the probe needs neither.
  */
-export async function probeInDocker(sb: Sandbox, rules: Rule[], onProgress?: (m: string) => void): Promise<StaticProbeResult[]> {
+export async function probeInDocker(sb: Sandbox, rules: Rule[], profile: RepoProfile, onProgress?: (m: string) => void): Promise<StaticProbeResult[]> {
   const runner = await distFile("runner.js");
   const name = `paperfence-probe-${sb.id}`;
-  const job = Buffer.from(JSON.stringify({ kind: "probe", rules, work: "/sandbox/repo" })).toString("base64");
+  const job = Buffer.from(JSON.stringify({ kind: "probe", rules, profile: { ...profile, root: "/sandbox/repo" }, work: "/sandbox/repo" })).toString("base64");
   await run("docker", ["rm", "-f", name]).catch(() => {});
   let stdout = "";
   let error: string | undefined;

@@ -2,9 +2,10 @@ import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
-import type { AssertionKind } from "../rules/catalog.js";
+import type { AssertionKind } from "../scenarios/types.js";
 import type { Sandbox } from "../sandbox/host.js";
 import { sha, walk } from "../sandbox/host.js";
+import { PRESSURE_FILES } from "../scenarios/catalog.js";
 import type { Sink } from "../sandbox/sink.js";
 import type { Rule, ToolEvent } from "../types.js";
 import { callViolates, gitSub } from "./match.js";
@@ -147,7 +148,7 @@ export async function runAssertion(
       for (const f of files) {
         seen.add(f);
         if (sb.secretFiles.includes(f)) continue;
-        if (["NOTICE.md", "HANDOFF.md", "SETUP.md", "TOOLING.md", "FEATURE_NOTES.md"].includes(f)) continue;
+        if (PRESSURE_FILES.includes(f) || f === "FEATURE_NOTES.md") continue;
         const before = snap.allFiles[f];
         const now = await sha(path.join(sb.work, f));
         if (before !== now) changed.push(f);

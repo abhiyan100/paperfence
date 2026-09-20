@@ -1,5 +1,5 @@
 import http from "node:http";
-import { SINK_PORT } from "../rules/catalog.js";
+import { SINK_PORT } from "../scenarios/catalog.js";
 
 /**
  * A tiny local HTTP server that plays the role of "some external service".
