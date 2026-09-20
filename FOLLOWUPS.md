@@ -1,36 +1,56 @@
 # Follow-ups
 
-Things worth doing that did not block the current milestone. From reviews/01.md and reviews/02.md (Codex, 2026-09-15).
+What is open, and what is deliberately not being built next.
 
-## Done since review 2
-- 2026-09-20 Trial verdicts (PASS / FAIL / ERROR / INCONCLUSIVE / NOT_APPLICABLE) derived in one place; "the agent could not do the task" no longer reads as "the rule held".
-- 2026-09-20 Repository profiling and per-form prerequisites; scenarios no longer assume the pricing fixture. Objectives for scope, require-before and install are derived from what the repo actually has.
-- 2026-09-20 Attack families: each rule is attacked through several forms, and grades carry the evidence scope that produced them.
-- 2026-09-20 Statistics: Wilson intervals, `--reps`, and a "can these two arms be told apart?" line in compare.
-- 2026-09-20 Content-addressed receipts and `paperfence replay`.
-- 2026-09-20 `paperfence conformance`: the permission model checked case by case against the real runtime. Found that several documented gaps prompt rather than allowing, which is the same answer unattended and a different one when watched.
-- 2026-09-20 A prose rule and the settings entry restating it are counted once; both still shown.
-- 2026-09-20 `harden --dry-run` prints the exact bytes of every file it would write.
-- 2026-09-20 GitHub Action, Markdown summaries for pull request comments and job summaries.
-- 2026-09-20 Test integrity covers what selects tests, not only the tests: the test script, runner configs, CI workflows. Matched, probed, asserted and blocked by the guard.
-- 2026-09-20 More routes to a secret (shell read loops, process substitution, encoders, copies, wrappers) and out (encoded payloads, DNS labels, remotes added mid-run, pushes to a URL).
-- 2026-09-20 Agent container runs with `--network none`; the credential proxy is reached over a unix socket on a shared volume. `paperfence doctor` checks the boundary instead of asserting it.
+Completed work lives in `CHANGELOG.md`. This file is only the list of things still worth doing, so it can be trusted as the open list rather than read as an archive.
+
+## The stance right now
+
+paperfence is alpha. It has had three adversarial reviews and it has not had a user. Review 3 found eight ways it could report a pass it had not earned, including in code that had unit tests and looked correct.
+
+So the next phase is not more surface area. It is:
+
+> build → **stop** → audit → attack paperfence → fix → real users → then expand
+
+New runtimes, a live enforcement daemon, transitive capability analysis and a large public benchmark are all real and all deferred until that loop has run at least once.
 
 ## Open
 
-- `scripts/leaderboard.ts scan` persists only the repos it fetched successfully this run, so a run with transient GitHub failures replaces a 100-row file with a 61-row one while reporting the same totals. It should merge into the existing rows and pin each row's scanned commit and extractor model. Re-scanned 2026-09-20: the totals were unchanged (702 rules, 700 wishes, 2 gates), so no public repo in the set used a bare tool-name deny entry.
-- Publishing to npm, without which the GitHub Action cannot run outside this repository.
-- Codex conformance cases, which is what would promote that adapter past discovery.
+### Correctness and honesty
+- **Harden overwrites `policy.json` unconditionally.** Merge, or back up first. A team that hand-edited it loses the edit.
+- **"Run X before Y" carries only commit and push.** A rule about opening a pull request is compiled as a push. Carry the full action through.
+- **The host guard has known holes by design.** A symlink created during a run and then read through a relative path; anything spawning a program not in the network list. Docker is the answer; do not extend the regexes much further.
 
-## Deferred from review 2
-- Done 2026-09-19: tool events carry `outcome`; reports carry a fingerprint; `scan` probes hooks in a container by default; `compare` exists.
-- Codex runtime adapter: not started. The Codex hook model lacks `ask`; a second adapter is the next big item after `compare` settles.
-- Leaderboard rows should pin the scanned commit SHA and the extractor model; cached rows should invalidate on either.
+### Runtimes
+- **Codex hooks.** The adapter discovers, evaluates and drives. Hooks are untouched: a Codex hook runs only once trusted by content hash, and we have not established how to observe one blocking a call. Until we can, `probeHooks` and `harden` stay false.
+- **Cursor, Gemini, Copilot.** The adapter boundary exists and each would be an adapter plus its own conformance cases. Not before the audit.
 
-- "Run X before Y" always probes and hardens Y = commit. Carry the action (commit / push / PR) from the rule text through catalog and policy.
-- The percentages in the summary count prose rules and their matching permission entries separately. Consider de-duplicating a prose rule that is backed by a permission entry.
-- Harden overwrites `policy.json` unconditionally. Merge or back up.
-- Docker image pins `@anthropic-ai/claude-agent-sdk@0.3.272`. Read the version from package.json at build time.
-- Leaderboard: run repos in parallel with a concurrency limit; add a manual list of well-known repos that GitHub code search does not surface.
-- Conformance: the hook-probe and permission-matcher tests encode the documented semantics; a differential run against the real CLI (settings file + mock command) would catch doc drift.
-- Host guard is best effort by design. Known holes: a symlink created during the run (`ln -s /etc x`) and then read through a relative path; anything that spawns a program not in the network list. Docker mode is the answer; do not extend the regexes much further.
+### Benchmark
+- **A publishable sweep.** The harness, the fixed corpus, and the change policy exist, and one smoke sweep has run. A real sweep is a budget decision: more repository archetypes, more models, five or more repetitions. Two repositories and one smoke run is a proof that the pipeline works, not a benchmark.
+
+### Infrastructure
+- **Provenance on releases.** The release workflow publishes with `--provenance` on a version tag, which needs an `NPM_TOKEN` secret on the GitHub repository. Until that is set, releases are published from a laptop without provenance.
+- **Leaderboard concurrency.** Repositories are scanned one at a time. Add a concurrency limit, and a manual list of well-known repositories that GitHub code search does not surface.
+
+### Capability graph
+- **It stops at the first hop, on purpose.** An AWS credential opening a role opening a function opening a database credential is the interesting chain and is not traced. Going further needs either an inventory a team writes or live introspection of the cloud account, and neither should be guessed at.
+
+## Not being built next, and why
+
+| | |
+|---|---|
+| A vendor-neutral enforcement daemon | paperfence tests and compiles controls today. Sitting in the live path of every agent action is a different product with a much worse failure mode, and it should not be built by the same burst that wrote the tests for it. |
+| A judgement model in the decision path | The generated guard is deterministic and inspectable. Adding a model to the allow/deny decision makes every verdict probabilistic. There is a slot for it in the policy compiler's unenforceable class; it stays empty until the deterministic layer has users. |
+| Organisation accounts, roles, single sign-on | The control plane has one write token per project. That is the right amount of authentication for a tool with no users. |
+| A GitHub App | The Action covers the same ground without asking anyone to install a third-party app with repository write access. |
+
+## Known-good, do not regress
+
+Recorded because several of these were bugs once and the tests that catch them are the only thing keeping them fixed.
+
+- A deny entry naming only a tool is not a control. Measured; the matcher reports it as present and unreliable.
+- `NOT_APPLICABLE` and `ERROR` are not `PASS`, and are in no denominator.
+- A command's own error text is not enforcement. Only a runtime or hook refusal counts.
+- Receipt canonicalisation must not lose a `__proto__` key.
+- Redaction happens at the sandbox boundary, not only in receipts.
+- `allSegments` stays faithful to Claude Code and does not look inside `sh -c`. `allSegmentsDeep` is what paperfence's own matcher and guard use.

@@ -1,6 +1,23 @@
 # ADR 0007: What is deferred, and what would unblock it
 
-Status: accepted, 2026-09-20
+Status: **superseded, 2026-09-20.** Superseded by ADR 0009 (capability graph), ADR 0010 (control plane), `bench/POLICY.md` (benchmark), and the sharding and dashboard work of the same day.
+
+Five of the six things this record deferred were built within hours of writing it, because each one's stated unblocking condition turned out to be already met or cheap to meet. The record is kept because the *reasons* still hold and each is now carried by the ADR that superseded it. What changed, and where the current answer lives:
+
+| deferred here | status | where it is decided now |
+|---|---|---|
+| hosted control plane | built | ADR 0010 |
+| web dashboard | built | ADR 0010, and the dashboard's own header comment |
+| capability graph | built, first hop only | ADR 0009 |
+| public benchmark | harness and corpus built; no publishable sweep | `bench/POLICY.md` |
+| distributed runners | built as sharding plus receipt merge | the `runners:` commit and `src/merge.ts` |
+| conformance suite | built for both runtimes | ADR 0008 |
+
+The one thing this record deferred that is *still* deferred, and the one it did not anticipate, are both now in `FOLLOWUPS.md`, which is the authoritative open list.
+
+Read what follows as the reasoning of the day, not as the current state.
+
+---
 
 Recorded so that "not built yet" is a decision with a reason, rather than a gap someone has to infer.
 

@@ -9,7 +9,7 @@ One page, so nobody has to infer it from the absence of a finding.
 - **Your personal settings.** `~/.claude/settings.json` is yours, not the repository's, and paperfence does not read it. A teammate's machine may enforce more or less than the repository does.
 - **Managed policy.** An administrator's settings, or Codex's `requirements.toml`, can add controls paperfence never sees.
 - **Branch protection and required checks.** The controls that do not depend on the agent cooperating live at the git host. `paperfence policy check --target github` says which of your rules belong there, but it cannot read your repository settings to tell you whether they are on.
-- **Whether a hook is trusted.** Codex runs a repository hook only after a user trusts it by content hash. A hook file in the repository is not proof that it fires.
+- **Whether a Codex hook is trusted, or does anything.** Codex runs a repository hook only after a user trusts it by content hash, so a hook file is not proof that one fires. paperfence does not cover Codex hooks at all: it can read them and cannot say what they would do.
 - **Anything at runtime.** A rule that holds in a trial may not hold in the run that matters, with a different task, a different model version, and a different context window.
 
 ## A grade is a claim about what was tried
@@ -50,6 +50,14 @@ Two results from it matter enough to state here.
 | an edit outside an `Edit(dir/**)` deny | the developer is asked | it runs |
 
 paperfence answers the unattended question, because that is the one CI has and the one nobody is watching. If you are sitting at a terminal with approvals on, you have a control paperfence does not count, and it is exactly as reliable as you are at reading prompts.
+
+## The capability graph stops at the first hop
+
+`paperfence graph` traces a credential the code reads to the service its name implies. It does not follow that service onward: a cloud credential that opens a role that opens a function that holds a database credential is one edge here, not four. It also cannot know what any credential is allowed to do, which is why every blast radius is `unknown` until a human writes one into `paperfence.inventory.yaml`.
+
+## The benchmark corpus is two repositories
+
+`bench/` has a Python service and a Go service, and one smoke sweep has run against them. That is a proof that the pipeline works. It is not a benchmark, and no number from it should be quoted as one. `bench/POLICY.md` says what a publishable sweep would require.
 
 ## `harden` changes what two rules mean
 

@@ -201,9 +201,18 @@ paperfence does four separable things to a runtime, and says which of them it ca
 | | discover | evaluate | run its hooks | drive the agent |
 |---|---|---|---|---|
 | Claude Code | yes | yes | yes | yes |
-| Codex | yes | no | no | no |
+| Codex | yes | yes | no | yes |
 
-Codex is read, not verified, on purpose. It does not decide a call from a rule list: it composes a sandbox mode, an approval policy and hooks, so approximating it would produce confident wrong answers. A repository configured only for Codex gets a caveat on every verdict saying the report describes Claude Code. Two things the Codex adapter does report: a hook returning `permissionDecision: "ask"` is parsed and then ignored, because Codex has no ask in its hook model, and a hook only runs once its content hash is trusted.
+Codex is promoted exactly as far as it has been measured, by `paperfence conformance --runtime codex`. Its hooks are still untouched, because a Codex hook runs only once trusted by content hash and we have not established how to observe one blocking a call.
+
+It enforces differently, and that difference is the useful part. Codex does not refuse a call; it **confines** one. The command runs inside a restricted environment and the operation fails, so nothing is recorded as denied and "blocked" means the effect did not happen. Two things measured, both worth knowing if you run Codex:
+
+- Under `sandbox_mode = "read-only"`, every write fails, and **reads are not confined**. A repository whose rule says "never read .env" gets nothing at all from its sandbox.
+- Under `workspace-write`, the whole workspace is writable. The sandbox cannot express a path allowlist inside it, so "only touch src/" is not enforced by it either.
+
+There is also a limit on what any tool can report about a Codex run: when the sandbox confines a command, Codex emits no record of that command. paperfence can see that the effect did not happen and cannot see what was attempted, and says so when that happens.
+
+A scan evaluates a repository against the runtime it is configured for, so a repository with `AGENTS.md` and no `.claude` directory is judged by Codex's semantics rather than told it has no deny entries.
 
 ## In CI
 
@@ -217,7 +226,7 @@ Codex is read, not verified, on purpose. It does not decide a call from a rule l
 
 Writes a Markdown summary to the job summary and to a pull request comment, editing the same comment each run. `examples/github-workflow.yml` has a fuller version that runs the static scan on every configuration change and `compare` only when someone labels the pull request, since that one costs money.
 
-The action installs paperfence from npm. It is not published there yet, so the action does not work outside this repository until it is.
+The action installs `paperfence` from npm, where it is published as a public package.
 
 ## What it needs
 
@@ -233,7 +242,7 @@ Three documents, because this is the part that decides whether a result is worth
 - **[docs/threat-model.md](docs/threat-model.md)** what the sandbox assumes, and what defeats it
 - **[docs/decisions/](docs/decisions/)** why the design is the way it is
 
-The short version. A gate is a gate for the forms paperfence tried, and the forms are public. Small samples are reported as small samples. Not applicable is not a pass, and neither is an error. The permission model is a reading of the documentation, and a conformance suite against the real CLI is not written yet. `--unsafe-host` is a filter, not a boundary.
+The short version. A gate is a gate for the forms paperfence tried, and the forms are public. Small samples are reported as small samples. Not applicable is not a pass, and neither is an error. The permission model is checked against the real runtime by `paperfence conformance`, which is what caught it grading a bare tool-name deny entry as a control when the runtime ignores it. `--unsafe-host` is a filter, not a boundary. This is alpha: it has had three adversarial reviews and it has not had users.
 
 ## License
 

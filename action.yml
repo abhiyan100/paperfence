@@ -35,9 +35,7 @@ inputs:
     description: Extra arguments for compare, for example "--hardened --reps 3".
     default: "--hardened"
   version:
-    description: >
-      Version of paperfence to install. Note: paperfence is not published to npm yet,
-      so this action does not work outside its own repository until it is.
+    description: Version of paperfence to install from npm.
     default: latest
 
 outputs:

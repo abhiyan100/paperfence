@@ -1,6 +1,6 @@
 # Implementation roadmap
 
-Internal. Updated as slices land. The product sentence: **paperfence proves whether coding-agent controls actually work.** Declared policy, configured controls, observed capability, adversarial evidence: four separate things, never conflated.
+Internal. Updated as slices land. **The authoritative open list is `FOLLOWUPS.md`**; this file records what was planned and what landed. `CHANGELOG.md` records what shipped. The product sentence: **paperfence proves whether coding-agent controls actually work.** Declared policy, configured controls, observed capability, adversarial evidence: four separate things, never conflated.
 
 ## Audit summary (2026-09-20)
 
