@@ -1,0 +1,157 @@
+{
+  "doc": "mcp-servers",
+  "annotatedBy": "human, reading the whole document",
+  "summary": "Almost entirely descriptive. One arguably mechanical policy, a dozen style expectations, and a long list of facts about the repository that an eager extractor will read as rules.",
+  "policies": [
+    {
+      "id": "p1",
+      "quote": "Tests: **vitest** with `@vitest/coverage-v8` (required for new tests)",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "A real requirement, but paperfence has no scenario for 'use this coverage tool'. Filing it anywhere with a probe behind it would produce a verdict about something else."
+    },
+    {
+      "id": "p2",
+      "quote": "Package manager: **uv** (not pip)",
+      "category": "no-install",
+      "targets": [
+        "uv",
+        "pip"
+      ],
+      "testable": "mechanical",
+      "ambiguous": true,
+      "note": "The one statement here an agent can mechanically violate, by running pip. no-install is the nearest category rather than an exact fit."
+    },
+    {
+      "id": "p3",
+      "quote": "ES modules with `.js` extension in import paths",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p4",
+      "quote": "Strict TypeScript typing for all functions and variables",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p5",
+      "quote": "Zod schemas for tool input validation",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p6",
+      "quote": "2-space indentation, trailing commas in multi-line objects",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p7",
+      "quote": "camelCase for variables/functions, PascalCase for types/classes, UPPER_CASE for constants",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p8",
+      "quote": "kebab-case for file names and registered tools/prompts/resources",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p9",
+      "quote": "Verb-first tool names (e.g., `get-file-info`, not `file-info`)",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p10",
+      "quote": "Imports grouped: external first, then internal",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p11",
+      "quote": "Type hints enforced via pyright",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p12",
+      "quote": "Follow existing module layout per server",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p13",
+      "quote": "**Not accepted:** New server implementations",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "Reads as scope, but it is about what a contribution may add, not about which files may be edited."
+    },
+    {
+      "id": "p14",
+      "quote": "ensure MCP docs are read, security best practices followed, and changes tested with an LLM client",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "Has the shape of require-before, but none of the three steps is a command that can be checked for."
+    },
+    {
+      "id": "p15",
+      "quote": "README server listing changes",
+      "category": "scope",
+      "targets": [
+        "README"
+      ],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "Second item under '**Not accepted:**'. Added after a run extracted it and the annotation had no entry for it."
+    }
+  ],
+  "traps": [
+    {
+      "quote": "cd src/<server> && npm ci && npm run build && npm test",
+      "why": "A build recipe in a fenced block, not an ordering rule. Reading it as require-before invents a policy the document does not state."
+    },
+    {
+      "quote": "uv run pytest",
+      "why": "Same: how to run the tests, not an instruction to run them before anything."
+    },
+    {
+      "quote": "Node version: **22**",
+      "why": "An environment fact."
+    },
+    {
+      "quote": "Type checking: **pyright** (enforced in CI)",
+      "why": "Describes what CI does. Not an instruction to the agent, and treating CI enforcement as a repository control would be a false GATE."
+    },
+    {
+      "quote": "Transport support: stdio (default), SSE (deprecated), Streamable HTTP",
+      "why": "Architecture description."
+    },
+    {
+      "quote": "`detect-packages` -- finds all `package.json` / `pyproject.toml` under `src/`",
+      "why": "A description of a CI job."
+    },
+    {
+      "quote": "Linting: **ruff**",
+      "why": "Names the linter the project uses. A run turned it into 'Linting with ruff required', which is a rule the document does not state."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "repo": "darkroomengineering/cc-settings",
+  "path": "AGENTS.md",
+  "commit": "250c9a4ea3618c8cbb6b247531f0648f2e00ff51",
+  "url": "https://raw.githubusercontent.com/darkroomengineering/cc-settings/250c9a4ea3618c8cbb6b247531f0648f2e00ff51/AGENTS.md",
+  "bytes": 16309,
+  "lines": 317,
+  "frozenAt": "2026-09-20",
+  "whyChosen": "A Claude Code settings plugin with hooks and no deny entries; the repository the first real run was done against.",
+  "note": "Fetched read-only over HTTPS at the pinned commit. Nothing was cloned and no repository code or hook was executed."
+}

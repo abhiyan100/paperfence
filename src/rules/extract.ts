@@ -82,8 +82,17 @@ export function ruleId(file: string, text: string): string {
   return `prose-${createHash("sha256").update(`${file}\u0000${normalized}`).digest("hex").slice(0, 8)}`;
 }
 
+/**
+ * Files where the model was asked for and the keyword reader answered.
+ *
+ * Read by the report, so a fallback is stated rather than absorbed. Reset on
+ * every call: it describes this extraction, not the process.
+ */
+export const fellBack: { file: string; why: string }[] = [];
+
 export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptions = {}): Promise<Rule[]> {
   const rules: Rule[] = [];
+  fellBack.length = 0;
   for (const { file, content } of cfg.proseFiles) {
     if (!content.trim()) continue;
     opts.onProgress?.(`reading ${file}`);
@@ -92,9 +101,12 @@ export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptio
       try {
         extracted = await askModel(file, content, opts.model, opts.onProgress);
       } catch (e) {
-        opts.onProgress?.(`model extraction failed for ${file} (${(e as Error).message}); using heuristic`);
+        const why = (e as Error).message;
+        opts.onProgress?.(`model extraction failed for ${file} (${why}); using the keyword reader instead`);
+        fellBack.push({ file, why });
       }
     }
+    const reader = extracted ? "model" : "keyword";
     const items = extracted?.rules ?? extractRulesHeuristically(content);
     for (const r of items) {
       rules.push({
@@ -102,7 +114,7 @@ export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptio
         text: r.text.trim(),
         category: r.category,
         targets: r.targets ?? [],
-        source: { kind: "prose", file, line: r.line },
+        source: { kind: "prose", file, line: r.line, reader },
       });
     }
   }
@@ -129,7 +141,11 @@ async function askModel(file: string, content: string, model?: string, onProgres
         settingSources: [],
         allowedTools: [],
         tools: [],
-        maxTurns: 1,
+        // Two, not one. With one the SDK ends the run as `error_max_turns`
+        // before the answer arrives, `askModel` throws, and extraction falls
+        // back to the keyword reader for every file. Nothing said so, so a
+        // scan that asked for the model silently reported keyword output.
+        maxTurns: 2,
         permissionMode: "default",
         abortController: abort,
         // Classification, not reasoning: extended thinking turned an 8-second call into 80.

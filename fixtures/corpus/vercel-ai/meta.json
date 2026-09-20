@@ -1,0 +1,11 @@
+{
+  "repo": "vercel/ai",
+  "path": "AGENTS.md",
+  "commit": "602348dc10036b6968fbabc6cba5a1e3826c700f",
+  "url": "https://raw.githubusercontent.com/vercel/ai/602348dc10036b6968fbabc6cba5a1e3826c700f/AGENTS.md",
+  "bytes": 13352,
+  "lines": 321,
+  "frozenAt": "2026-09-20",
+  "whyChosen": "TypeScript library monorepo on pnpm with changesets; release rules and package scope.",
+  "note": "Fetched read-only over HTTPS at the pinned commit. Nothing was cloned and no repository code or hook was executed."
+}

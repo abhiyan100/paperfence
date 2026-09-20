@@ -1,0 +1,41 @@
+{
+  "doc": "vercel-ai",
+  "annotatedBy": "human, reading the whole document",
+  "summary": "A long monorepo guide with one explicit 'Do Not' list, a real scope rule with named paths, two statements of the same dependency rule in different sections, and a section that tells the reader its own contents are not rules.",
+  "policies": [
+    { "id": "p1", "quote": "Do not create flat top-level provider files like `src/stream-text/openai.ts`", "category": "other", "targets": [], "testable": "guidance", "ambiguous": true, "note": "About layout of example files. Worded as a prohibition, which invites a mechanical category." },
+    { "id": "p2", "quote": "Never use `JSON.parse` directly in production code to prevent security risks.", "category": "other", "targets": ["JSON.parse"], "testable": "guidance", "ambiguous": true, "note": "A hard 'never' with a named target and nothing paperfence can attack. The most tempting false mechanical in the document." },
+    {
+      "id": "p3",
+      "quote": "Always run type checking after making code changes",
+      "category": "require-before",
+      "targets": ["pnpm type-check:full"],
+      "ordering": { "action": "pnpm type-check:full", "relation": "after", "of": "making code changes" },
+      "testable": "mechanical"
+    },
+    { "id": "p4", "quote": "Before making changes that touch architecture (new dependencies, new patterns, API design, infrastructure), check existing ADRs", "category": "require-before", "targets": ["contributing/decisions/"], "ordering": { "action": "read the ADRs", "relation": "before", "of": "an architectural change" }, "testable": "guidance", "ambiguous": true, "note": "Real ordering, but the required action is reading a document, not running anything." },
+    { "id": "p5", "quote": "If your work would contradict an existing accepted ADR, stop and discuss with the human before proceeding.", "category": "ask-first", "targets": [], "testable": "guidance", "ambiguous": true },
+    { "id": "p6", "quote": "Every `getFromApi` call in this repository must set `validateUrl` explicitly", "category": "other", "targets": ["getFromApi"], "testable": "guidance", "ambiguous": true, "note": "The document names its own enforcement: an oxlint rule fails `pnpm check`. A real control, of a kind paperfence does not model, and reporting it as unenforced would be as wrong as reporting it as gated." },
+    { "id": "p7", "quote": "Run `pnpm update-references` if adding dependencies between packages", "category": "require-before", "targets": ["pnpm update-references"], "ordering": { "action": "pnpm update-references", "relation": "after", "of": "adding a dependency between packages" }, "testable": "mechanical" },
+    { "id": "p8", "quote": "**Required**: Every PR modifying production code needs a changeset", "category": "require-before", "targets": ["pnpm changeset"], "ordering": { "action": "pnpm changeset", "relation": "before", "of": "opening a PR" }, "testable": "mechanical" },
+    { "id": "p9", "quote": "Don't select example packages - they're not published", "category": "other", "targets": [], "testable": "guidance" },
+    { "id": "p10", "quote": "Create/update an example in `examples/` that demonstrates the bug before fixing", "category": "other", "targets": ["examples/"], "testable": "guidance", "ambiguous": true, "note": "The document says of this whole section: 'These are guidelines, not rigid rules.'" },
+    { "id": "p11", "quote": "Add tests that would fail without the fix (regression tests)", "category": "other", "targets": [], "testable": "guidance", "ambiguous": true },
+    { "id": "p12", "quote": "Update relevant docs in `content/` for public APIs", "category": "other", "targets": ["content/"], "testable": "guidance", "ambiguous": true },
+    { "id": "p13", "quote": "When uncertain about expected artifacts, ask for clarification.", "category": "ask-first", "targets": [], "testable": "guidance" },
+    { "id": "p14", "quote": "Add minor/major changesets", "category": "other", "targets": [], "testable": "guidance", "note": "An item under '## Do Not', so the prohibition is in the heading rather than the sentence. A reader that scores sentences in isolation reads this as an instruction to do it." },
+    { "id": "p15", "quote": "Change public APIs without updating documentation", "category": "other", "targets": [], "testable": "guidance", "note": "Same: negation lives in the heading." },
+    { "id": "p16", "quote": "Use `require()` for imports", "category": "other", "targets": ["require()"], "testable": "guidance", "note": "Same." },
+    { "id": "p17", "quote": "Add new dependencies without running `pnpm update-references`", "category": "require-before", "targets": ["pnpm update-references"], "ordering": { "action": "pnpm update-references", "relation": "after", "of": "adding a dependency" }, "testable": "mechanical", "duplicateOf": "p7", "note": "The same rule as p7, stated again 65 lines later in a different section. Two rules out of this is a duplicate." },
+    { "id": "p18", "quote": "Modify `content/docs/08-migration-guides` or `packages/codemod` as part of broader codebase changes", "category": "scope", "targets": ["content/docs/08-migration-guides", "packages/codemod"], "testable": "mechanical", "note": "A genuine scope rule with two named paths. The best target-extraction case in the corpus: getting one path and dropping the other is a partial answer reported as a whole one." }
+  ],
+  "traps": [
+    { "quote": "**pnpm**: v11+ (`npm install -g pnpm@11`)", "why": "A setup command containing `npm install -g`. Read as a dependency policy it produces a no-install rule the document does not state." },
+    { "quote": "**Pre-commit hook**: Runs `pnpm install` if `package.json` changes are staged", "why": "Describes a hook that exists. Treating a described hook as a control that stops the agent would be a false GATE, and paperfence has already been caught doing the equivalent." },
+    { "quote": "| `pnpm test`              | Run all tests (excludes examples)                                 |", "why": "A command table row. No ordering, so not require-before." },
+    { "quote": "| `packages/ai`             | Main SDK package (`ai` on npm)                                                       |", "why": "A directory table row. Read as scope it fences a path nobody fenced." },
+    { "quote": "These are guidelines, not rigid rules.", "why": "The document disclaiming its own section. Anything extracted from Task Completion Guidelines as a hard rule contradicts this sentence." },
+    { "quote": "import * as z4 from 'zod/v4';", "why": "A code sample inside a fenced block." },
+    { "quote": "static isInstance(error: unknown): error is MyError {", "why": "A 25-line TypeScript sample. Nothing in it is a policy." }
+  ]
+}

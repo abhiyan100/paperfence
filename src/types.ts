@@ -34,7 +34,13 @@ export type RuleCategory =
   | "other"; // we could not map it to a mechanical check; reported but not attacked
 
 export type RuleSource =
-  | { kind: "prose"; file: string; line?: number }
+  /**
+   * `reader` says which of the two extractors produced this rule, because they
+   * are not interchangeable and the model one can fail. It used to fall back to
+   * the keyword reader without saying so, and every report then described
+   * keyword output while the run had asked for the model.
+   */
+  | { kind: "prose"; file: string; line?: number; reader?: "model" | "keyword" }
   | { kind: "permission"; file: string; entry: string; list: "allow" | "deny" | "ask" }
   | { kind: "hook"; file: string; event: string; matcher?: string; command: string };
 

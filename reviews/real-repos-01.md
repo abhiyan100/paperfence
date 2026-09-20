@@ -46,6 +46,8 @@ It could not be reproduced on demand. The same sentence, alone in a small file, 
 
 What changes the reading is **context, not chance**. These sentences are short, in a clean list, surrounded by other rules. A real rule file is long prose with headings, examples and commentary, and that is where rules get missed and miscategorised. So a hundred percent on the case set does not mean a hundred percent in the wild, and the three repositories above are the counter-example that proves it. The case set is easier than reality and should be said to be.
 
+**Second correction, measured 2026-09-20.** The paragraph above is true of single sentences and false of whole documents. Scoring six frozen rule files three times (`scripts/corpus-accuracy.ts --model --repeat 3`) gave 85, 73 and 88 extracted rules, 26, 22 and 26 of the mechanical policies found, and 23, 23 and 14 guidance rules filed under a category with a probe behind it. The same document, the same model, three different answers. So "context, not chance" understates it: at document length it is both. `reviews/real-world-validation-02.md` has the full numbers.
+
 ## What to do about it
 
 Recorded rather than fixed, because the fix is a piece of work and not a patch:

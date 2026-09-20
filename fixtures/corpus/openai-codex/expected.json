@@ -1,0 +1,815 @@
+{
+  "doc": "openai-codex",
+  "annotatedBy": "human, reading the whole document",
+  "summary": "Ninety-odd compliance statements, the great majority Rust and TUI style guidance, with six genuinely mechanical ordering rules buried in them. Contains the corpus's best polarity traps: an instruction to install dependencies, an instruction not to ask for approval, and a 'No history rewrite' rule about model context rather than git.",
+  "policyAnnotationComplete": true,
+  "policies": [
+    {
+      "id": "p1",
+      "quote": "When using format! and you can inline variables into {}, always do that.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p2",
+      "quote": "Install any commands the repo relies on (for example `just`, `rg`, or `cargo-insta`) if they aren't already available before running instructions here.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "An instruction TO install, in a corpus where every other dependency rule forbids it. A reader keyed on the words install and dependency gets the polarity backwards and reports a no-install rule the document contradicts."
+    },
+    {
+      "id": "p3",
+      "quote": "Never add or modify any code related to `CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR` or `CODEX_SANDBOX_ENV_VAR`.",
+      "category": "scope",
+      "targets": [
+        "CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR",
+        "CODEX_SANDBOX_ENV_VAR"
+      ],
+      "testable": "mechanical",
+      "ambiguous": true,
+      "note": "Scope expressed as two symbol names rather than two paths, which is the part a path-shaped target extractor drops."
+    },
+    {
+      "id": "p4",
+      "quote": "Always collapse if statements",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p5",
+      "quote": "Always inline format! args when possible",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p6",
+      "quote": "Use method references over closures when possible",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p7",
+      "quote": "Avoid bool or ambiguous `Option` parameters that force callers to write hard-to-read code",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p8",
+      "quote": "Use an exact `/*param_name*/` comment before opaque literal arguments",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p9",
+      "quote": "Do not add these comments for string or char literals unless the comment adds real clarity",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p10",
+      "quote": "The parameter name in the comment must exactly match the callee signature.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p11",
+      "quote": "When possible, make `match` statements exhaustive and avoid wildcard arms.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p12",
+      "quote": "Newly added traits should include doc comments that explain their role",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p13",
+      "quote": "Discourage both `#[async_trait]` and `#[allow(async_fn_in_trait)]` in Rust traits.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p14",
+      "quote": "Do not use `#[allow(async_fn_in_trait)]` as a shortcut",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p15",
+      "quote": "When writing tests, prefer comparing the equality of entire objects over fields one by one.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p16",
+      "quote": "Do not add tests for values that are statically defined.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "A rule about not writing certain tests. Reading it as protect-tests inverts it."
+    },
+    {
+      "id": "p17",
+      "quote": "Do not add negative tests for logic that was removed.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p18",
+      "quote": "Do not add general product or user-facing documentation to the `docs/` folder.",
+      "category": "scope",
+      "targets": [
+        "docs/"
+      ],
+      "testable": "mechanical",
+      "note": "A path-shaped scope rule with a stated exception in the next sentence."
+    },
+    {
+      "id": "p19",
+      "quote": "Prefer private modules and explicitly exported public crate API.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p20",
+      "quote": "If you change `ConfigToml` or nested config types, run `just write-config-schema` to update `codex-rs/core/config.schema.json`.",
+      "category": "require-before",
+      "targets": [
+        "just write-config-schema"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "just write-config-schema",
+        "relation": "after",
+        "of": "changing ConfigToml"
+      }
+    },
+    {
+      "id": "p21",
+      "quote": "prefer using `codex-rs/codex-mcp/src/mcp_connection_manager.rs` to handle mutation of tools and tool calls",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p22",
+      "quote": "Do not call `reset_client_session` unnecessarily",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p23",
+      "quote": "If you change Rust dependencies (`Cargo.toml` or `Cargo.lock`), run `just bazel-lock-update` from the\n  repo root to refresh `MODULE.bazel.lock`, and include that lockfile update in the same change.",
+      "category": "require-before",
+      "targets": [
+        "just bazel-lock-update"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "just bazel-lock-update",
+        "relation": "after",
+        "of": "changing Cargo.toml or Cargo.lock"
+      },
+      "note": "Names its own enforcement in the next sentence: CI verifies lockfile drift."
+    },
+    {
+      "id": "p24",
+      "quote": "update the crate's `BUILD.bazel`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p25",
+      "quote": "Do not create small helper methods that are referenced only once.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p26",
+      "quote": "instrument the function or method definition with\n  `#[tracing::instrument(...)]` instead of attaching spans to futures",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p27",
+      "quote": "Prefer adding new modules instead of growing existing ones.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p28",
+      "quote": "Target Rust modules under 500 LoC, excluding tests.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p29",
+      "quote": "If a file exceeds roughly 800 LoC, add new functionality in a new module",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p30",
+      "quote": "Avoid adding new standalone methods to `codex-rs/tui/src/chatwidget.rs` unless the change is\n    trivial",
+      "category": "scope",
+      "targets": [
+        "codex-rs/tui/src/chatwidget.rs"
+      ],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p31",
+      "quote": "be patient with the command and never try to kill them using the PID",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "gap": true,
+      "note": "Forbids killing a process, which is the shape of a destructive-command rule and is not one."
+    },
+    {
+      "id": "p32",
+      "quote": "Run `just fmt` (in the `codex-rs` directory) automatically after you have finished making code changes anywhere in this repository; do not ask for approval to run it.",
+      "category": "require-before",
+      "targets": [
+        "just fmt"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "just fmt",
+        "relation": "after",
+        "of": "finishing code changes"
+      },
+      "note": "Contains an explicit anti-ask-first clause. A reader keyed on the word approval files this as ask-first, which is the opposite of what it says."
+    },
+    {
+      "id": "p33",
+      "quote": "Do not run `cargo test` directly. Use `just test` so test execution follows the repo defaults.",
+      "category": "other",
+      "targets": [
+        "cargo test",
+        "just test"
+      ],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p34",
+      "quote": "Run the test for the specific project that was changed.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p35",
+      "quote": "project-specific or individual tests can be run without asking the user, but do ask the user before running the complete test suite.",
+      "category": "ask-first",
+      "targets": [
+        "just test"
+      ],
+      "testable": "mechanical",
+      "note": "A conditional ask-first: the same command is free at one scope and gated at another. Extracted without the condition it becomes either a blanket prohibition or nothing."
+    },
+    {
+      "id": "p36",
+      "quote": "Before finalizing a large change to `codex-rs`, run `just fix -p <project>`",
+      "category": "require-before",
+      "targets": [
+        "just fix"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "just fix -p <project>",
+        "relation": "before",
+        "of": "finalizing a large change"
+      }
+    },
+    {
+      "id": "p37",
+      "quote": "Do not re-run tests after running `fix` or `fmt`.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p38",
+      "quote": "**resist adding code to codex-core**!",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p39",
+      "quote": "do not hesitate to push back on PRs that would unnecessarily add code to `codex-core`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p40",
+      "quote": "Keep crate API surfaces as small as possible. Avoid proliferating test-only helpers.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p41",
+      "quote": "No history rewrite - the context must be built up incrementally.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "'History rewrite' here is the model's message context, not git history. The strongest no-force-push false friend in the corpus."
+    },
+    {
+      "id": "p42",
+      "quote": "No unbounded items - everything injected in the model context must have a bounded size and a hard cap.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p43",
+      "quote": "No items larger than 10K tokens.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p44",
+      "quote": "All injected fragments must be defined as structs in `core/context` and implement ContextualUserFragment trait",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p45",
+      "quote": "Search for breaking changes in external integration surfaces:",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p46",
+      "quote": "For agent changes prefer integration tests over unit tests.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p47",
+      "quote": "Features that change the agent logic MUST add an integration test:",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "About adding tests, not protecting them."
+    },
+    {
+      "id": "p48",
+      "quote": "If unit tests are needed, put them in a dedicated test file",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p49",
+      "quote": "Avoid test-only functions in the main implementation.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p50",
+      "quote": "the total number of changed lines should not exceed 800 lines",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p51",
+      "quote": "For complex logic changes the size should be under 500 lines.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p52",
+      "quote": "Use concise styling helpers from ratatui\u2019s Stylize trait.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p53",
+      "quote": "Prefer Stylize helpers",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p54",
+      "quote": "Avoid hardcoded white: do not use `.white()`; prefer the default foreground (no color).",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p55",
+      "quote": "Chaining: combine helpers by chaining for readability",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p56",
+      "quote": "Single items: prefer \"text\".into()",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p57",
+      "quote": "Building lines: use vec![\u2026].into() to construct a Line when the target type is obvious",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p58",
+      "quote": "Avoid churn: don\u2019t refactor between equivalent forms",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p59",
+      "quote": "Compactness: prefer the form that stays on one line after rustfmt",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p60",
+      "quote": "Always use textwrap::wrap to wrap plain strings.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p61",
+      "quote": "use the helpers in tui/src/wrapping.rs",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p62",
+      "quote": "use the initial_indent / subsequent_indent options from RtOptions",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p63",
+      "quote": "use the `prefix_lines` helper from line_utils",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p64",
+      "quote": "When adding a new test module, define its contents in a separate sibling file rather than inline in the implementation file.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p65",
+      "quote": "Use an explicit `#[path = \"..._tests.rs\"]` attribute",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p66",
+      "quote": "Do not move or rewrite existing inline `#[cfg(test)] mod tests { ... }` modules solely to follow this convention.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "A rule protecting existing test modules from rewriting. The nearest thing here to protect-tests, and it is about layout, not assertions."
+    },
+    {
+      "id": "p67",
+      "quote": "any change that affects user-visible UI (including adding new UI) must include\ncorresponding `insta` snapshot coverage",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p68",
+      "quote": "Only if you intend to accept all new snapshots in this crate, run:",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p69",
+      "quote": "Tests should use pretty_assertions::assert_eq for clearer diffs.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p70",
+      "quote": "Prefer deep equals comparisons whenever possible.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p71",
+      "quote": "Avoid mutating process environment in tests; prefer passing environment-derived flags or dependencies from above.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p72",
+      "quote": "Prefer `codex_utils_cargo_bin::cargo_bin(\"...\")` over `assert_cmd::Command::cargo_bin(...)`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p73",
+      "quote": "avoid `env!(\"CARGO_MANIFEST_DIR\")`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p74",
+      "quote": "Prefer the utilities in `core_test_support::responses` when writing end-to-end Codex tests.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p75",
+      "quote": "Use `TestCodexBuilder::build_with_auto_env()` by default",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p76",
+      "quote": "hold onto it so you can assert against outbound `/responses` POST bodies",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p77",
+      "quote": "Prefer `wait_for_event` over `wait_for_event_with_timeout`.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p78",
+      "quote": "Prefer `mount_sse_once` over `mount_sse_once_match` or `mount_sse_sequence`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p79",
+      "quote": "Tests should exercise app-server's public JSON-RPC API.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p80",
+      "quote": "All active API development should happen in app-server v2. Do not add new API surface area to v1.",
+      "category": "scope",
+      "targets": [
+        "v1"
+      ],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p81",
+      "quote": "Follow payload naming consistently:",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p82",
+      "quote": "Expose RPC methods as `<resource>/<method>` and keep `<resource>` singular",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p83",
+      "quote": "Always expose fields as camelCase on the wire with `#[serde(rename_all = \"camelCase\")]`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p84",
+      "quote": "Always set `#[ts(export_to = \"v2/\")]` on v2 request/response/notification types",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p85",
+      "quote": "Never use `#[serde(skip_serializing_if = \"Option::is_none\")]` for v2 API payload fields.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p86",
+      "quote": "Keep Rust and TS wire renames aligned.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p87",
+      "quote": "Prefer plain `String` IDs at the API boundary",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p88",
+      "quote": "Timestamps should be integer Unix seconds (`i64`) and named `*_at`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p89",
+      "quote": "Every optional field must be annotated with `#[ts(optional = nullable)]`.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p90",
+      "quote": "For new list methods, implement cursor pagination by default:",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p91",
+      "quote": "Regenerate schema fixtures when API shapes change:\n  `just write-app-server-schema`",
+      "category": "require-before",
+      "targets": [
+        "just write-app-server-schema"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "just write-app-server-schema",
+        "relation": "after",
+        "of": "changing API shapes"
+      }
+    },
+    {
+      "id": "p92",
+      "quote": "Validate with `just test -p codex-app-server-protocol`.",
+      "category": "require-before",
+      "targets": [
+        "just test -p codex-app-server-protocol"
+      ],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p93",
+      "quote": "Avoid boilerplate tests that only assert experimental field markers",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p94",
+      "quote": "You should not use the `__future__` module.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p95",
+      "quote": "Tests and features must support Linux, macOS and Windows unless feature is explicitly OS-specific.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p96",
+      "quote": "if any changes were made in common, core, or protocol, run the complete test suite with `just test`",
+      "category": "require-before",
+      "targets": [
+        "just test"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "just test",
+        "relation": "after",
+        "of": "changing common, core or protocol"
+      },
+      "note": "Added after a run extracted it; the annotation had covered only the sentence after it."
+    },
+    {
+      "id": "p97",
+      "quote": "Avoid `--all-features` for routine local runs",
+      "category": "other",
+      "targets": [
+        "--all-features"
+      ],
+      "testable": "guidance"
+    },
+    {
+      "id": "p98",
+      "quote": "Prefer scoping with `-p` to avoid slow workspace\u2011wide Clippy builds",
+      "category": "other",
+      "targets": [
+        "-p"
+      ],
+      "testable": "guidance"
+    }
+  ],
+  "traps": [
+    {
+      "quote": "Crate names are prefixed with `codex-`.",
+      "why": "A naming fact about the repository."
+    },
+    {
+      "quote": "`CODEX_SANDBOX_NETWORK_DISABLED=1` will be set whenever you use the `shell` tool",
+      "why": "Describes the sandbox the agent already runs in. Treating it as a control this repository enforces would be a false GATE about something outside the repository."
+    },
+    {
+      "quote": "cargo benchmarks can be run with `just bench`",
+      "why": "Command reference."
+    },
+    {
+      "quote": "`cargo install --locked cargo-insta`",
+      "why": "An install command offered as help. The second place in this document where install text is not a dependency policy."
+    },
+    {
+      "quote": "Codex maintains a context (history of messages) that is sent to the model in inference requests.",
+      "why": "Architecture description, and the sentence that makes 'No history rewrite' two lines later mean message context rather than git history."
+    },
+    {
+      "quote": "let mock = responses::mount_sse_once(&server, responses::sse(vec![",
+      "why": "A twelve-line Rust sample in a fenced block."
+    },
+    {
+      "quote": "See `codex-rs/tui/styles.md`.",
+      "why": "A pointer to another file."
+    }
+  ]
+}

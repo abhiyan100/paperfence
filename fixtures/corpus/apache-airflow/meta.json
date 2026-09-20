@@ -1,0 +1,11 @@
+{
+  "repo": "apache/airflow",
+  "path": "AGENTS.md",
+  "commit": "f546f7f070230058e6956f2f51d0196b5da8f85e",
+  "url": "https://raw.githubusercontent.com/apache/airflow/f546f7f070230058e6956f2f51d0196b5da8f85e/AGENTS.md",
+  "bytes": 22104,
+  "lines": 247,
+  "frozenAt": "2026-09-20",
+  "whyChosen": "Large Python monorepo with providers; uv-based custom test commands and generated files.",
+  "note": "Fetched read-only over HTTPS at the pinned commit. Nothing was cloned and no repository code or hook was executed."
+}

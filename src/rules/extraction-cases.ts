@@ -25,9 +25,13 @@ import type { RuleCategory } from "../types.js";
  * A real rule file is long prose with headings, examples and commentary, and
  * that is where rules get missed: the three repositories in
  * `reviews/real-repos-01.md` produced misses that these same sentences do not.
- * Both readers score every clear-cut case here and neither scored that well in
- * the wild. Closing that gap means scoring against whole documents, not
- * sentences, and that is not built yet.
+ * Both readers score every clear-cut case here and neither scores that well in
+ * the wild. That gap is now measured rather than asserted: `corpus.ts` scores
+ * both readers against six real rule files annotated statement by statement,
+ * and on those the model reader finds a little over half the mechanical
+ * policies and the keyword reader rather less. Keep both. This set is the fast
+ * check that a change did not break the easy cases; the corpus is the evidence
+ * about real documents.
  */
 
 export interface ExtractionCase {

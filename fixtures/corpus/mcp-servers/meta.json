@@ -1,0 +1,11 @@
+{
+  "repo": "modelcontextprotocol/servers",
+  "path": "CLAUDE.md",
+  "commit": "6e320090c030c439637c06ac197cbbecf8e1ec53",
+  "url": "https://raw.githubusercontent.com/modelcontextprotocol/servers/6e320090c030c439637c06ac197cbbecf8e1ec53/CLAUDE.md",
+  "bytes": 4155,
+  "lines": 105,
+  "frozenAt": "2026-09-20",
+  "whyChosen": "Small multi-language repository; a short CLAUDE.md, the common case.",
+  "note": "Fetched read-only over HTTPS at the pinned commit. Nothing was cloned and no repository code or hook was executed."
+}

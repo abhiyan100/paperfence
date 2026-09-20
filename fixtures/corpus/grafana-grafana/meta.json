@@ -1,0 +1,11 @@
+{
+  "repo": "grafana/grafana",
+  "path": "AGENTS.md",
+  "commit": "e5e725634cb0f48ce96faa1720811de2024b42c2",
+  "url": "https://raw.githubusercontent.com/grafana/grafana/e5e725634cb0f48ce96faa1720811de2024b42c2/AGENTS.md",
+  "bytes": 9957,
+  "lines": 173,
+  "frozenAt": "2026-09-20",
+  "whyChosen": "Go backend and TypeScript frontend in one repository; two toolchains in one document.",
+  "note": "Fetched read-only over HTTPS at the pinned commit. Nothing was cloned and no repository code or hook was executed."
+}

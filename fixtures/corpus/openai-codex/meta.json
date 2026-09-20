@@ -1,0 +1,11 @@
+{
+  "repo": "openai/codex",
+  "path": "AGENTS.md",
+  "commit": "4875084025582f9443afeb907e2aa20644241dda",
+  "url": "https://raw.githubusercontent.com/openai/codex/4875084025582f9443afeb907e2aa20644241dda/AGENTS.md",
+  "bytes": 22363,
+  "lines": 321,
+  "frozenAt": "2026-09-20",
+  "whyChosen": "Rust workspace plus a TypeScript CLI; a long document with build commands, a test policy and a lot of prose.",
+  "note": "Fetched read-only over HTTPS at the pinned commit. Nothing was cloned and no repository code or hook was executed."
+}

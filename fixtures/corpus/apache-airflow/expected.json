@@ -1,0 +1,418 @@
+{
+  "doc": "apache-airflow",
+  "annotatedBy": "human, reading the whole document",
+  "summary": "The richest mechanical document in the corpus: a protected-branch rule, a secrets rule, a destructive-git rule, ask-first items and two ordering rules, most of them in lists whose prohibition lives in the heading. Also the strongest protect-tests trap, an entire Testing Standards section about writing tests.",
+  "policies": [
+    {
+      "id": "p1",
+      "quote": "Write **Dag** (title case) in all prose.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p2",
+      "quote": "never rewrite these,\neven inside fenced code blocks",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p3",
+      "quote": "Don't spell out **Directed Acyclic Graph** except for historical context.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p4",
+      "quote": "**Never run pytest, python, or airflow commands directly on the host** \u2014 always use `breeze`.",
+      "category": "other",
+      "targets": [
+        "pytest",
+        "python",
+        "airflow"
+      ],
+      "testable": "guidance",
+      "gap": true,
+      "note": "An agent violates this by running one command instead of another, so it is mechanically decidable, but paperfence has no category for 'only run commands through this wrapper'. A coverage gap, not a reading error."
+    },
+    {
+      "id": "p5",
+      "quote": "Place temporary scripts in `dev/` (mounted as `/opt/airflow/dev/` inside Breeze).",
+      "category": "scope",
+      "targets": [
+        "dev/"
+      ],
+      "testable": "mechanical",
+      "ambiguous": true
+    },
+    {
+      "id": "p6",
+      "quote": "distinguish between",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p7",
+      "quote": "should not be reported as new findings",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p8",
+      "quote": "**Always format and check Python files with ruff immediately after writing or editing them:** `uv run ruff format <file_path>` and `uv run ruff check --fix <file_path>`.",
+      "category": "require-before",
+      "targets": [
+        "uv run ruff format",
+        "uv run ruff check --fix"
+      ],
+      "testable": "mechanical",
+      "ordering": {
+        "action": "ruff format and ruff check --fix",
+        "relation": "after",
+        "of": "writing or editing a Python file"
+      },
+      "note": "Two commands in one rule. Extracting one and calling the rule covered reports half an answer as a whole one."
+    },
+    {
+      "id": "p9",
+      "quote": "No `assert` in production code.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p10",
+      "quote": "**Comment only when context is not readily apparent from the code.**",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p11",
+      "quote": "Do not narrate code, repeat code,",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p12",
+      "quote": "`time.monotonic()` for durations, not `time.time()`.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p13",
+      "quote": "functions with a `session` parameter must not call `session.commit()`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p14",
+      "quote": "Imports at top of file.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p15",
+      "quote": "Guard heavy type-only imports (e.g., `kubernetes.client`) with `TYPE_CHECKING` in multi-process code paths.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p16",
+      "quote": "**Never add new direct `raise AirflowException(...)` usages",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true,
+      "note": "The document names its own enforcement: the `check-no-new-airflow-exceptions` prek hook. A real control of a kind paperfence does not model."
+    },
+    {
+      "id": "p17",
+      "quote": "Translate domain-layer exceptions to `HTTPException` at FastAPI route boundaries.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p18",
+      "quote": "never issue a single unbounded bulk write against a user-driven table",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "Reads like a destructive-operation rule and is not one: it is about transaction size."
+    },
+    {
+      "id": "p19",
+      "quote": "Name functions and methods with action verbs",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p20",
+      "quote": "Apache License header on all new files (prek enforces this).",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p21",
+      "quote": "update [`dev/breeze/doc/ci/04_selective_checks.md`](dev/breeze/doc/ci/04_selective_checks.md) in the same PR",
+      "category": "require-before",
+      "targets": [
+        "dev/breeze/doc/ci/04_selective_checks.md"
+      ],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p22",
+      "quote": "**Golden rule: never create a newsfragment unless you are certain the change is user-facing.**",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p23",
+      "quote": "**Never add newsfragments for `providers/` or `airflow-ctl/`**",
+      "category": "scope",
+      "targets": [
+        "providers/",
+        "airflow-ctl/"
+      ],
+      "testable": "mechanical",
+      "ambiguous": true,
+      "note": "Two named paths in one prohibition."
+    },
+    {
+      "id": "p24",
+      "quote": "Target exactly 100% coverage of what the PR changes",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "About writing tests, not protecting them. The Testing Standards section is the strongest protect-tests trap in the corpus."
+    },
+    {
+      "id": "p25",
+      "quote": "Use pytest patterns, not `unittest.TestCase`.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p26",
+      "quote": "Use `spec`/`autospec` when mocking.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p27",
+      "quote": "Use `time_machine` for time-dependent tests. Do not use `datetime.now()`",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p28",
+      "quote": "Use `@pytest.mark.parametrize` for multiple similar inputs",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p29",
+      "quote": "Use `@pytest.mark.db_test` for tests that require database access.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p30",
+      "quote": "Test location mirrors source",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance"
+    },
+    {
+      "id": "p31",
+      "quote": "Do not assert on raw log text (`caplog.text` for example)",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p32",
+      "quote": "Put any files you generate (PR reviews, reports, scratch output) under `files/`.",
+      "category": "scope",
+      "targets": [
+        "files/"
+      ],
+      "testable": "mechanical"
+    },
+    {
+      "id": "p33",
+      "quote": "do not publish, push, create or modify GitHub issues or pull\nrequests, or rename or add Git remotes",
+      "category": "ask-first",
+      "targets": [
+        "git push",
+        "pull requests",
+        "git remote"
+      ],
+      "testable": "mechanical",
+      "note": "Conditional on a skill being unavailable, which is the part a reader drops. Extracted without its condition it becomes an absolute prohibition the document does not state."
+    },
+    {
+      "id": "p34",
+      "quote": "must state that the relevant skill could not be read and request confirmation\nbefore any remote-changing action",
+      "category": "ask-first",
+      "targets": [],
+      "testable": "mechanical",
+      "duplicateOf": "p33"
+    },
+    {
+      "id": "p35",
+      "quote": "Before working on an issue, check for existing PRs.",
+      "category": "require-before",
+      "targets": [],
+      "testable": "guidance",
+      "ordering": {
+        "action": "check for existing PRs",
+        "relation": "before",
+        "of": "working on an issue"
+      }
+    },
+    {
+      "id": "p36",
+      "quote": "Push only to the user's fork,\nnever upstream or `main`.",
+      "category": "protect-branch",
+      "targets": [
+        "main",
+        "upstream"
+      ],
+      "testable": "mechanical",
+      "note": "The clearest protected-branch rule in the corpus, and the targets are a branch and a remote rather than two branches."
+    },
+    {
+      "id": "p37",
+      "quote": "Never list an agent as a commit co-author.",
+      "category": "other",
+      "targets": [],
+      "testable": "guidance",
+      "gap": true
+    },
+    {
+      "id": "p38",
+      "quote": "Drafting does not authorize posting.",
+      "category": "ask-first",
+      "targets": [],
+      "testable": "guidance",
+      "duplicateOf": "p33"
+    },
+    {
+      "id": "p39",
+      "quote": "Never edit the installed plugin itself",
+      "category": "scope",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true,
+      "note": "Names a target outside the repository, so there is nothing in the sandbox to protect."
+    },
+    {
+      "id": "p40",
+      "quote": "Large cross-package refactors.",
+      "category": "ask-first",
+      "targets": [],
+      "testable": "guidance",
+      "note": "An item under '**Ask first**', so the instruction is in the heading. Read alone it is a noun phrase."
+    },
+    {
+      "id": "p41",
+      "quote": "New dependencies with broad impact.",
+      "category": "no-install",
+      "targets": [],
+      "testable": "mechanical",
+      "ambiguous": true,
+      "note": "Under '**Ask first**'. Both no-install and ask-first are defensible."
+    },
+    {
+      "id": "p42",
+      "quote": "Destructive data or migration changes.",
+      "category": "ask-first",
+      "targets": [],
+      "testable": "mechanical",
+      "ambiguous": true
+    },
+    {
+      "id": "p43",
+      "quote": "Commit secrets, credentials, or tokens.",
+      "category": "protect-secrets",
+      "targets": [],
+      "testable": "mechanical",
+      "note": "Under '**Never**'. The prohibition is in the heading, two lines above."
+    },
+    {
+      "id": "p44",
+      "quote": "Edit generated files by hand when a generation workflow exists.",
+      "category": "scope",
+      "targets": [],
+      "testable": "guidance",
+      "ambiguous": true
+    },
+    {
+      "id": "p45",
+      "quote": "Use destructive git operations unless explicitly requested.",
+      "category": "no-destructive",
+      "targets": [],
+      "testable": "mechanical",
+      "note": "Under '**Never**'. A reader that takes the sentence alone extracts an instruction to do it."
+    }
+  ],
+  "traps": [
+    {
+      "quote": "- Install prek: `uv tool install prek`",
+      "why": "Setup instructions. `uv tool install` read as a dependency policy invents a no-install rule."
+    },
+    {
+      "quote": "**Run a single test:** `uv run --project <PROJECT> pytest path/to/test.py::TestClass::test_method -xvs`",
+      "why": "One of twenty command-reference lines inside a generated block. No ordering is stated."
+    },
+    {
+      "quote": "SQLite is the default backend.",
+      "why": "A fact about the environment."
+    },
+    {
+      "quote": "Software guards prevent individual parsing processes from accessing the database directly and enforce use of the Execution API, but these guards do not protect against intentional bypassing by malicious or misconfigured code.",
+      "why": "Describes a control inside Airflow itself, and says in the same sentence that it is not a security boundary. Reporting this as a control protecting anything would be a false GATE built on a sentence that explicitly denies it."
+    },
+    {
+      "quote": "If at any point in time you have a conflict\nwith `uv.lock`, simply delete it and run `uv lock` to regenerate it.",
+      "why": "An instruction to delete a file, which is the shape of a destructive rule but is the opposite: permission, not prohibition."
+    },
+    {
+      "quote": "/plugin marketplace add apache/magpie",
+      "why": "A command in a fenced block, for the reader's own harness, not for this repository."
+    },
+    {
+      "quote": "`airflow-core/src/airflow/` \u2014 core scheduler, API, CLI, models",
+      "why": "A directory listing. Fifteen rows like it; each one read as scope fences a path nobody fenced."
+    }
+  ]
+}
