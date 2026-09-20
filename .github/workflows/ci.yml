@@ -51,6 +51,12 @@ jobs:
             if (gate < 8) { console.error(`expected hardening to produce gates, got ${gate}`); process.exit(1); }
           '
 
+      # The case table itself, without running the runtime. The real
+      # conformance run needs Docker and spends money; it belongs on a
+      # schedule, not on every pull request.
+      - name: conformance cases agree with our matcher
+        run: node dist/cli.js conformance --list > /dev/null
+
       # paperfence's own sandbox boundary. Skipped without Docker rather than
       # passed: a check that cannot run is not a check that passed.
       - name: sandbox isolation

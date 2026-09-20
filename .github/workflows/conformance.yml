@@ -1,0 +1,50 @@
+# The conformance suite against the real runtime.
+#
+# Not on every pull request: it needs Docker, it spends money, and each case
+# runs a real agent. Weekly is enough to catch a runtime change, and the
+# failure output names the claim that stopped being true.
+name: conformance
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: Case ids to run, space separated. Empty runs all of them.
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: check our reading of the permission rules against the runtime
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          only=""
+          if [ -n "${{ inputs.only }}" ]; then only="--only ${{ inputs.only }}"; fi
+          node dist/cli.js conformance $only --json conformance.json
+
+      - name: Upload the result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance
+          path: conformance.json
+          if-no-files-found: warn

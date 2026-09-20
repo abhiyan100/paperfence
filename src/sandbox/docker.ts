@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { loadCredential } from "../proxy.js";
@@ -38,7 +39,34 @@ const run = promisify(execFile);
  * See docs/decisions/0003-sandbox-network.md for what this replaced and why.
  */
 
-export const IMAGE = "paperfence-sandbox:0.4";
+/**
+ * The Agent SDK version the sandbox image installs.
+ *
+ * Read from this package's own lockfile-resolved dependency rather than
+ * written twice. A container running a different SDK from the one the
+ * fingerprint reports would make every receipt quietly wrong about the
+ * conditions it claims to describe.
+ */
+export function sdkVersion(): string {
+  const candidates = [path.join(here(), "..", "package.json"), path.join(here(), "..", "..", "package.json")];
+  for (const c of candidates) {
+    try {
+      const pkg = JSON.parse(readFileSync(c, "utf8")) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+      const spec = pkg.dependencies?.["@anthropic-ai/claude-agent-sdk"] ?? pkg.devDependencies?.["@anthropic-ai/claude-agent-sdk"];
+      if (spec) return spec.replace(/^[\^~>=<\s]+/, "");
+    } catch {
+      // try the next candidate
+    }
+  }
+  throw new Error("cannot determine the Agent SDK version from package.json; the sandbox image would not match the host");
+}
+
+/**
+ * The image tag carries the SDK version, so bumping the dependency rebuilds
+ * the image instead of silently reusing one built against the old SDK.
+ */
+export const IMAGE_BASE = "paperfence-sandbox:0.4";
+export const IMAGE = `${IMAGE_BASE}-sdk${sdkVersion()}`;
 
 /** Where the proxy's unix socket lives inside both containers. */
 export const SOCK_DIR = "/paperfence/sock";
@@ -73,7 +101,7 @@ export async function ensureImage(onProgress?: (m: string) => void): Promise<voi
   onProgress?.(`building ${IMAGE} (first run only, a minute or two)`);
   const ctx = await fs.mkdtemp(path.join(os.tmpdir(), "pf-img-"));
   try {
-    await fs.writeFile(path.join(ctx, "Dockerfile"), DOCKERFILE);
+    await fs.writeFile(path.join(ctx, "Dockerfile"), dockerfile());
     await new Promise<void>((resolve, reject) => {
       const child = spawn("docker", ["build", "-t", IMAGE, ctx], { stdio: ["ignore", "pipe", "pipe"] });
       child.stdout.on("data", () => {});
@@ -87,12 +115,13 @@ export async function ensureImage(onProgress?: (m: string) => void): Promise<voi
 }
 
 // The node image already has a "node" user with UID 1000 and a real home.
-export const DOCKERFILE = `FROM node:22-slim
+export function dockerfile(SDK = sdkVersion()): string {
+  return `FROM node:22-slim
 RUN apt-get update && apt-get install -y --no-install-recommends git curl ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /paperfence
 RUN npm init -y >/dev/null && npm pkg set type=module \\
  && case "$(uname -m)" in aarch64|arm64) P=linux-arm64;; x86_64|amd64) P=linux-x64;; *) echo "unsupported arch" && exit 1;; esac \\
- && npm install --omit=dev @anthropic-ai/claude-agent-sdk@0.3.272 @anthropic-ai/claude-agent-sdk-$P@0.3.272 \\
+ && npm install --omit=dev @anthropic-ai/claude-agent-sdk@${SDK} @anthropic-ai/claude-agent-sdk-$P@${SDK} \\
  && test -x node_modules/@anthropic-ai/claude-agent-sdk-$P/claude \\
  && mkdir -p /paperfence/sock \\
  && chown -R node:node /paperfence
@@ -103,6 +132,7 @@ ENV GIT_AUTHOR_NAME=agent GIT_AUTHOR_EMAIL=agent@sandbox GIT_COMMITTER_NAME=agen
 ENV HOME=/home/node
 USER node
 `;
+}
 
 export interface DockerRunOptions {
   model: string;

@@ -204,7 +204,7 @@ export const CASES: ConformanceCase[] = [
   },
   {
     id: "read-deny-blocks-edit",
-    claim: "A Read deny rule also refuses Edit on the same path.",
+    claim: "A Read deny rule stops an Edit on the same path, because Edit needs a prior Read and that Read is refused.",
     settings: deny(`Read(${CONFIG})`),
     call: { tool: "Edit", input: { file_path: CONFIG, old_string: "retries = 3", new_string: "retries = 4" }, describe: `Edit ${CONFIG}` },
     expected: "deny",
