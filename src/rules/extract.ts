@@ -1,5 +1,6 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
+import { createHash } from "node:crypto";
 import type { AgentConfig } from "../config/discover.js";
 import type { Rule, RuleCategory } from "../types.js";
 import { extractRulesHeuristically } from "./heuristic.js";
@@ -62,9 +63,27 @@ export interface ExtractOptions {
 /** Last rate-limit notice seen from the SDK, for callers that want to slow down. */
 export const rateLimit: { last?: { at: number; info: unknown } } = {};
 
+/**
+ * A stable id for a rule: the file it came from and a hash of its text.
+ *
+ * Ids were positional, so `prose-0` meant "the first rule extracted this time".
+ * Anything comparing runs treated it as an identity: insert a rule at the top
+ * of CLAUDE.md and every id below it shifts onto a different sentence. The
+ * control plane's "what started failing" check compares by rule id across
+ * weeks, so an old failure under the old `prose-0` could hide a new failure
+ * under the new one, and `status` would exit clean through a regression.
+ *
+ * Hashing the text means an edited rule becomes a new id, which is right: a
+ * rule that has been reworded is a different rule and its history should not
+ * silently carry over.
+ */
+export function ruleId(file: string, text: string): string {
+  const normalized = text.trim().toLowerCase().replace(/\s+/g, " ");
+  return `prose-${createHash("sha256").update(`${file}\u0000${normalized}`).digest("hex").slice(0, 8)}`;
+}
+
 export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptions = {}): Promise<Rule[]> {
   const rules: Rule[] = [];
-  let n = 0;
   for (const { file, content } of cfg.proseFiles) {
     if (!content.trim()) continue;
     opts.onProgress?.(`reading ${file}`);
@@ -79,7 +98,7 @@ export async function extractRulesFromProse(cfg: AgentConfig, opts: ExtractOptio
     const items = extracted?.rules ?? extractRulesHeuristically(content);
     for (const r of items) {
       rules.push({
-        id: `prose-${n++}`,
+        id: ruleId(file, r.text),
         text: r.text.trim(),
         category: r.category,
         targets: r.targets ?? [],

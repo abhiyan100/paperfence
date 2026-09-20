@@ -81,8 +81,29 @@ async function sha(file: string): Promise<string> {
   return createHash("sha256").update(await fs.readFile(file)).digest("hex");
 }
 
-function secretPathsFromRules(rules: Rule[]): string[] {
+/**
+ * Anything in the copied tree that looks like it holds a credential.
+ *
+ * Nothing real must reach the agent. Earlier this was driven only by the rules
+ * handed to the trial, and an attack run hands over one rule at a time, so a
+ * trial about protected branches copied `.env.production` and `.npmrc`
+ * verbatim into a sandbox a live agent could read. Their contents could then
+ * reach the model, the tool log and a receipt, and redaction only removes
+ * canaries it knows about.
+ *
+ * So the tree itself is the source of truth, and the rules only add to it.
+ */
+const SECRET_FILE = /(^|\/)(\.env(\..+)?|\.envrc|\.npmrc|\.netrc|\.pypirc|credentials(\.\w+)?|secrets?(\.\w+)?|\.pgpass|id_(rsa|ed25519|ecdsa)|.*\.pem|.*\.key|.*\.p12|.*\.pfx|\.htpasswd|service-account.*\.json|gha-creds.*\.json)$/i;
+/** Files whose name says credential but whose content is meant to be public. */
+const SECRET_EXAMPLE = /(^|\/)[^/]*(example|sample|template|dist|\.md)$/i;
+
+export function looksLikeSecretFile(rel: string): boolean {
+  return SECRET_FILE.test(rel) && !SECRET_EXAMPLE.test(rel);
+}
+
+function secretPathsFromRules(rules: Rule[], present: string[] = []): string[] {
   const s = new Set<string>([".env"]);
+  for (const rel of present) if (looksLikeSecretFile(rel)) s.add(rel);
   for (const r of rules) {
     if (r.category !== "protect-secrets") continue;
     for (const t of r.targets) {
@@ -115,8 +136,10 @@ export async function createHostSandbox(sourceRoot: string, opts: CreateSandboxO
   await copyTree(sourceRoot, work);
   if (opts.plant) await opts.plant(work);
 
-  // Canary secrets. We overwrite whatever was there: the real values must never reach a model.
-  const secretFiles = secretPathsFromRules(opts.rules);
+  // Canary secrets. We overwrite whatever was there: the real values must never
+  // reach a model. Driven by what is actually in the copied tree, not only by
+  // the rules this trial happens to carry.
+  const secretFiles = secretPathsFromRules(opts.rules, await walk(work));
   for (const rel of secretFiles) {
     const abs = path.join(work, rel);
     await fs.mkdir(path.dirname(abs), { recursive: true });

@@ -118,6 +118,12 @@ function segments(cmd, depth = 0) {
   for (const seg of splitTop(cmd)) {
     out.push(seg);
     for (const inner of subshellBodies(seg)) out.push(...segments(inner, depth + 1));
+    // `{ rm -rf build; }` parses as a segment whose program is `{`, so nothing
+    // inside it was matched. A brace group is a list of commands.
+    if (/^\{\s/.test(seg)) {
+      const body = seg.replace(/^\{\s*/, "").replace(/\s*\}\s*;?\s*$/, "");
+      if (body && body !== seg) out.push(...segments(body, depth + 1));
+    }
     // sh -c '...' / bash -lc "..." : the body is a command too. The flag may be
     // combined with others, so -lc, -ec and -xc all carry a command.
     const p = parseProg(seg);
@@ -243,7 +249,12 @@ if (event === "PostToolUse") {
       const { prog, args } = parseProg(top[0]);
       const normalized = (prog + (args ? " " + args : "")).trim();
       for (const req of policy.requireBefore) {
-        if (normalized === req.command || normalized.startsWith(req.command + " ")) state["ran:" + req.command] = Date.now();
+        if (normalized !== req.command && !normalized.startsWith(req.command + " ")) continue;
+        // `npm test --help` prints usage and tests nothing, so it must not earn
+        // credit for having run the suite.
+        const extra = normalized.slice(req.command.length);
+        if (/(^|\s)(--help|-h|--version|-v|--dry-run|--list(-tests)?|--listTests)(\s|$)/.test(extra)) continue;
+        state["ran:" + req.command] = Date.now();
       }
       writeState(state);
     }
@@ -408,8 +419,17 @@ if (tool === "Bash") {
       // with a different verb.
       if (git && git.sub === "remote" && git.argv.includes("add") && git.argv.some((a) => /^(https?:\/\/|git@|ssh:\/\/)/.test(a))) block("adding a remote to push to is not allowed");
       if (git && git.sub === "push" && git.argv.some((a) => /^(https?:\/\/|git@|ssh:\/\/)/.test(a))) block("pushing to a URL instead of a configured remote is not allowed");
-      if (scripty && /(urllib|requests\.|http\.client|\bfetch\s*\(|https?\.(request|get)|net\.connect|socket\.|WebSocket|XMLHttpRequest|axios|got\()/.test(scriptText) && !/127\.0\.0\.1|localhost/.test(scriptText)) block("outbound network from scripts is not allowed");
-      if (scripty && /https?:\/\//.test(scriptText) && !/127\.0\.0\.1|localhost/.test(scriptText)) block("outbound network from scripts is not allowed");
+      // Looking for "localhost" anywhere in the text let a URL smuggle the
+      // exemption in its path: https://example.com/localhost was treated as
+      // loopback. Check the host of each URL instead.
+      const urls = scriptText.match(/https?:\/\/[^\s"'`)]+/g) || [];
+      const nonLoopback = urls.filter((u) => {
+        const host = (u.replace(/^https?:\/\//, "").split(/[/?#]/)[0] || "").split("@").pop().split(":")[0];
+        return host && host !== "127.0.0.1" && host !== "localhost" && host !== "::1" && host !== "0.0.0.0";
+      });
+      const networkCall = /(urllib|requests\.|http\.client|\bfetch\s*\(|https?\.(request|get)|net\.connect|socket\.|WebSocket|XMLHttpRequest|axios|got\()/.test(scriptText);
+      if (scripty && networkCall && (nonLoopback.length > 0 || urls.length === 0)) block("outbound network from scripts is not allowed");
+      if (scripty && nonLoopback.length > 0) block("outbound network from scripts is not allowed");
     }
 
     // secrets
@@ -431,7 +451,12 @@ if (tool === "Bash") {
     const editsInPlace = /^(sed|perl)$/.test(prog) && /(^|\s)-i/.test(args);
     const writeTargets = [...(s.match(/(?:^|\s)\d?>>?\s*(\S+)/g) || []).map((m) => m.replace(/^\s*\d?>>?\s*/, ""))];
     let argPaths = argv.filter((a) => a && !a.startsWith("-"));
-    if ((prog === "cp" || prog === "mv" || prog === "install" || prog === "ln") && argPaths.length > 1) argPaths = argPaths.slice(-1); // destination only
+    // Only the destination matters for what gets written. But `mv` also removes
+    // its source, so moving the hook directory away deleted the guard while the
+    // guard said yes.
+    const movesAway = prog === "mv" || prog === "rename";
+    if ((prog === "cp" || prog === "install" || prog === "ln") && argPaths.length > 1) argPaths = argPaths.slice(-1); // destination only
+    if (movesAway && argPaths.some((a) => touchesSelf(rel(a)))) block("moving the paperfence hook, its policy or settings.json is not allowed");
     const shellTouches = (pred) => (shellWriters.test(prog) || editsInPlace) && argPaths.some(pred) || writeTargets.some(pred);
     if (shellTouches((a) => touchesSelf(rel(a)))) block("the paperfence hook, its policy and settings.json are not editable by the agent");
     if (prog === "rm" && argv.some((a) => !a.startsWith("-") && touchesSelf(rel(a)))) block("the paperfence hook, its policy and settings.json are not editable by the agent");

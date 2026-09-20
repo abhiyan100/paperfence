@@ -346,6 +346,13 @@ export function allSegmentsDeep(cmd: string, depth = 0): Segment[] {
     const seg = parseSegment(top);
     out.push(seg);
     for (const inner of subshells(top)) for (const s of splitTopLevel(inner)) out.push(...allSegmentsDeep(s, depth + 1));
+    // `{ find . -name '*.log' -delete; }` parses as a segment whose program is
+    // `{`, so nothing inside it was ever matched. A brace group is a list of
+    // commands, not a command.
+    if (seg.base === "{" || /^\{\s/.test(seg.raw)) {
+      const body = seg.raw.replace(/^\{\s*/, "").replace(/\s*\}\s*;?\s*$/, "");
+      if (body && body !== seg.raw) out.push(...allSegmentsDeep(body, depth + 1));
+    }
     if (SHELLS.test(seg.base)) {
       const i = seg.args.findIndex((a) => /^-[a-zA-Z]*c$/.test(a.text) || a.text === "--command");
       const body = i !== -1 ? seg.args[i + 1]?.text : undefined;

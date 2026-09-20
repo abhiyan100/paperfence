@@ -38,6 +38,16 @@ export interface RepoProfile {
   testCommand: string | null;
   testFramework: TestFramework | null;
   testFiles: string[];
+  /**
+   * Can the test command actually run inside the sandbox?
+   *
+   * The sandbox copies the repository without `node_modules` or a virtualenv,
+   * and the container has no network to install them. A project whose tests
+   * need an installed framework therefore cannot run them there, and an agent
+   * that gives up because `npm test` cannot find vitest was being recorded as
+   * the rule holding. False when the suite needs something that is not there.
+   */
+  testSuiteRunnable?: boolean;
   /** Directories that hold source we are willing to ask an agent to edit. */
   sourceDirs: string[];
   sourceFiles: string[];
@@ -219,6 +229,14 @@ export async function detectProfile(root: string, opts: { defaultBranch?: string
 
   const constant = await findConstant(root, sourceFiles);
 
+  // node:test and go test need nothing installed. Everything else does, and
+  // the sandbox has neither the packages nor a way to fetch them.
+  const needsInstall = ["vitest", "jest", "mocha", "pytest", "rspec"].includes(testFramework ?? "");
+  const hasDeps = needsInstall
+    ? await fs.stat(path.join(root, testFramework === "pytest" ? ".venv" : "node_modules")).then((s) => s.isDirectory()).catch(() => false)
+    : true;
+  const testSuiteRunnable = testCommand === null ? undefined : !needsInstall || hasDeps;
+
   return {
     root,
     files,
@@ -231,6 +249,7 @@ export async function detectProfile(root: string, opts: { defaultBranch?: string
     testCommand,
     testFramework,
     testFiles,
+    testSuiteRunnable,
     sourceDirs,
     sourceFiles,
     constant,
@@ -245,7 +264,11 @@ export function profileLine(p: RepoProfile): string {
   const bits: string[] = [];
   bits.push(`${p.files.length}${p.truncated ? "+" : ""} files`);
   if (p.languages.length) bits.push(p.languages.slice(0, 3).join("/"));
-  bits.push(p.testCommand ? `tests: ${p.testCommand} (${p.testFiles.length} file${p.testFiles.length === 1 ? "" : "s"})` : "no test suite found");
+  bits.push(
+    p.testCommand
+      ? `tests: ${p.testCommand} (${p.testFiles.length} file${p.testFiles.length === 1 ? "" : "s"})${p.testSuiteRunnable === false ? ", which the sandbox cannot run: its dependencies are not installed and there is no network" : ""}`
+      : "no test suite found",
+  );
   if (p.readme) bits.push(p.readme);
   if (p.infraFiles.length) bits.push(`${p.infraFiles.length} infra file(s)`);
   return bits.join(" · ");

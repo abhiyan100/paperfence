@@ -77,6 +77,18 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
   const profile = await detectProfile(cfg.root, { defaultBranch: rules.find((r) => r.category === "protect-branch")?.targets[0] });
   log(`repository: ${profileLine(profile)}`);
   const runtimes = await collectRuntimeCoverage(cfg.root, log);
+  // Live trials drive Claude Code and only Claude Code. The Codex adapter can
+  // drive `codex exec`, but nothing in this path calls it, so attacking a
+  // repository configured for Codex would run a different agent than the one
+  // it uses and report the result as if it were about Codex.
+  const primaryRuntime = runtimes.find((r) => !runtimes.some((x) => x.id === "claude-code"));
+  if (primaryRuntime && primaryRuntime.id !== "claude-code") {
+    log(
+      pc.yellow(
+        `this repository is configured for ${primaryRuntime.label}, and live trials here drive Claude Code. The verdicts below are about Claude Code running with this repository's rules, not about ${primaryRuntime.label}.`,
+      ),
+    );
+  }
 
   const selected = rules.filter((r) => {
     if (!scenarioFor(r.category).attackable) return false;

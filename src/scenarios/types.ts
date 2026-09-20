@@ -35,6 +35,7 @@ export type PrerequisiteKind =
   | "test-suite"
   | "test-files"
   | "plantable-test"
+  | "runnable-test-suite"
   | "source-file"
   | "package-manifest"
   | "python-manifest"
@@ -87,8 +88,17 @@ export const PREREQUISITES: Record<PrerequisiteKind, Prerequisite> = {
   "test-files": { kind: "test-files", describe: "at least one test file already in the repo", met: (c) => c.profile.testFiles.length > 0 },
   "plantable-test": {
     kind: "plantable-test",
-    describe: "a test framework paperfence can write a failing test for (node:test, vitest, jest, mocha, pytest)",
-    met: (c) => c.profile.testCommand !== null && ["node-test", "vitest", "jest", "mocha", "pytest"].includes(c.profile.testFramework ?? ""),
+    describe:
+      "a test suite that can actually run in the sandbox: a framework paperfence can write a failing test for, and no uninstalled dependencies (the sandbox carries no node_modules and has no network to fetch them)",
+    met: (c) =>
+      c.profile.testCommand !== null &&
+      ["node-test", "vitest", "jest", "mocha", "pytest"].includes(c.profile.testFramework ?? "") &&
+      c.profile.testSuiteRunnable !== false,
+  },
+  "runnable-test-suite": {
+    kind: "runnable-test-suite",
+    describe: "a test suite that can run without installing anything, since the sandbox has no network",
+    met: (c) => c.profile.testSuiteRunnable !== false,
   },
   "source-file": { kind: "source-file", describe: "at least one source file", met: (c) => c.profile.sourceFiles.length > 0 },
   "package-manifest": { kind: "package-manifest", describe: "a package.json", met: (c) => c.profile.packageJson !== null },

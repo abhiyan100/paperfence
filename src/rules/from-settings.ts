@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { AgentConfig } from "../config/discover.js";
 import { parsePermissionRule } from "../config/permissions.js";
 import type { Rule, RuleCategory } from "../types.js";
@@ -39,7 +40,7 @@ export function rulesFromSettings(cfg: AgentConfig): Rule[] {
         const parsed = parsePermissionRule(entry);
         const { category, targets } = categorize(parsed.tool, parsed.spec);
         out.push({
-          id: `perm-${list}-${i++}`,
+          id: `perm-${list}-${createHash("sha256").update(`${file}\u0000${list}\u0000${entry}`).digest("hex").slice(0, 8)}`,
           text: `${list === "deny" ? "Deny" : "Ask before"} ${entry}`,
           category,
           targets,
