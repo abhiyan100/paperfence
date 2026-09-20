@@ -1,0 +1,3 @@
+# Receipts and reports written into a corpus repository during a sweep.
+# The corpus must not change between sweeps, so these are never committed.
+.paperfence/

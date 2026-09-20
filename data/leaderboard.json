@@ -972,292 +972,154 @@
   {
     "repo": "workersio/skills",
     "stars": 170,
+    "commit": "0e3950fc7b284db4f6b317e48bcb99edd2c1e3bb",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Agent skills to find and fix software bugs",
-    "rules": 12,
+    "rules": 8,
     "gates": 0,
-    "wishes": 10,
-    "untested": 2,
+    "wishes": 0,
+    "untested": 8,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": true,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do not remove existing reference context.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm plugins/wio/skills/wio/references/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Keep `plugins/wio/skills/wio` as the source of truth for WIO workflow and testing references.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do not create separate `scan`, `test`, `workload`, `review`, or `doctor` skills. They are command modes inside the single `wio` skill.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit plugins/wio/skills/scan\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do not duplicate references under plugin, cloud, Claude, command, hook, or subagent folders.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do not remove existing reference context.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Keep `plugins/wio/skills/wio/SKILL.md` concise and route detailed testing guidance through `plugins/wio/skills/wio/references/index.md`.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:42:12.588Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:16:05.812Z"
   },
   {
     "repo": "jacopone/antigravity-nix",
     "stars": 164,
+    "commit": "b92ea8e30f8b8dc0892586940c1437d52228e14c",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Auto-updating Nix package for Google Antigravity agentic IDE. Updates 3x/week. FHS environment with overlay support for NixOS/Home Manager.",
-    "rules": 4,
+    "rules": 5,
     "gates": 0,
-    "wishes": 4,
-    "untested": 0,
+    "wishes": 1,
+    "untested": 4,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Never use fake/placeholder hashes. The update.yml workflow runs nix flake check + nix build on the updated packages before opening a PR (and",
+        "text": "Never** use fake/placeholder hashes. The `update.yml` workflow runs `nix flake check` + `nix build` on the updated packages before opening a",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm artifacts/versions.json/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Before committing changes to packaging, verify build succeeds with nix build .#default --rebuild, verify the binary exists, verify flake met",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "When modifying pkgs/*.nix or flake.nix, test locally with multiple build approaches (FHS and no-FHS), verify the FHS environment includes al",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "When modifying .github/workflows/*.yml, test with gh workflow run <workflow>.yml, check workflow syntax with gh workflow view <workflow>.yml",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:42:22.330Z"
+    "scannedAt": "2026-09-20T14:16:15.311Z"
   },
   {
     "repo": "Shpigford/studio",
     "stars": 160,
+    "commit": "24d22c4ed0394b44b3ccc7612cc9bb70c8faf635",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "A suite of random, mostly weird, generative art tools!",
-    "rules": 8,
+    "rules": 3,
     "gates": 0,
-    "wishes": 3,
-    "untested": 5,
+    "wishes": 0,
+    "untested": 3,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "All p5 tools use instance mode. Every p5 global must be prefixed with `p.` (e.g., `p.background()`, `p.createCanvas()`, `p.PI`). Do NOT use ",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "vitest for `src/lib/` utilities only (~20-30 tests)",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm src/lib/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "No UI or E2E tests — visual tools are verified by inspection",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm src/tools/pricing.test.js\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:42:33.056Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:16:24.813Z"
   },
   {
     "repo": "mwangli/stock-trading",
     "stars": 147,
+    "commit": "103a5a101a81ae7ff4126fa92ad423aeb47880be",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "AI小模型股票自动交易系统后端项目，使用DL4J框架实现LSTM模型实现股票价格预测和自动化股票交易，后端技术栈包含springboot，mysql，MongoDB，quartZ，k8s, mybatis-plus, webSocket, OCR文字识别等技术框架",
-    "rules": 31,
+    "rules": 13,
     "gates": 0,
-    "wishes": 30,
-    "untested": 1,
+    "wishes": 1,
+    "untested": 12,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
-      {
-        "text": "After every code change, verify compilation: Backend: `cd backend && mvn compile`, Frontend: `cd frontend-v2 && npm run build`",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
       {
         "text": "Never use `git reset --hard` or `git push -f` — use `revert` or new commits",
         "grade": "WISH",
         "summary": "Nothing mechanical stops \"git push --force\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "No automated tests — quality relies on code review and manual verification. Do not generate test cases",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm test cases/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "所有定时任务必须通过 `tradingExecutor.job` 模块中的统一调度体系完成，禁止在业务类中直接使用 `@Scheduled` 注解。",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "后续新增或修改任何后台任务时，禁止在任意类上新增 `@Scheduled`；必须通过 `JobConfig + JobSchedulerService` 的方式接入统一调度体系。",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "所有 `@RestController` 接口方法必须在入口打印一行访问日志，用于排查接口问题。已通过全局 AOP 切面 `com.stock.logging.ApiLoggingAspect` 统一实现。",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:43:10.705Z"
+    "scannedAt": "2026-09-20T14:16:40.492Z"
   },
   {
     "repo": "gaopengbin/cesium-mcp",
     "stars": 136,
+    "commit": "121b76e14b06fc7788b9d6eab5b46a6a84599665",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Protocol-agnostic CesiumJS AI control runtime for MCP, WebMCP, function calling, and browser agents.",
-    "rules": 12,
+    "rules": 4,
     "gates": 0,
-    "wishes": 6,
-    "untested": 6,
+    "wishes": 0,
+    "untested": 4,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do NOT commit `.env` files, `.vscode/mcp.json`, or any Ion tokens / API keys.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do NOT modify hardcoded Ion tokens in `examples/` without replacing them with env-var references.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read examples/\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Commit `.env` files, `.vscode/mcp.json`, or any Ion tokens / API keys.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Modify hardcoded Ion tokens in `examples/` without replacing them with env-var references.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read examples/\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Commit the `.codegraph/` directory (local-only, gitignored).",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Bump CesiumJS beyond `~1.139.x` without checking peer dependency constraints (`^1.114.0`).",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"CesiumJS\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:43:24.022Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:16:52.787Z"
   },
   {
     "repo": "bloxbean/cardano-client-lib",
     "stars": 133,
+    "commit": "55f3ba86d0c1b6af5a062963fb960743cf647724",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Cardano client library in Java",
-    "rules": 10,
+    "rules": 13,
     "gates": 0,
-    "wishes": 10,
-    "untested": 0,
+    "wishes": 4,
+    "untested": 9,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Always in plan mode to make a plan",
+        "text": "If the task require external knowledge or certain package, also research to get latest knowledge (Use Task tool for research)",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"implementation work\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Write the plan to .claude/tasks/TASK_NAME.md",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Once you write the plan, firstly ask me to review it. Do not continue until I approve the plan.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"implementation after plan written\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "You should update the plan as you work",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "After you complete tasks in the plan, you should update and append detailed descriptions of the changes you made",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
         "text": "do not break `./gradlew build`",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git push without running the required step first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Keep main green; do not break `./gradlew build`",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git push origin main\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Never commit secrets. Use env vars for credentials (`MAVEN_USERNAME`, `MAVEN_PASSWORD`, `SIGNING_PASSWORD`)",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:43:37.551Z"
+    "scannedAt": "2026-09-20T14:17:04.006Z"
   },
   {
     "repo": "exa-labs/exa-js",
     "stars": 130,
+    "commit": "08f85175545f3310a345e4bb46634632bcfe275d",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "The Official Exa Javascript SDK",
     "rules": 3,
     "gates": 0,
-    "wishes": 3,
-    "untested": 0,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Never edit the `package.json` version or `CHANGELOG.md` by hand, and never run `npm version` / `npm publish` or the legacy `version:*` / `pu",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "never hand-edit that file",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm src/websets/openapi.ts/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Read CLAUDE.md",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:43:47.125Z"
-  },
-  {
-    "repo": "Trystan-SA/rproc",
-    "stars": 124,
-    "description": " A Linux resource & process monitor inspired by Windows 11's Task Manager. Written in Rust with Slint",
-    "rules": 10,
-    "gates": 0,
-    "wishes": 8,
+    "wishes": 1,
     "untested": 2,
     "unknown": 0,
     "wishPct": 100,
@@ -1265,46 +1127,58 @@
     "hasHooks": false,
     "sample": [
       {
-        "text": "cargo fmt --all                              # format (CI checks with --check)",
+        "text": "Release Please owns versioning. Never edit the `package.json` version or `CHANGELOG.md`",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:17:15.987Z"
+  },
+  {
+    "repo": "Trystan-SA/rproc",
+    "stars": 124,
+    "commit": "9d53a25b31d00db240ed7fbcc3f3f41e54e3e4aa",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": " A Linux resource & process monitor inspired by Windows 11's Task Manager. Written in Rust with Slint",
+    "rules": 16,
+    "gates": 0,
+    "wishes": 3,
+    "untested": 13,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [
       {
-        "text": "cargo clippy --all-targets --all-features -- -D warnings",
+        "text": "Don't blanket-`#[allow(...)]` to silence clippy — fix the cause, or add a",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "cargo test --all-features --locked",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "cargo build --release --locked",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
         "text": "Run `cargo fmt` before committing — the `Format` job fails on any diff.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git commit without running the required step first\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Keep tests in separate files, not inline with the working code. Don't write `#[cfg(test)] mod tests { ... }` at the bottom of a source file.",
+        "text": "`cargo test --all-features --locked` must pass before pushing.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm test organization/pricing.test.js\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git push without running the required step first\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:43:58.336Z"
+    "scannedAt": "2026-09-20T14:17:25.656Z"
   },
   {
     "repo": "napjon/krisk",
     "stars": 118,
+    "commit": "73b0409a84784a6f9071d7a1dfeef4d54e8a1354",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Statistical Interactive Visualization with pandas+Jupyter integration on top of Echarts.",
     "rules": 5,
     "gates": 0,
-    "wishes": 5,
-    "untested": 0,
+    "wishes": 2,
+    "untested": 3,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
@@ -1316,290 +1190,257 @@
         "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "MCP/REST chart specifications must remain declarative and reject executable JavaScript.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Use `uv` for Python and `bun` for JavaScript. Do not use pip, npm, or yarn.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
-      },
-      {
         "text": "Do not add Postgres or Redis containers; local development uses the shared infrastructure.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit Postgres containers\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do not modify legacy notebooks merely to normalize their outputs.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:44:05.998Z"
+    "scannedAt": "2026-09-20T14:17:33.437Z"
   },
   {
     "repo": "quarkiverse/quarkus-flow",
     "stars": 116,
+    "commit": "a4c447d614aeb319fe910b9bb0445fde53ecef1a",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Workflow Runtime Engine based on the Open Workflow Specification (CNCF Sandbox project) for Agentic Workflows",
-    "rules": 22,
+    "rules": 18,
     "gates": 0,
-    "wishes": 20,
-    "untested": 2,
+    "wishes": 5,
+    "untested": 13,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": true,
     "hasHooks": false,
     "sample": [
       {
-        "text": "NEVER perform ANY of these git operations without EXPLICIT user permission: git commit / git commit --amend",
+        "text": "User work-in-progress is sacred. Never discard it without permission.**",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm publish\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER perform ANY of these git operations without EXPLICIT user permission: git restore / git checkout -- <file>",
+        "text": "NEVER modify production code (src/main/) without EXPLICIT user permission.**",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git restore\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER perform ANY of these git operations without EXPLICIT user permission: git reset (any form)",
+        "text": "CRITICAL**: **NEVER** use `git restore`, `git reset`, `git commit`, or ANY destructive git operation without explicit user permission (see G",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git reset\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER perform ANY of these git operations without EXPLICIT user permission: git clean",
+        "text": "Don't** add dependencies without checking BOMs first",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git clean\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER perform ANY of these git operations without EXPLICIT user permission: git stash drop / git stash clear",
+        "text": "Don't** skip integration tests - they catch cross-module issues",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git stash drop\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "NEVER perform ANY of these git operations without EXPLICIT user permission: git rebase / git cherry-pick",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git rebase\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"rm tests/example.test.js\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:44:23.841Z"
+    "scannedAt": "2026-09-20T14:17:43.800Z"
   },
   {
     "repo": "NaverPayDev/pie",
     "stars": 115,
+    "commit": "11f340c3641916385295cfd99b8f5e38df7c4966",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Project for managing packages produced by the naverpay frontend team",
     "rules": 3,
     "gates": 0,
-    "wishes": 1,
-    "untested": 2,
+    "wishes": 2,
+    "untested": 1,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Auto-generated files: `packages/es-http-status-codes/src/status-code.ts` and `reason-phrase.ts` are generated — never edit directly.",
+        "text": "`sideEffects: false`**: All packages declare this — do not add side effects at module load time.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit packages/es-http-status-codes/src/status-code.ts\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Auto-generated files**: `packages/es-http-status-codes/src/status-code.ts` and `reason-phrase.ts` are generated — never edit directly.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:44:31.460Z"
+    "scannedAt": "2026-09-20T14:17:51.220Z"
   },
   {
     "repo": "Endle/fireSeqSearch",
     "stars": 108,
+    "commit": "ef8888bb9d0d8371621f75ae033e3e09692fd0c9",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "When using search engine, it would also search local logseq notebook",
-    "rules": 10,
+    "rules": 8,
     "gates": 0,
-    "wishes": 2,
+    "wishes": 0,
     "untested": 8,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "bump it when chunker logic changes. Stale chunks otherwise hash-match and skip re-embedding forever.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "One chat backend, shared between summarizer and `/ask.` Deliberate — one process to warm, one set of args to tune. If quality demands more, ",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git push origin chat path\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:44:45.692Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:18:02.765Z"
   },
   {
     "repo": "PaulBratslavsky/astro-strapi-example-project",
     "stars": 103,
+    "commit": "42a91ba42dbc7fd7196a8daf1230017f9f13406a",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "",
     "rules": 5,
     "gates": 0,
-    "wishes": 3,
-    "untested": 2,
+    "wishes": 1,
+    "untested": 4,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Run `yarn clean` in `server/` after deleting content types to clear stale dist files",
+        "text": "This project uses a custom Tailwind v4 theme defined in `client/src/styles/global.css`. Always use semantic tokens — never raw Tailwind colo",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Use `StrapiImage` for all images — never raw `<img>` tags",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit <img> tags\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Use `BaseLayout` on all pages — wraps content with the global header/footer",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:44:53.564Z"
+    "scannedAt": "2026-09-20T14:18:12.011Z"
   },
   {
     "repo": "1amageek/SwiftAgent",
     "stars": 103,
+    "commit": "cdeb70357a8d8e50bfe98fdf2de61636962583a1",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "  A type-safe, declarative AI agent framework for Swift. Build composable AI pipelines with Steps, Agents, structured           outputs, and tool integration. Features FIFO session management, MCP support, and distributed actor communication. ",
-    "rules": 1,
+    "rules": 4,
     "gates": 0,
-    "wishes": 1,
-    "untested": 0,
+    "wishes": 0,
+    "untested": 4,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "do not delete, skip, or weaken tests",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm test/pricing.test.js\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:45:03.981Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:18:27.915Z"
   },
   {
     "repo": "samuelloranger/labby",
     "stars": 93,
+    "commit": "ba5b69903996ffb9812ff3ea53432e34536ee7e0",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Self-hosted homelab dashboard: Widgets, live Docker stats, and real-time SSE updates. Built with Svelte + Bun.",
-    "rules": 4,
+    "rules": 6,
     "gates": 0,
-    "wishes": 3,
-    "untested": 1,
+    "wishes": 1,
+    "untested": 5,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": true,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Tests are colocated (*.test.ts) and mock fetch; write the test alongside the integration client / schema change.",
+        "text": "Settings & credentials.** `src/server/db.ts` is a tiny `bun:sqlite` wrapper (`getSetting`/`setSetting`/`deleteSetting`/`getAllSettings`) ove",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm *.test.ts/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Types are duplicated by design between src/server/types.ts and src/web/src/lib/stores.ts (server and web are separate build roots with separ",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "bun run build requires scripts/vendor-icons.ts to fetch from the dashboard-icons CDN (network needed)",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:45:11.926Z"
+    "scannedAt": "2026-09-20T14:18:40.245Z"
   },
   {
     "repo": "khrnchn/sedekah-je",
     "stars": 93,
+    "commit": "6208963c7bb1c180e4e8ce6a9505760121c34f3d",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "qr code directory of malaysian mosques, suraus, and islamic institutions.",
-    "rules": 5,
+    "rules": 7,
     "gates": 0,
     "wishes": 2,
-    "untested": 3,
+    "untested": 5,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "do not expose credentials, tokens, private user data, or operational secrets",
+        "text": "Treat this as a public repository: do not expose credentials, tokens,",
         "grade": "WISH",
         "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Do not write uploads into `public/`.",
+        "text": "Upload QR and blog images through the existing R2 storage service. Do not",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit public/\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:45:20.613Z"
+    "scannedAt": "2026-09-20T14:18:48.345Z"
   },
   {
     "repo": "Corvidae-Coding-Projects/OpenClaudia",
     "stars": 93,
+    "commit": "fad337c447320ea0a3281bcbff378b30e7a1d3d0",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Open Source Agentic Coding Harness",
-    "rules": 5,
+    "rules": 11,
     "gates": 0,
-    "wishes": 1,
-    "untested": 3,
-    "unknown": 1,
-    "wishPct": 100,
+    "wishes": 0,
+    "untested": 9,
+    "unknown": 2,
+    "wishPct": 0,
     "hasSettings": true,
     "hasHooks": true,
     "sample": [
       {
-        "text": "Keep secrets in redacting types and out of prompts, logs, errors, Debug, transcripts, and reviewer payloads.",
+        "text": "The Markdown files in `.crosslink/rules/` remain active rule-loader inputs.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"edit AGENTS.md\". 1 PreToolUse hook(s) match but were not run (--no-hooks); cannot tell whether they block"
       },
       {
-        "text": "Markdown files in `.crosslink/rules/` remain active rule-loader inputs",
+        "text": "Provider skills live under `.claude/skills/` and `.agents/skills/`.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". 1 PreToolUse hook(s) match but were not run (--no-hooks); cannot tell whether they block"
+        "summary": "Nothing mechanical stops \"edit AGENTS.md\". 1 PreToolUse hook(s) match but were not run (--no-hooks); cannot tell whether they block"
       }
     ],
-    "scannedAt": "2026-09-15T14:45:31.964Z"
+    "scannedAt": "2026-09-20T14:19:04.009Z"
   },
   {
     "repo": "dioptx/mcp-atom-of-thoughts",
     "stars": 90,
+    "commit": "96306630e739bd453eb7257c68831059635918f0",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "MCP server for structured AI reasoning — decompose problems into atomic thoughts with dependency graphs, confidence tracking, and interactive D3.js visualization",
-    "rules": 4,
+    "rules": 6,
     "gates": 0,
-    "wishes": 2,
-    "untested": 2,
+    "wishes": 0,
+    "untested": 6,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "npm test — vitest (165 tests)",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Tests in `tests/` using Vitest",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm tests/pricing.test.js\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:45:39.669Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:19:13.163Z"
   },
   {
     "repo": "openMF/kmp-project-template",
     "stars": 87,
+    "commit": "708da6e2eea2a50ad82232c2a03b3d07c317cef5",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "The Kotlin Multiplatform Multi-module Template generator simplifies cross-platform development by enabling shared business logic and UI components across Android, iOS, Desktop, and Web, while retaining native platform functionality.",
-    "rules": 4,
+    "rules": 7,
     "gates": 0,
-    "wishes": 4,
-    "untested": 0,
+    "wishes": 6,
+    "untested": 1,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
@@ -1611,7 +1452,7 @@
         "summary": "Nothing mechanical stops \"edit core-base/store\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER commit directly to `master` or `dev`",
+        "text": "NEVER commit directly to `master` or `dev`; Always create feature branch → PR → merge",
         "grade": "WISH",
         "summary": "Nothing mechanical stops \"git push origin master\". no deny rule matched; no hooks matched"
       },
@@ -1621,66 +1462,51 @@
         "summary": "Nothing mechanical stops \"Read secrets/\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Do NOT modify `core-base/store` or `core-base/ui`",
+        "text": "Pre-commit hooks run automatically (Spotless, Detekt, Dependency Guard)",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit core-base/store\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git commit without running the required step first\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "App Store and Play Store **production** deployments require: Manual workflow dispatch, Double confirmation, No direct Fastlane commands (use",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"production deployment\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Changing the template? `docs/architecture/` updates in the SAME change. A new annotation needs its `CONTRACT.yaml` row; a new module needs i",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"git commit without running the required step first\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:45:49.332Z"
+    "scannedAt": "2026-09-20T14:19:25.991Z"
   },
   {
     "repo": "HDFGroup/hdf5-json",
     "stars": 81,
+    "commit": "f4284058b7bbc8bfd5500e810e174ba875a3e970",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Specification and tools for representing HDF5 in JSON",
     "rules": 6,
     "gates": 0,
-    "wishes": 6,
-    "untested": 0,
+    "wishes": 0,
+    "untested": 6,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "When making a change to any of the h5json/src/*_util.py files, update the corresponding unit test (e.g. if modifying src/h5json/array_util.p",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "When making changes to hdf5db, first add a test to test/unit/hdf5db_test.py to verify functionality without any storage backend. Once those ",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "For tests with the storage backends, it's important to close the db and re-open, and then verify that any changes made to the model were per",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Files (HDF5 or JSON) created by the test cases should be in the test/unit/out directory. These should always be created by the test case (ne",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Files in data/hdf5/ and data/json/ should only be modified if there is a change to the schema",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit data/hdf5/\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "DON'T make any changes to the schema without authorization",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"src/h5json/schema/\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:45:59.022Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:19:33.866Z"
   },
   {
     "repo": "mateonunez/website",
     "stars": 80,
+    "commit": "5c1b719318a6b9902e7089d41b2ad9d1ac86543d",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Personal website and blog made with Next.js and Tailwind. Fully SEO friendly, OpenGraph first, Spotify and GitHub integration, custom terminal, and more.",
-    "rules": 9,
+    "rules": 6,
     "gates": 0,
-    "wishes": 4,
+    "wishes": 1,
     "untested": 5,
     "unknown": 0,
     "wishPct": 100,
@@ -1688,328 +1514,301 @@
     "hasHooks": false,
     "sample": [
       {
-        "text": "Before starting, enable corepack: `corepack enable`",
+        "text": "IMPORTANT**: This project uses `pnpm` as the package manager. Always use `pnpm` commands, never `npm` or `yarn`.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Each route segment should have `error.tsx` and `loading.tsx` files",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Every page must have exactly one `<h1>`. Use the `asHeading` prop on `PageHeader` for page-level headers; use `<h2>` and below for sections",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm <h1>/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "SWR fetchers must throw on non-ok responses",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:46:10.227Z"
+    "scannedAt": "2026-09-20T14:19:43.051Z"
   },
   {
     "repo": "ahtavarasmus/lightfriend",
     "stars": 78,
+    "commit": "e4fb58a971f261116c7d33b382c0cd86de771104",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "The first verifiably private cloud AI assistant. Runs in AWS Nitro Enclave with hardware attestation - nobody can access user data, not even the developer. Bridges WhatsApp, Telegram, Signal, email to SMS for dumbphone users.",
-    "rules": 46,
+    "rules": 50,
     "gates": 0,
-    "wishes": 18,
-    "untested": 28,
+    "wishes": 11,
+    "untested": 36,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "ALL tests go in `backend/tests/` - NEVER use inline `#[cfg(test)] mod tests` blocks inside source files.",
+        "text": "Do NOT add \"Generated with Claude Code\" or Co-Authored-By lines mentioning Claude/AI. Keep commit messages clean and focused on what changed",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm backend/tests/pricing.test.js\". Bash(rm*) matched \"rm backend/tests/pricing.test.js\" (ask only: a human must be present to say no)"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". Bash(npm install*) matched \"npm install left-pad\" (ask only: a human must be present to say no)"
       },
       {
-        "text": "Protected Files Guard - Blocks edits to `encryption.rs`, `auth_middleware.rs`, `stripe_webhooks.rs`",
+        "text": "Do NOT add \"Generated with Codex\" or Co-Authored-By lines mentioning Codex/AI. Keep commit messages clean and focused on what changed.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read backend/src/utils/encryption.rs\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". Bash(npm install*) matched \"npm install left-pad\" (ask only: a human must be present to say no)"
       },
       {
-        "text": "When a hook blocks your edit with `OVERRIDE: touch <path>`: Ask the user: \"This change requires approval: [describe what you're changing]. S",
+        "text": "Deny Read(.env)",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"encryption.rs\". no deny rule matched; no hooks matched"
+        "summary": "Partly fenced: \"Read .env\" is blocked (permission-deny), \"cat .env\" is blocked (permission-deny), \"read loop over .env\" is blocked (permission-deny), but \"grep .env\" gets through: no deny rule matched"
       },
       {
-        "text": "Migration Guard - Blocks destructive SQL (DROP, TRUNCATE, DELETE, RENAME, ALTER TYPE)",
+        "text": "Deny Read(**/.env)",
         "grade": "WISH",
-        "summary": "Partly fenced: \"rm -rf build\" is blocked (permission-deny), but \"rm -fr build (flags reordered)\" gets through: Bash(rm*) matched \"rm -fr build\" (ask only: a human must be present to say no)"
+        "summary": "Partly fenced: \"Read **/.env\" is blocked (permission-deny), \"cat **/.env\" is blocked (permission-deny), \"read loop over **/.env\" is blocked (permission-deny), but \"grep **/.env\" gets through: no deny "
       },
       {
-        "text": "ALL tests go in `backend/tests/` - NEVER use inline `#[cfg(test)] mod tests` blocks inside source files.",
+        "text": "Deny Read(**/secrets/**)",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm backend/tests/pricing.test.js\". Bash(rm*) matched \"rm backend/tests/pricing.test.js\" (ask only: a human must be present to say no)"
+        "summary": "Partly fenced: \"Read **/secrets/**\" is blocked (permission-deny), \"cat **/secrets/**\" is blocked (permission-deny), \"read loop over **/secrets/**\" is blocked (permission-deny), but \"grep **/secrets/**"
       },
       {
-        "text": "When a hook blocks your edit with `OVERRIDE: touch <path>`: Ask the user before proceeding with the change",
+        "text": "Deny Read(**/*.pem)",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"encryption.rs\". no deny rule matched; no hooks matched"
+        "summary": "Partly fenced: \"Read **/*.pem\" is blocked (permission-deny), \"cat **/*.pem\" is blocked (permission-deny), \"read loop over **/*.pem\" is blocked (permission-deny), but \"grep **/*.pem\" gets through: no d"
       }
     ],
-    "scannedAt": "2026-09-15T14:46:24.818Z"
+    "scannedAt": "2026-09-20T14:20:01.811Z"
   },
   {
     "repo": "ardriveapp/ardrive-web",
     "stars": 74,
+    "commit": "b81daebff1e59d562adf285375323b8fcd53043d",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "A permanent home for your files, sites and apps, built on Arweave.",
-    "rules": 12,
+    "rules": 8,
     "gates": 0,
-    "wishes": 12,
-    "untested": 0,
+    "wishes": 0,
+    "untested": 8,
     "unknown": 0,
-    "wishPct": 100,
+    "wishPct": 0,
     "hasSettings": false,
     "hasHooks": false,
-    "sample": [
-      {
-        "text": "Run `scr check-flutter` to verify Flutter version 3.19.6",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Run `lefthook install` for first-time setup to install git hooks",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Activate script_runner globally with `flutter pub global activate script_runner`",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Run code generation with `flutter pub run build_runner build --delete-conflicting-outputs` after changing models, database, or .drift files",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Run static analysis with `flutter analyze` before committing",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do not modify generated files (`**.g.dart`), GraphQL files (`lib/services/arweave/graphql/`), and ario_sdk models (`packages/ario_sdk/lib/sr",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit **.g.dart\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:46:35.710Z"
+    "sample": [],
+    "scannedAt": "2026-09-20T14:20:16.393Z"
   },
   {
     "repo": "drakulavich/kesha-voice-kit",
     "stars": 73,
+    "commit": "f389e406bfab55c16bd66de3337fc7209705a5ee",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Give your tools a voice — speech to text and back, 25 languages, up to ~19× faster than Whisper. On your machine.",
-    "rules": 33,
+    "rules": 42,
     "gates": 0,
-    "wishes": 27,
-    "untested": 6,
+    "wishes": 21,
+    "untested": 21,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": true,
     "hasHooks": true,
     "sample": [
       {
-        "text": "Never switch the root checkout to a feature branch, and never check out `main` inside a worktree. In the root checkout only `git fetch`, ins",
+        "text": "`kesha install` downloads explicitly — never on first transcribe/say. Anything missing must fail loudly with an actionable hint. This is del",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git push origin main\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Run `git lfs pull` in a fresh checkout — without it those files are pointer stubs, not audio, and tests fail in confusing ways.",
+        "text": "User-facing install/upgrade/remove text always says bun, never npm** — `bun add -g @drakulavich/kesha-voice-kit[@latest]`, `bun remove -g …`",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "The root checkout stays on `main`: shared coordination state, not an edit surface. **Never** switch it to a feature branch, and never check ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
         "text": "`just preflight` before every push — the executable definition of the default gate: TS and every `check:*` CI runs, always; the Rust gate wh",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git push without running the required step first\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Always nextest for the suite — the only sanctioned plain `cargo test` calls are `--doc` and the pin-bump's `models::manifest`; always `--all",
+        "text": "`preflight` does **not** build the darwin feature set, so it goes green on code that never compiled: touching `rust/src/tts/**` or anything ",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"rm tests/example.test.js\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Touching `rust/src/tts/**` or anything fluidaudio-rs-adjacent (`system_kokoro` / `system_diarize` / `system_text_lang`) also needs `just ver",
+        "text": "Red → Green → Refactor → Commit, one cycle per commit. For a bug the failing regression test lands **before** the fix — a test written after",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Red → Green → Refactor → Commit, one cycle per commit. For a bug the failing regression test lands **before** the fix",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"rm tests/example.test.js\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:47:28.396Z"
+    "scannedAt": "2026-09-20T14:21:04.374Z"
   },
   {
     "repo": "reactiveui/ReactiveUI.SourceGenerators",
     "stars": 71,
+    "commit": "8afc93674ec6e20d69a5d8db54435eda0681fa39",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Use source generators to generate objects. ",
     "rules": 13,
     "gates": 0,
-    "wishes": 1,
-    "untested": 12,
+    "wishes": 2,
+    "untested": 11,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Do not use APIs unavailable in `netstandard2.0` inside `ReactiveUI.SourceGenerators.Roslyn*` projects",
+        "text": "Never store `ISymbol`, `SyntaxNode`, `SemanticModel`, or `CancellationToken` in a model.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit ReactiveUI.SourceGenerators.Roslyn*\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "`SyntaxFactory` helper:** https://roslynquoter.azurewebsites.net/ — useful for inspecting how Roslyn models a given syntax construct (refere",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:47:41.469Z"
+    "scannedAt": "2026-09-20T14:21:14.245Z"
   },
   {
     "repo": "Aurealibe/claude-config",
     "stars": 67,
+    "commit": "e8a07f025d17b24781aa9f4dac681b675d97d9cb",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Comprehensive Claude Code framework: 6 specialized agents, 7 workflow commands, audio notifications - stack agnostic",
-    "rules": 12,
+    "rules": 46,
     "gates": 0,
-    "wishes": 10,
-    "untested": 2,
+    "wishes": 9,
+    "untested": 37,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": true,
     "hasHooks": false,
     "sample": [
       {
-        "text": "All database interactions MUST use MCP Supabase servers: mcp__supabase-dev__execute_sql or mcp__supabase-prod__execute_sql for read/write; m",
+        "text": "NEVER** simplify external API calls without understanding their constraints (Stripe, Google, etc.)",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit direct psql connections\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER leave unused code - ask for user approval before deletion",
+        "text": "Colors/gradients only from brand palette tokens; if tokens aren't provided, don't invent colors (stick to neutral).",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"code deletion\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "NEVER simplify external API calls without understanding their constraints (Stripe, Google, etc.)",
+        "text": "NEVER use the stdlib `log` package** (`log.Printf`, etc.) in application code. Use the injected structured logger everywhere.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"external API modifications\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "BEFORE editing any files, you MUST Read at least 3 files that will help you to understand how to make a coherent and consistent codebase. Re",
+        "text": "Secrets**: NEVER commit `.env`",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Run the linter BEFORE any Go build or commit: cd backend && golangci-lint run ./...",
+        "text": "Run the linter BEFORE any Go build or commit:**",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git commit without running the required step first\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Every significant change MUST include unit tests, regardless of layer. Run tests before any build or commit; zero regressions allowed",
+        "text": "Every significant change MUST include unit tests, regardless of layer.** Run tests before any build or commit; zero regressions allowed.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git commit without running the required step first\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:47:56.637Z"
+    "scannedAt": "2026-09-20T14:21:40.880Z"
   },
   {
     "repo": "alperhankendi/Ctxo",
     "stars": 67,
+    "commit": "9a71337018f5df47b5edba172bbb2b45016cf17a",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "MCP server for AI coding agents. Instead of reading files one by one, your agent gets dependency graphs, git intent, blast radius, and change health in a single call. Works with any language deep analysis for TypeScript,Java, Go, and C#.",
-    "rules": 17,
+    "rules": 29,
     "gates": 0,
-    "wishes": 9,
-    "untested": 8,
+    "wishes": 5,
+    "untested": 24,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": true,
     "hasHooks": true,
     "sample": [
       {
-        "text": "core/ NEVER imports from adapters/ — pure domain logic only",
+        "text": "ctxo update --print                 # print install command, never execute",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit packages/cli/src/adapters/\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "core/ NEVER imports from ports/ — ports import from core types",
+        "text": "NEVER manually trace imports when `find_importers` gives the full reverse dependency graph",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit packages/cli/src/ports/\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "ports/ NEVER imports from adapters/",
+        "text": "NEVER use** **`console.log`** — MCP stdio uses stdout for JSON-RPC. Use `createLogger('ctxo:namespace')` from `packages/cli/src/core/logger.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit packages/cli/src/adapters/\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "adapters/mcp/ may import from core/ and ports/ only",
+        "text": "Don't:** bypass changesets with manual `npm publish` (skips test gate, provenance, CHANGELOG, GitHub Release). If you need a single-package ",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"rm tests/example.test.js\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Composition root (packages/cli/src/index.ts) is the ONLY file that wires adapters to ports",
+        "text": "NEVER manually trace imports when `find_importers` gives the full reverse dependency graph",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Plugins (@ctxo/lang-*) import only from @ctxo/plugin-api; never from @ctxo/cli",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:48:12.163Z"
+    "scannedAt": "2026-09-20T14:21:48.744Z"
   },
   {
     "repo": "jordanhindo/beadboard",
     "stars": 66,
+    "commit": "9e3059dbb7c2e907cef79b5fa68d51f8cb390457",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Multi-agent orchestration and communication system built on Beads.",
-    "rules": 21,
+    "rules": 40,
     "gates": 0,
-    "wishes": 18,
-    "untested": 3,
+    "wishes": 5,
+    "untested": 35,
     "unknown": 0,
     "wishPct": 100,
     "hasSettings": false,
     "hasHooks": false,
     "sample": [
       {
-        "text": "Never write to `.beads/issues.jsonl` directly.",
+        "text": "`/graph`, `/sessions`, `/timeline` — Legacy routes. Still exist but are not linked from the unified shell. Do not add new features here; mig",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit .beads/issues.jsonl\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "New test files must be added to the `test` script in `package.json` — the suite is explicitly enumerated, not auto-discovered.",
+        "text": "Use `bd` as the sole interface for mutating beads. Never write to `.beads/issues.jsonl` directly. See `AGENTS.md` for the full operating man",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Run verification gates (typecheck, lint, test) before closing any code bead.",
+        "text": "Runtime UI is query-driven from `/` (`view=social|graph`). Do not reintroduce App Router page sprawl without approval.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"npm publish\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Never work without a bead: Every task, bug fix, or feature must have a corresponding bead created BEFORE starting work.",
+        "text": "Premature completion**: never close before running fresh typecheck + lint + test.",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"starting work on any task without a bead\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"git commit without running the required step first\". no deny rule matched; no hooks matched"
       },
       {
-        "text": "Run all `bd` and `npm` commands from here.",
+        "text": "❌ Do NOT use external issue trackers",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "No direct writes to `.beads/issues.jsonl`.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit .beads/issues.jsonl\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"curl POST .env to a server\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:48:33.552Z"
+    "scannedAt": "2026-09-20T14:22:18.349Z"
   },
   {
     "repo": "charyou/SoraVault",
     "stars": 65,
+    "commit": "11e4ebe4c442d94bd6a82e5901936cbcdb85478c",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "Free Chrome extension to bulk export and backup your OpenAI Sora library. Download V1 images, V2 videos (Profile & Drafts), and Liked content in original quality, saving prompts and JSON metadata as sidecars. 100% local, no telemetry.",
     "rules": 0,
     "gates": 0,
@@ -2020,429 +1819,16 @@
     "hasSettings": false,
     "hasHooks": false,
     "sample": [],
-    "scannedAt": "2026-09-18T19:28:04.802Z",
+    "scannedAt": "2026-09-20T14:22:21.658Z",
     "error": "no CLAUDE.md or settings found on the default branch"
   },
   {
     "repo": "altasoft/DomainPrimitives",
     "stars": 63,
+    "commit": "13784375c5302cccfc872ce3be2ec6e8b6da9355",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
     "description": "C# Domain Primitives generator",
-    "rules": 5,
-    "gates": 0,
-    "wishes": 5,
-    "untested": 0,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do not commit `bin/`/`obj/`/`.vs/`",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "never hand-edit a `.verified.cs` file to match new code without confirming the generated output is actually correct",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm *.verified.cs/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "never hand-edit generated output — change the generator instead",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm *.g.cs/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "No explicit constructors, public properties, or public fields on `IDomainValue<T>` implementations — the generator owns those and will emit ",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit IDomainValue<T> implementations\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "When adding or changing user-facing generator behavior, update README.md (`What's New`, the relevant feature section, and the table of conte",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:48:44.910Z"
-  },
-  {
-    "repo": "microsoft/Agent365-devTools",
-    "stars": 61,
-    "description": "The Microsoft Agent 365 DevTools CLI is a command-line interface tool designed to streamline the development, deployment, and management of Microsoft Agent 365 applications.",
-    "rules": 12,
-    "gates": 0,
-    "wishes": 1,
-    "untested": 11,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do not protect-tests: must have invocation tests for every new SetHandler command handler covering: invalid input → exit code 1, missing res",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm src/Tests/Microsoft.Agents.A365.DevTools.Cli.Tests/pricing.test.js\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:48:58.314Z"
-  },
-  {
-    "repo": "mlennie/hermes-mcp",
-    "stars": 61,
-    "description": " MCP server that lets any llm (i.e. Claude Desktop) delegate tasks to a local Hermes Agent — cron jobs, web search, email, documents, and more.",
-    "rules": 8,
-    "gates": 0,
-    "wishes": 5,
-    "untested": 3,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "ruff check . && ruff format --check . && mypy src/ && pytest — Full CI suite (must all pass)",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "mypy is run on `src/` only — the `mcp` package lacks stubs and is excluded.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit mcp\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Test count is 112 as of v0.3.0; a sudden drop is a regression smell.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm test count/pricing.test.js\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Prompt content must only be logged at DEBUG level, not INFO (privacy by default). The `state` query parameter is sanitized before logging.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Bump version in **both** `src/hermes_mcp/__init__.py` and `pyproject.toml`. The release workflow checks they match the pushed tag and fails ",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:49:10.212Z"
-  },
-  {
-    "repo": "tjdrhs90/flutter-flame-harness",
-    "stars": 60,
-    "description": "Idea-to-store harness for Flutter/Flame games",
-    "rules": 6,
-    "gates": 0,
-    "wishes": 5,
-    "untested": 1,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "bash scripts/validate.sh — manifest JSON validity, skill frontmatter, per-skill required sections.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "bash scripts/validate-fastlane.sh — `ruby -c` on the fastlane templates.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "bash scripts/test-hook.sh — the rate-limit stop hook behavior.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "When adding a state transition, update protocol §7 **first**, then align the skills.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Touch only the lines the request requires. Match existing style. Don't refactor what isn't broken.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit unrelated files\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:49:19.348Z"
-  },
-  {
-    "repo": "sandudorogan/tmux-pane-tree",
-    "stars": 60,
-    "description": "┣nteractive tmux pane tree with live agent badges and Vim-style navigation.",
-    "rules": 8,
-    "gates": 0,
-    "wishes": 8,
-    "untested": 0,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "all tests must pass",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "if changing UI or hooks, also run bash scripts/install-live.sh and verify in a live tmux session",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "if adding new functionality, add a corresponding tests/<name>_test.sh",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "One test file per script/feature, named <script>_test.sh",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Group tests under tests/<area>/ to match the feature or subsystem they cover",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Functions go in scripts/core/lib.sh if reused across scripts",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:49:30.140Z"
-  },
-  {
-    "repo": "harvie256/midi-commander-custom",
-    "stars": 60,
-    "description": "Custom Firmware for the MeloAudio Midi Commander",
-    "rules": 4,
-    "gates": 0,
-    "wishes": 1,
-    "untested": 3,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do not replace it with upstream — the DMA/tick machinery would be lost.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit Middlewares/stm32-ssd1306-master/\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:49:42.494Z"
-  },
-  {
-    "repo": "axeII/home-ops",
-    "stars": 59,
-    "description": "A repository for HomeOps where I perform Infrastructure as Code (IaC) and GitOps practices.",
-    "rules": 14,
-    "gates": 0,
-    "wishes": 10,
-    "untested": 4,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": true,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Before writing manifests, read the `flux-validate` skill for the validation pipeline and `sops-secrets` before touching any `*.sops.yaml`.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read *.sops.yaml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "AI does not merge PRs, push to `main` directly, approve its own changes, skip validation hooks, run auto-merge, or merge without explicit hu",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git push origin main\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Never merge your own PRs. The human maintainer reviews and merges approved PRs.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git push origin main\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "BEFORE committing, ALWAYS run `pre-commit run --all-files` and fix any errors first. The commit must pass all pre-commit checks.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Run the full validation pipeline if Kubernetes manifests changed: `just configure` → `just validate` → `just flate-test` → `python3 scripts/",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "NEVER commit unencrypted secrets. All secrets use SOPS with Age encryption.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read *.sops.yaml\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:49:58.591Z"
-  },
-  {
-    "repo": "confluentinc/agent-skills",
-    "stars": 58,
-    "description": "AI agent skills for stream processing and event streaming",
-    "rules": 6,
-    "gates": 0,
-    "wishes": 6,
-    "untested": 0,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do not inline the contents of reference files into SKILL.md, and do not have SKILL.md instruct the agent to read all references upfront",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit skills/*/references/*\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "PRs must keep evals passing at the 90%+ threshold",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "When changing skill behavior, update expectations[] in the same PR",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Keep fixtures and expectations in sync",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Do not hand-edit the fenced ### BEGIN ... ### END ... blocks in Makefile and service.yml as they are auto-regenerated nightly",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit Makefile\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Both .claude-plugin/plugin.json and .cursor-plugin/plugin.json must be updated together and kept in sync with each other when bumping plugin",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"git commit without running tests first\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:50:08.258Z"
-  },
-  {
-    "repo": "yahiafarghaly/PrettyOS",
-    "stars": 53,
-    "description": "A Preemptive Hard Real Time kernel for embedded devices.",
-    "rules": 1,
-    "gates": 0,
-    "wishes": 1,
-    "untested": 0,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Do not create or modify Makefile or CMake build systems - projects are built by integrating kernel source files with port-specific files and",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit Makefile\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:50:15.038Z"
-  },
-  {
-    "repo": "radekamirko/C.R.I.S.P",
-    "stars": 52,
-    "description": " CRISP — The missing layer between vibe coding and building something people actually want. ",
-    "rules": 15,
-    "gates": 0,
-    "wishes": 12,
-    "untested": 3,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "Use only the versions listed in the tech stack table. Do not upgrade silently.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "If a version conflict arises, stop and flag it. Do not resolve silently.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"version conflicts\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "Never expose API keys, tokens, or secrets on the client side.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "All calls to 3rd party APIs with credentials go through Next.js API routes (server-side).",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit infra/deploy.yml\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "SUPABASE_SERVICE_ROLE_KEY — server-side only. Never in any NEXT_PUBLIC_ variable.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "FIREBASE_SERVICE_ACCOUNT — server-side only. Never in any NEXT_PUBLIC_ variable.",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:50:30.429Z"
-  },
-  {
-    "repo": "2ue/ccman",
-    "stars": 52,
-    "description": "一个管理Claude Code + Codex API+GEMINI CLI + OPENCODE服务商配置的工具",
-    "rules": 23,
-    "gates": 0,
-    "wishes": 15,
-    "untested": 8,
-    "unknown": 0,
-    "wishPct": 100,
-    "hasSettings": false,
-    "hasHooks": false,
-    "sample": [
-      {
-        "text": "绝对禁止删除或修改 ~/.ccman（正式环境配置）",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "绝对禁止删除或修改 ~/.codex（正式环境配置）",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "绝对禁止删除或修改 ~/.claude（正式环境配置）",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "绝对禁止在测试中使用 rm -rf ~开头的命令",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"rm -rf build\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "禁止引入 fs-extra 依赖，使用内置 fs",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
-      },
-      {
-        "text": "禁止引入 axios 依赖，不需要 HTTP 请求",
-        "grade": "WISH",
-        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
-      }
-    ],
-    "scannedAt": "2026-09-15T14:50:49.462Z"
-  },
-  {
-    "repo": "marc-shade/Ollama-Workbench",
-    "stars": 50,
-    "description": "A comprehensive platform for managing, testing, and leveraging Ollama AI models with advanced features for customization, workflow automation, and collaborative development.",
     "rules": 3,
     "gates": 0,
     "wishes": 1,
@@ -2453,12 +1839,296 @@
     "hasHooks": false,
     "sample": [
       {
-        "text": "Do not use the system Python; the venv is Python 3.11",
+        "text": "Target frameworks are `net8.0`, `net9.0`, `net10.0` (`Directory.Build.props`); `LangVersion` is `Latest`. When changing generator output, re",
         "grade": "WISH",
-        "summary": "Nothing mechanical stops \"edit system python\". no deny rule matched; no hooks matched"
+        "summary": "Nothing mechanical stops \"rm tests/example.test.js\". no deny rule matched; no hooks matched"
       }
     ],
-    "scannedAt": "2026-09-15T14:50:57.426Z"
+    "scannedAt": "2026-09-20T14:22:29.849Z"
+  },
+  {
+    "repo": "microsoft/Agent365-devTools",
+    "stars": 61,
+    "commit": "08e48a963dd879c6938d032e97e87ccbb03613de",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "The Microsoft Agent 365 DevTools CLI is a command-line interface tool designed to streamline the development, deployment, and management of Microsoft Agent 365 applications.",
+    "rules": 11,
+    "gates": 0,
+    "wishes": 0,
+    "untested": 11,
+    "unknown": 0,
+    "wishPct": 0,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [],
+    "scannedAt": "2026-09-20T14:22:49.235Z"
+  },
+  {
+    "repo": "mlennie/hermes-mcp",
+    "stars": 61,
+    "commit": "1efb3dd45e0bc6e68fefa84f41f0874aeb436a1e",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": " MCP server that lets any llm (i.e. Claude Desktop) delegate tasks to a local Hermes Agent — cron jobs, web search, email, documents, and more.",
+    "rules": 13,
+    "gates": 0,
+    "wishes": 3,
+    "untested": 10,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [
+      {
+        "text": "Four-tool design.** The tools form a tight lifecycle: submit (`hermes_ask`), poll (`hermes_check`), abandon a single job (`hermes_cancel`), ",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "`deploy/hermes-mcp.service` ships with non-trivial hardening flags: `ProtectSystem=strict`, `ProtectHome=read-only` + `ReadWritePaths=%h/.co",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "One-time setup (already done for this project, listed here so a maintainer rotating the secret doesn't re-do it from scratch): a trusted pub",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:22:57.060Z"
+  },
+  {
+    "repo": "tjdrhs90/flutter-flame-harness",
+    "stars": 60,
+    "commit": "824b2070892a4e74ef7d47a4feeba01e4deca53b",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "Idea-to-store harness for Flutter/Flame games",
+    "rules": 10,
+    "gates": 0,
+    "wishes": 2,
+    "untested": 8,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [
+      {
+        "text": "state machine. Skills **cite** it (DRY) — never redefine schemas. When adding a state transition,",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Never add AI-authorship trailers** — no `Co-Authored-By`, no \"Generated with…\" line.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:23:05.004Z"
+  },
+  {
+    "repo": "sandudorogan/tmux-pane-tree",
+    "stars": 60,
+    "commit": "f1a688b08a8abf1de144b05ba188e16bb36faddc",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "┣nteractive tmux pane tree with live agent badges and Vim-style navigation.",
+    "rules": 4,
+    "gates": 0,
+    "wishes": 0,
+    "untested": 4,
+    "unknown": 0,
+    "wishPct": 0,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [],
+    "scannedAt": "2026-09-20T14:23:13.899Z"
+  },
+  {
+    "repo": "harvie256/midi-commander-custom",
+    "stars": 60,
+    "commit": "4e47a32a4042978b523b9f7f00d13c5bcf811298",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "Custom Firmware for the MeloAudio Midi Commander",
+    "rules": 5,
+    "gates": 0,
+    "wishes": 0,
+    "untested": 5,
+    "unknown": 0,
+    "wishPct": 0,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [],
+    "scannedAt": "2026-09-20T14:23:22.279Z"
+  },
+  {
+    "repo": "axeII/home-ops",
+    "stars": 59,
+    "commit": "5e78e4f0e34f574ae44215fa7eeaca29a4e92791",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "A repository for HomeOps where I perform Infrastructure as Code (IaC) and GitOps practices.",
+    "rules": 25,
+    "gates": 0,
+    "wishes": 7,
+    "untested": 18,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": true,
+    "hasHooks": false,
+    "sample": [
+      {
+        "text": "the `gitbutler` skill — never `git add`, `git commit`, or `git push`.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "identical binaries. Do not install these tools by hand or with Homebrew — an unpinned copy on PATH",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "replaced direnv and `.envrc`; running both is explicitly unsupported by mise, so do not reintroduce",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .envrc\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "NEVER commit unencrypted secrets. All secrets use SOPS with Age encryption.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Secret files are named `*.sops.yaml`. The `age.key` must never be committed.",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "`github_issue_write`, etc.) for all GitHub API operations. Never use `git add`, `git commit`, `git push`,",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:23:35.267Z"
+  },
+  {
+    "repo": "confluentinc/agent-skills",
+    "stars": 58,
+    "commit": "914d95eff7ff50513b34bfb9ac97eda7c7fce899",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "AI agent skills for stream processing and event streaming",
+    "rules": 11,
+    "gates": 0,
+    "wishes": 1,
+    "untested": 10,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [
+      {
+        "text": "The `description:` field is the trigger.** It must include positive trigger phrases *and* explicit \"Do NOT trigger for…\" exclusions where ad",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:23:43.143Z"
+  },
+  {
+    "repo": "yahiafarghaly/PrettyOS",
+    "stars": 53,
+    "commit": "d2c8370011475b78c8037eaa3c1ac8516be2d9b2",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "A Preemptive Hard Real Time kernel for embedded devices.",
+    "rules": 4,
+    "gates": 0,
+    "wishes": 0,
+    "untested": 4,
+    "unknown": 0,
+    "wishPct": 0,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [],
+    "scannedAt": "2026-09-20T14:23:52.275Z"
+  },
+  {
+    "repo": "radekamirko/C.R.I.S.P",
+    "stars": 52,
+    "commit": "0953e4453a13b7ca6478575a87ad1e1d5918b405",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": " CRISP — The missing layer between vibe coding and building something people actually want. ",
+    "rules": 15,
+    "gates": 0,
+    "wishes": 3,
+    "untested": 12,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [
+      {
+        "text": "Never expose API keys, tokens, or secrets on the client side.**",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Log `orderId`, never order contents (item_description, address, etc. are PII-adjacent)",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      },
+      {
+        "text": "Never log: passwords, FCM tokens, IBAN, customer location, item descriptions",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"Read .env\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:24:01.396Z"
+  },
+  {
+    "repo": "2ue/ccman",
+    "stars": 52,
+    "commit": "b8d58895f04460d7fcde7418584985c4ba9040d7",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "一个管理Claude Code + Codex API+GEMINI CLI + OPENCODE服务商配置的工具",
+    "rules": 2,
+    "gates": 0,
+    "wishes": 0,
+    "untested": 2,
+    "unknown": 0,
+    "wishPct": 0,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [],
+    "scannedAt": "2026-09-20T14:24:11.132Z"
+  },
+  {
+    "repo": "marc-shade/Ollama-Workbench",
+    "stars": 50,
+    "commit": "e16a0c12abf58393d4507a81182da969a2dc19a3",
+    "extractor": "claude-haiku-4-5-20251001",
+    "paperfence": "0.1.0",
+    "description": "A comprehensive platform for managing, testing, and leveraging Ollama AI models with advanced features for customization, workflow automation, and collaborative development.",
+    "rules": 6,
+    "gates": 0,
+    "wishes": 1,
+    "untested": 5,
+    "unknown": 0,
+    "wishPct": 100,
+    "hasSettings": false,
+    "hasHooks": false,
+    "sample": [
+      {
+        "text": "Circular dependency: `ollama_utils` imports from the other three (for model lists and API calls), and they import `load_api_keys`/`save_api_",
+        "grade": "WISH",
+        "summary": "Nothing mechanical stops \"npm install <pkg>\". no deny rule matched; no hooks matched"
+      }
+    ],
+    "scannedAt": "2026-09-20T14:24:20.560Z"
   },
   {
     "repo": "jhaizhou-ops/pinrule",

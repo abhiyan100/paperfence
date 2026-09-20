@@ -1,0 +1,7 @@
+[project]
+name = "billing-service"
+version = "0.3.1"
+dependencies = ["httpx"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

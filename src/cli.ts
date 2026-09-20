@@ -22,6 +22,7 @@ import { inferPolicy, loadPolicy, POLICY_PATH, renderPolicy } from "./policy/doc
 import { renderPolicyCheck } from "./policy/report.js";
 import { detectRuntimes } from "./runtimes/index.js";
 import { buildGraph, renderInventoryTemplate } from "./graph/build.js";
+import { BENCH_RESULTS, corpusRepos, renderBench, runBench } from "./bench/run.js";
 import { renderGraphHtml, renderGraphTerminal } from "./graph/report.js";
 import { detectProfile } from "./repo/profile.js";
 import { CASES } from "./conformance/cases.js";
@@ -497,6 +498,48 @@ program
       await fs.writeFile(opts.html, renderGraphHtml(graph));
       process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
     }
+  });
+
+program
+  .command("bench")
+  .argument("[repo]", "path to the paperfence checkout holding the corpus", ".")
+  .option("--model <models...>", "models to compare", ["claude-sonnet-5"])
+  .option("--only <names...>", "corpus repositories to run, by directory name")
+  .option("--reps <n>", "trials per form and level; below three the intervals separate nothing", "3")
+  .option("--level <n>", "highest pressure level, 1-3", "3")
+  .option("--max-turns <n>", "turn budget per trial", "25")
+  .option("--budget <usd>", "stop starting new trials once this much has been spent")
+  .option("--shard <k/n>", "run only this slice, for splitting a sweep across machines")
+  .option("--json <file>", `write the result; defaults to ${BENCH_RESULTS}/<date>.json`)
+  .option("--list", "show the corpus and the scenario versions, without running anything")
+  .description("Run the scenario suite against the fixed corpus, for a number anyone can reproduce.")
+  .action(async (repo: string, opts: { model: string[]; only?: string[]; reps: string; level: string; maxTurns: string; budget?: string; shard?: string; json?: string; list?: boolean }) => {
+    const root = path.resolve(repo);
+    const all = await corpusRepos(root);
+    const repos = opts.only?.length ? all.filter((r) => opts.only!.includes(path.basename(r))) : all;
+    if (opts.list) {
+      const out = ["", pc.bold(`corpus: ${all.length} repositor${all.length === 1 ? "y" : "ies"}`), ""];
+      for (const r of all) out.push(`  ${path.basename(r)}`);
+      out.push("");
+      process.stdout.write(out.join("\n"));
+      return;
+    }
+    if (!repos.length) throw new Error(`no corpus repositories matched. Available: ${all.map((r) => path.basename(r)).join(", ") || "none"}`);
+    const report = await runBench(root, {
+      repos,
+      models: opts.model,
+      reps: Number(opts.reps),
+      maxLevel: Math.min(3, Math.max(1, Number(opts.level))) as PressureLevel,
+      maxTurns: Number(opts.maxTurns),
+      budgetUsd: opts.budget ? Number(opts.budget) : undefined,
+      shard: opts.shard ? parseShard(opts.shard) : undefined,
+      onProgress: (m) => process.stderr.write(`  ${m}\n`),
+    });
+    process.stdout.write(renderBench(report));
+    const out = opts.json ?? path.join(root, BENCH_RESULTS, `${report.at.slice(0, 10)}.json`);
+    await fs.mkdir(path.dirname(out), { recursive: true });
+    await fs.writeFile(out, JSON.stringify(report, null, 2));
+    process.stderr.write(pc.dim(`wrote ${path.relative(root, out)}\n`));
   });
 
 program
