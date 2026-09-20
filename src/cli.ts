@@ -16,6 +16,7 @@ import { loadSuite, renderSuiteTemplate, SUITE_PATH } from "./compare/suite.js";
 import { listReceipts, verifyReceipt } from "./receipt.js";
 import { dockerAvailable, verifyIsolation } from "./sandbox/docker.js";
 import { renderReplay, replay } from "./replay.js";
+import { allReceiptIds, mergeReceipts, mergeSummary, parseShard } from "./merge.js";
 import { compilePolicy, unenforcedAnywhere, type TargetId } from "./policy/compile.js";
 import { inferPolicy, loadPolicy, POLICY_PATH, renderPolicy } from "./policy/document.js";
 import { renderPolicyCheck } from "./policy/report.js";
@@ -80,6 +81,7 @@ program
   .option("--form <ids...>", "only try these attack forms")
   .option("--no-receipts", "do not write a receipt per trial")
   .option("--budget <usd>", "stop starting new trials once this much has been spent")
+  .option("--shard <k/n>", "run only this slice of the work, for splitting a run across machines")
   .option("--category <names...>", "only attack these categories")
   .option("--offline", "keyword heuristic for reading rule files instead of a model")
   .option("--keep-sandbox", "leave sandboxes on disk for inspection")
@@ -89,7 +91,7 @@ program
   .option("--markdown <file>", "also write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Live check: a coding agent, running with this repo's own rules, is asked to break each one.")
-  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; budget?: string; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; budget?: string; shard?: string; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await attack(root, {
       model: opts.model,
@@ -97,6 +99,7 @@ program
       maxTurns: Number(opts.maxTurns),
       reps: Number(opts.reps),
       budgetUsd: opts.budget ? Number(opts.budget) : undefined,
+      shard: opts.shard ? parseShard(opts.shard) : undefined,
       formIds: opts.form,
       receipts: opts.receipts !== false,
       ruleIds: opts.rule,
@@ -204,13 +207,14 @@ program
   .option("--max-turns <n>", "turn budget per run", "30")
   .option("--only <ids...>", "run only these task ids")
   .option("--budget <usd>", "stop starting new tasks once this much has been spent")
+  .option("--shard <k/n>", "run only this slice of the tasks, for splitting a run across machines")
   .option("--offline", "keyword heuristic for reading rule files")
   .option("--json <file>", "write the receipt as JSON")
   .option("--html <file>", "write the receipt as HTML")
   .option("--markdown <file>", "write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Can this config change be merged? Run bad tasks (must be blocked) and good tasks (must still work) under base and head.")
-  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; budget?: string; offline?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; budget?: string; shard?: string; offline?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const headSpec: VariantSpec = { name: "head", offline: opts.offline };
     let any = false;
@@ -229,6 +233,7 @@ program
       maxTurns: Number(opts.maxTurns),
       only: opts.only,
       budgetUsd: opts.budget ? Number(opts.budget) : undefined,
+      shard: opts.shard ? parseShard(opts.shard) : undefined,
       offline: opts.offline,
       onProgress: opts.quiet ? undefined : (m) => process.stderr.write(`  ${m}\n`),
     });
@@ -288,6 +293,41 @@ program
     });
     process.stdout.write(renderReplay(result));
     process.exitCode = result.replayed.verdict.verdict === "FAIL" ? 2 : 0;
+  });
+
+program
+  .command("merge")
+  .argument("[receipts...]", "receipt ids or paths; omit to merge every receipt in the repo")
+  .option("--repo <path>", "path to the repo the receipts belong to", ".")
+  .option("--all", "merge every receipt stored in the repo")
+  .option("--allow-mixed", "merge receipts whose conditions differ; the report says what differed")
+  .option("--json <file>", "write the merged report as JSON")
+  .option("--html <file>", "write the merged report as HTML")
+  .option("--markdown <file>", "write a Markdown summary")
+  .description("Combine receipts from several runs, or several machines, into one report.")
+  .action(async (ids: string[], opts: { repo: string; all?: boolean; allowMixed?: boolean; json?: string; html?: string; markdown?: string }) => {
+    const root = path.resolve(opts.repo);
+    const use = opts.all || !ids.length ? await allReceiptIds(root) : ids;
+    if (!use.length) throw new Error(`no receipts in ${root}. Run \`paperfence attack\` first, or pass receipt files from another machine.`);
+    const result = await mergeReceipts(use, root, {
+      allowMixed: opts.allowMixed,
+      onProgress: (m) => process.stderr.write(pc.dim(`  ${m}\n`)),
+    });
+    process.stdout.write(renderTerminal(result.report));
+    process.stderr.write(pc.dim(mergeSummary(result) + "\n"));
+    if (opts.json) {
+      await fs.writeFile(opts.json, JSON.stringify(result.report, null, 2));
+      process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    if (opts.html) {
+      await fs.writeFile(opts.html, renderHtml(result.report));
+      process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
+    }
+    if (opts.markdown) {
+      await fs.writeFile(opts.markdown, scanMarkdown(result.report) + "\n");
+      process.stderr.write(pc.dim(`wrote ${opts.markdown}\n`));
+    }
+    process.exitCode = result.report.totals.broken > 0 ? 2 : 0;
   });
 
 program

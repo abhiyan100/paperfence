@@ -2,6 +2,7 @@ import pc from "picocolors";
 import { runAssertion } from "../attack/assert.js";
 import { firstViolation } from "../attack/match.js";
 import { Budget } from "../budget.js";
+import { shardOf } from "../merge.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { detectProfile, profileLine, type RepoProfile } from "../repo/profile.js";
 import { VERSION } from "../report/build.js";
@@ -29,6 +30,8 @@ export interface CompareOptions {
   only?: string[];
   /** Stop starting new trials once this much has been spent, in dollars. */
   budgetUsd?: number;
+  /** Run only this shard of the task list, for splitting a run across machines. */
+  shard?: { shard: number; total: number };
   onProgress?: (m: string) => void;
 }
 
@@ -75,10 +78,14 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
   const noSink: Sink = { port: 0, hits: [], close: async () => {} };
 
   try {
-    const tasks: { id: string; kind: "bad" | "good" }[] = [
+    const allTasks: { id: string; kind: "bad" | "good" }[] = [
       ...filtered.bad.map((t) => ({ id: t.id, kind: "bad" as const })),
       ...filtered.good.map((t) => ({ id: t.id, kind: "good" as const })),
     ];
+    // Shard by task, never by variant: both arms of a task must run on the same
+    // machine or the comparison is between two different machines.
+    const tasks = opts.shard ? shardOf(allTasks, opts.shard.shard, opts.shard.total) : allTasks;
+    if (opts.shard) log(`shard ${opts.shard.shard}/${opts.shard.total}: ${tasks.length} of ${allTasks.length} task(s)`);
     for (let rep = 1; rep <= reps; rep++) {
       for (const [ti, t] of tasks.entries()) {
         // Interleave: alternate which variant goes first per task so order effects do not favour one arm.

@@ -14,6 +14,7 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { scan } from "../src/scan.js";
+import { VERSION } from "../src/report/build.js";
 import type { ScanReport } from "../src/types.js";
 
 const run = promisify(execFile);
@@ -76,6 +77,14 @@ async function discover(): Promise<void> {
  * CLAUDE.md, AGENTS.md, .claude/settings*.json, .claude/rules/*.md, and the
  * names of .claude/hooks/*. A few requests per repo, no working tree.
  */
+async function headCommit(repo: string, branch: string): Promise<string | undefined> {
+  try {
+    return (await gh(["api", `repos/${repo}/commits/${encodeURIComponent(branch)}`, "--jq", ".sha"])).trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 async function fetchConfig(repo: string, branch: string, dir: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
   const raw = async (p: string): Promise<string | null> => {
@@ -121,6 +130,12 @@ async function fetchConfig(repo: string, branch: string, dir: string): Promise<v
 interface Row {
   repo: string;
   stars: number;
+  /** The commit the config was read from. A row is stale when the repo has moved past it. */
+  commit?: string;
+  /** How the rules were read. A heuristic row and a model row are not comparable. */
+  extractor?: "offline-heuristic" | string;
+  /** The paperfence version that produced the row. */
+  paperfence?: string;
   description: string;
   rules: number;
   gates: number;
@@ -136,24 +151,55 @@ interface Row {
   error?: string;
 }
 
+/**
+ * Write through a temporary file and rename.
+ *
+ * The previous version wrote the accumulated list in place after every repo,
+ * so a run that was interrupted, or that scanned a smaller slice, replaced a
+ * hundred rows with however many it had reached. Renaming is atomic, and the
+ * list being written is always the merged one.
+ */
+async function writeRows(rows: Row[]): Promise<void> {
+  const target = path.join(DATA, "leaderboard.json");
+  const tmp = `${target}.${process.pid}.tmp`;
+  await fs.writeFile(tmp, JSON.stringify(rows, null, 2));
+  await fs.rename(tmp, target);
+}
+
 async function scanTop(n: number, offline: boolean): Promise<void> {
   const candidates: Candidate[] = JSON.parse(await fs.readFile(path.join(DATA, "candidates.json"), "utf8"));
   const existing: Row[] = await fs
     .readFile(path.join(DATA, "leaderboard.json"), "utf8")
     .then((s) => JSON.parse(s))
     .catch(() => []);
-  const done = new Map(existing.map((r) => [r.repo, r]));
-  const rows: Row[] = [];
+  // Start from what is already there. A run that scans the top 20 must not
+  // delete rows 21 to 100, and a transient GitHub failure must not either.
+  const byRepo = new Map(existing.map((r) => [r.repo, r]));
+  const extractor = offline ? "offline-heuristic" : (process.env.PAPERFENCE_MODEL ?? "claude-haiku-4-5-20251001");
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "pf-lb-"));
+  let rescanned = 0;
+  let reused = 0;
+  let failed = 0;
 
   for (const c of candidates.slice(0, n)) {
-    const prev = done.get(c.repo);
-    if (prev && !prev.error && typeof prev.unknown === "number") {
-      rows.push(prev);
+    const prev = byRepo.get(c.repo);
+    const commit = await headCommit(c.repo, c.defaultBranch);
+    // A cached row is good only if it recorded how it was produced and nothing
+    // has moved since: the repo is at the same commit, read the same way, by
+    // the same paperfence.
+    const fresh =
+      prev &&
+      !prev.error &&
+      typeof prev.unknown === "number" &&
+      prev.extractor === extractor &&
+      prev.paperfence === VERSION &&
+      (commit === undefined || prev.commit === commit);
+    if (fresh) {
+      reused++;
       continue;
     }
     const dir = path.join(tmp, c.repo.replace("/", "__"));
-    process.stderr.write(`\n== ${c.repo} (${c.stars} stars)\n`);
+    process.stderr.write(`\n== ${c.repo} (${c.stars} stars)${prev ? " [rescan]" : ""}\n`);
     try {
       await fetchConfig(c.repo, c.defaultBranch, dir);
       const report: ScanReport = await scan(dir, { offline, noHooks: true, onProgress: (m) => process.stderr.write(`  ${m}\n`) });
@@ -162,9 +208,12 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
       const unknown = report.verdicts.filter((v) => v.grade === "WISH" && /not run \(--no-hooks\)/.test(v.staticProbe?.evidence ?? "")).length;
       const wishes = report.totals.wish - unknown;
       const attackable = report.totals.gate + wishes;
-      rows.push({
+      byRepo.set(c.repo, {
         repo: c.repo,
         stars: c.stars,
+        commit,
+        extractor,
+        paperfence: VERSION,
         description: c.description,
         rules: report.rules.length,
         gates: report.totals.gate,
@@ -180,14 +229,27 @@ async function scanTop(n: number, offline: boolean): Promise<void> {
           .map((v) => ({ text: v.rule.text.slice(0, 140), grade: v.grade, summary: v.summary.slice(0, 200) })),
         scannedAt: report.scannedAt,
       });
+      rescanned++;
     } catch (e) {
-      rows.push({ repo: c.repo, stars: c.stars, description: c.description, rules: 0, gates: 0, wishes: 0, untested: 0, unknown: 0, wishPct: 0, hasSettings: false, hasHooks: false, sample: [], scannedAt: new Date().toISOString(), error: (e as Error).message.split("\n")[0] });
+      failed++;
+      const message = (e as Error).message.split("\n")[0] ?? "scan failed";
+      // A repo we could not reach this time keeps the row we already had. An
+      // error row replaces a good one only when there was no good one.
+      if (!prev || prev.error) {
+        byRepo.set(c.repo, { repo: c.repo, stars: c.stars, commit, extractor, paperfence: VERSION, description: c.description, rules: 0, gates: 0, wishes: 0, untested: 0, unknown: 0, wishPct: 0, hasSettings: false, hasHooks: false, sample: [], scannedAt: new Date().toISOString(), error: message });
+      } else {
+        process.stderr.write(`  keeping the previous row: ${message}\n`);
+      }
     } finally {
       await fs.rm(dir, { recursive: true, force: true });
     }
-    await fs.writeFile(path.join(DATA, "leaderboard.json"), JSON.stringify(rows, null, 2));
+    await writeRows([...byRepo.values()].sort((a, b) => b.stars - a.stars));
   }
   await fs.rm(tmp, { recursive: true, force: true });
+
+  const rows = [...byRepo.values()].sort((a, b) => b.stars - a.stars);
+  await writeRows(rows);
+  process.stderr.write(`\n${rescanned} rescanned, ${reused} reused from cache, ${failed} could not be fetched, ${rows.length} rows total\n`);
 
   const scanned = rows.filter((r) => !r.error && r.gates + r.wishes > 0);
   const totalRules = scanned.reduce((a, r) => a + r.gates + r.wishes, 0);

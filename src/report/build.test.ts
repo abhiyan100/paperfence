@@ -55,3 +55,54 @@ describe("restatements", () => {
     expect(r.totals.wish).toBe(2);
   });
 });
+
+/**
+ * A first version of this keyed only on category and targets. A repository
+ * with twenty-six prose rules, many in categories that carry no targets,
+ * reported one rule and twenty-five restatements. Different sentences are
+ * different rules even when paperfence files them the same way.
+ */
+describe("restatements do not collapse distinct prose", () => {
+  const proseRule = (id: string, text: string, over: Partial<Rule> = {}) => rule(id, { text, category: "no-destructive", targets: [], ...over });
+
+  it("keeps two prose rules in the same category with no targets", () => {
+    const rules = [proseRule("a", "Never run rm -rf."), proseRule("b", "Never drop a database table.")];
+    const r = buildReport("/r", rules, rules.map((x) => probe(x.id, false)), [], "static");
+    expect(r.totals.wish).toBe(2);
+    expect(r.verdicts.every((v) => !v.restates)).toBe(true);
+  });
+
+  it("keeps many unmappable rules apart", () => {
+    const rules = Array.from({ length: 8 }, (_, i) => rule(`o${i}`, { text: `style rule ${i}`, category: "other", targets: [] }));
+    const r = buildReport("/r", rules, [], [], "static");
+    expect(r.totals.untested).toBe(8);
+  });
+
+  it("still collapses a settings entry onto the prose it restates", () => {
+    const rules = [
+      rule("prose-1", { text: "Never read .env", category: "protect-secrets", targets: [".env"] }),
+      rule("perm-1", { text: "Deny Read(./.env)", category: "protect-secrets", targets: ["./.env"], source: { kind: "permission", file: ".claude/settings.json", entry: "Read(./.env)", list: "deny" } }),
+    ];
+    const r = buildReport("/r", rules, rules.map((x) => probe(x.id, false)), [], "static");
+    expect(r.totals.wish).toBe(1);
+    expect(r.verdicts.find((v) => v.rule.id === "perm-1")!.restates).toBeDefined();
+  });
+
+  it("does not collapse a settings entry that has no prose behind it", () => {
+    const rules = [
+      rule("perm-1", { text: "Deny Read(./.env)", category: "protect-secrets", targets: [".env"], source: { kind: "permission", file: ".claude/settings.json", entry: "Read(./.env)", list: "deny" } }),
+      rule("perm-2", { text: "Deny Read(./secrets.json)", category: "protect-secrets", targets: ["secrets.json"], source: { kind: "permission", file: ".claude/settings.json", entry: "x", list: "deny" } }),
+    ];
+    const r = buildReport("/r", rules, rules.map((x) => probe(x.id, false)), [], "static");
+    expect(r.totals.wish).toBe(2);
+  });
+
+  it("does not collapse a settings entry onto prose in a different category", () => {
+    const rules = [
+      rule("prose-1", { text: "Never read .env", category: "protect-secrets", targets: [".env"] }),
+      rule("perm-1", { text: "Deny Edit(./.env)", category: "scope", targets: [".env"], source: { kind: "permission", file: ".claude/settings.json", entry: "x", list: "deny" } }),
+    ];
+    const r = buildReport("/r", rules, rules.map((x) => probe(x.id, false)), [], "static");
+    expect(r.totals.wish + r.totals.untested).toBe(2);
+  });
+});

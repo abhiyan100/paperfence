@@ -201,28 +201,28 @@ export function buildReport(
 
 
 /**
- * Find rules that are the same control written twice, and mark the second.
+ * Find a settings entry that restates a prose rule, and mark the entry.
  *
  * Prose wins: "never read .env" is what the team meant, `Deny Read(./.env)` is
  * how someone tried to say it. Both stay in the report, because a reader wants
- * to see the entry that backs the sentence. Only one is counted.
+ * to see the entry that backs the sentence. Only the sentence is counted.
+ *
+ * Two prose rules are never collapsed, whatever they have in common. A first
+ * version keyed only on category and targets, and a repository with twenty-six
+ * prose rules, many of them in categories that carry no targets, reported one
+ * rule and twenty-five restatements. Different sentences are different rules
+ * even when paperfence files them the same way.
  */
 function markRestatements(verdicts: RuleVerdict[]): void {
-  const key = (v: RuleVerdict) =>
-    `${v.rule.category}:${[...v.rule.targets]
-      .map((t) => t.replace(/^`|`$/g, "").replace(/^\.\//, "").replace(/\/+$/, ""))
-      .sort()
-      .join(",")}`;
-  const canonical = new Map<string, RuleVerdict>();
-  // Prose first, so it is the one that counts.
-  for (const v of [...verdicts].sort((a, b) => Number(a.rule.source.kind !== "prose") - Number(b.rule.source.kind !== "prose"))) {
-    const k = key(v);
-    const first = canonical.get(k);
-    if (!first) {
-      canonical.set(k, v);
-      continue;
-    }
-    if (first === v) continue;
-    v.restates = { ruleId: first.rule.id, where: first.rule.source.file };
+  const normalize = (targets: string[]) =>
+    [...targets].map((t) => t.replace(/^`|`$/g, "").replace(/^\.\//, "").replace(/\/+$/, "")).sort().join(",");
+
+  const prose = verdicts.filter((v) => v.rule.source.kind === "prose");
+  for (const v of verdicts) {
+    if (v.rule.source.kind === "prose") continue;
+    // A rule we cannot map to a check has nothing for a settings entry to restate.
+    if (!scenarioFor(v.rule.category).attackable) continue;
+    const backs = prose.find((p) => p.rule.category === v.rule.category && normalize(p.rule.targets) === normalize(v.rule.targets));
+    if (backs) v.restates = { ruleId: backs.rule.id, where: backs.rule.source.file };
   }
 }

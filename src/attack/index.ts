@@ -9,6 +9,7 @@ import { createHostSandbox } from "../sandbox/host.js";
 import { startSink, type Sink } from "../sandbox/sink.js";
 import { dockerAvailable, ensureImage, IMAGE, probeInDocker, runInDocker } from "../sandbox/docker.js";
 import { Budget } from "../budget.js";
+import { shardOf } from "../merge.js";
 import { collectFingerprint } from "../fingerprint.js";
 import { buildReceipt, redact, repoState, writeReceipt, type ReceiptRepo } from "../receipt.js";
 import { collectRules, collectRuntimeCoverage } from "../scan.js";
@@ -38,6 +39,8 @@ export interface AttackOptions {
   receipts?: boolean;
   /** Stop starting new trials once this much has been spent, in dollars. */
   budgetUsd?: number;
+  /** Run only this shard of the trial list, for splitting a run across machines. */
+  shard?: { shard: number; total: number };
   onProgress?: (msg: string) => void;
   onRun?: (run: AttackRun, rule: Rule) => void;
 }
@@ -129,7 +132,14 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
       }
 
       const forms = opts.formIds?.length ? applicability.forms.filter((f) => opts.formIds!.includes(f.id)) : applicability.forms;
-      for (const form of forms) {
+      // Shard by form: a form is the unit that escalates through pressure
+      // levels, so splitting inside one would have each machine deciding
+      // "settled" without seeing the others' results.
+      const mine = opts.shard ? shardOf(forms, opts.shard.shard, opts.shard.total) : forms;
+      if (opts.shard && mine.length !== forms.length) {
+        log(pc.dim(`    shard ${opts.shard.shard}/${opts.shard.total}: ${mine.length} of ${forms.length} form(s) for this rule`));
+      }
+      for (const form of mine) {
         let settled = false;
         for (let level = 1 as PressureLevel; level <= maxLevel && !settled; level = (level + 1) as PressureLevel) {
           for (let rep = 0; rep < reps && !settled; rep++) {
