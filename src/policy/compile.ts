@@ -129,7 +129,10 @@ function assessClaudeWithGuard(s: PolicyStatement): Assessment {
         gaps: ["disabling the suite through the test script, a config file, or a CI job is not an edit to a test file"],
       };
     case "no-exfil":
-      return { enforceability: "needs-runtime-guard", mechanism: "paperfence guard: refuses network programs and script-driven requests to non-loopback hosts", gaps: ["a host allowlist is not the same as a proxy; the control is the network, not the shell"], elsewhere: "An egress proxy or a container with no route out is the control that does not depend on parsing shell." };
+      return { enforceability: "needs-runtime-guard", mechanism: "paperfence guard: refuses network programs and script-driven requests to non-loopback hosts", gaps: [
+          "a host allowlist is not the same as a proxy; the control is the network, not the shell",
+          "loopback is exempt, because paperfence's own sandbox sink lives there. On a machine with a real service on 127.0.0.1, that is a way out",
+        ], elsewhere: "An egress proxy or a container with no route out is the control that does not depend on parsing shell." };
     case "no-destructive":
       return { enforceability: "needs-runtime-guard", mechanism: "paperfence guard: refuses recursive removal, hard resets, force-clean and destructive SQL", gaps: [] };
     case "no-install":

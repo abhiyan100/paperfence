@@ -21,3 +21,42 @@ jobs:
       - run: pnpm build
       - name: static scan of the fixture (offline, no model)
         run: node dist/cli.js scan fixtures/typical --offline -q
+
+      # The policy layer end to end: draft one from the fixture's own rules,
+      # then compile it for every target. Exit 2 means a statement is enforced
+      # by nothing anywhere, which is true of the fixture and is the point.
+      - name: policy round trip
+        run: |
+          node dist/cli.js policy init fixtures/typical --offline --force
+          # The fixture's policy is committed. Redrafting it must reproduce it,
+          # so a change in how rules are inferred shows up here as a diff.
+          git diff --exit-code -- fixtures/typical/paperfence.policy.yaml
+          node dist/cli.js policy check fixtures/typical --target claude-code claude-code-hook codex github || [ $? -eq 2 ]
+
+      # Hardening must be reviewable before it is applied, and applying it must
+      # turn the fixture's wishes into gates.
+      - name: harden the fixture and re-scan
+        run: |
+          cp -r fixtures/typical "$RUNNER_TEMP/hardened"
+          node dist/cli.js harden "$RUNNER_TEMP/hardened" --offline --dry-run -q > "$RUNNER_TEMP/patch.txt"
+          grep -q "Nothing was written" "$RUNNER_TEMP/patch.txt"
+          node dist/cli.js harden "$RUNNER_TEMP/hardened" --offline -q
+          node dist/cli.js scan "$RUNNER_TEMP/hardened" --offline --unsafe-run-hooks -q --json "$RUNNER_TEMP/after.json"
+          node -e '
+            const r = require(process.env.RUNNER_TEMP + "/after.json");
+            const { gate, wish, broken } = r.totals;
+            console.log(`after hardening: ${gate} gate, ${wish} wish, ${broken} broken`);
+            if (broken > 0) { console.error("hardening left a broken rule"); process.exit(1); }
+            if (wish > 0) { console.error(`hardening left ${wish} rule(s) with nothing mechanical behind them`); process.exit(1); }
+            if (gate < 8) { console.error(`expected hardening to produce gates, got ${gate}`); process.exit(1); }
+          '
+
+      # paperfence's own sandbox boundary. Skipped without Docker rather than
+      # passed: a check that cannot run is not a check that passed.
+      - name: sandbox isolation
+        run: |
+          if docker info >/dev/null 2>&1; then
+            node dist/cli.js doctor
+          else
+            echo "::warning::Docker unavailable; the sandbox isolation checks did not run"
+          fi

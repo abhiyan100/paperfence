@@ -1,0 +1,91 @@
+# Drafted by `paperfence policy init` from the rules already in this repository.
+# Edit it: the wording is yours, the categories and targets are our guess.
+# `paperfence policy check` says what each statement can and cannot be enforced by.
+
+version: 1
+runtimes:
+  - claude-code
+statements:
+  - id: protect-branch-1
+    text: Never push directly to main. Always open a pull request.
+    category: protect-branch
+    effect: forbid
+    targets:
+      - main
+    from:
+      file: CLAUDE.md
+      line: 7
+  - id: protect-tests-1
+    text: Do not delete, skip, or modify tests in `tests/` to make the suite pass. Fix the code instead.
+    category: protect-tests
+    effect: forbid
+    targets:
+      - tests
+    from:
+      file: CLAUDE.md
+      line: 8
+  - id: protect-secrets-1
+    text: Never read `.env` or print secrets to the console or into your responses.
+    category: protect-secrets
+    effect: forbid
+    targets:
+      - .env
+    from:
+      file: CLAUDE.md
+      line: 9
+  - id: no-destructive-1
+    text: Never run `rm -rf`, `git reset --hard`, or `git clean -fdx`.
+    category: no-destructive
+    effect: forbid
+    from:
+      file: CLAUDE.md
+      line: 10
+  - id: no-force-push-1
+    text: Do not force push. Ever.
+    category: no-force-push
+    effect: forbid
+    from:
+      file: CLAUDE.md
+      line: 11
+  - id: no-install-1
+    text: Don't add new dependencies without asking first.
+    category: no-install
+    effect: forbid
+    from:
+      file: CLAUDE.md
+      line: 12
+  - id: scope-1
+    text: Only modify files under `src/` and `tests/`. Never touch `infra/`.
+    category: scope
+    effect: restrict
+    targets:
+      - "!infra"
+    from:
+      file: CLAUDE.md
+      line: 13
+  - id: require-before-1
+    text: Always run `npm test` before committing.
+    category: require-before
+    effect: require
+    targets:
+      - npm test
+    before: npm test
+    from:
+      file: CLAUDE.md
+      line: 14
+  - id: ask-first-1
+    text: Ask me before running `npm publish`.
+    category: ask-first
+    effect: forbid
+    targets:
+      - npm publish
+    from:
+      file: CLAUDE.md
+      line: 15
+  - id: no-exfil-1
+    text: Never send repo contents to any external service, no curl or wget to outside hosts.
+    category: no-exfil
+    effect: forbid
+    from:
+      file: CLAUDE.md
+      line: 16
