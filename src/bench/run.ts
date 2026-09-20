@@ -142,6 +142,10 @@ export async function runBench(root: string, opts: BenchOptions): Promise<BenchR
         maxLevel,
         maxTurns,
         offline: true, // the corpus rules are ours; a model is not needed to read them
+        // Every form, every level, every repetition. An ordinary attack run
+        // stops a form once it breaks, which would give failing forms fewer
+        // trials than passing ones and understate the rate it is pooled into.
+        exhaustive: true,
         budgetUsd: opts.budgetUsd ? Math.max(0, opts.budgetUsd - budget.total) : undefined,
         shard: opts.shard,
         onProgress: (m) => log(pc.dim(`  ${m}`)),
@@ -173,6 +177,7 @@ export async function runBench(root: string, opts: BenchOptions): Promise<BenchR
       "Agents are stochastic. Two sweeps of the same configuration will not produce identical numbers; the intervals are there to say how much of the difference is noise.",
       "Every trial answered its own permission prompts with yes, which is what an unattended run does. A developer watching would have had a chance to say no.",
       "A scenario whose prerequisites a repository does not meet was not run and is not in any denominator.",
+      "Every form runs at every pressure level for every repetition, so the sample is fixed rather than stopping when something breaks. A rate computed over a sample that stops early understates it, because a form that fails once contributes one trial and a form that never fails contributes all of them.",
       "paperfence wrote the scenarios and the corpus. That is a conflict of interest, and the mitigation is that both are in the repository and the receipts are reproducible, not that we promise to be fair.",
     ],
   };

@@ -36,8 +36,25 @@ export interface MergeResult {
   rejected: { id: string; why: string }[];
 }
 
-/** Fields that must match for two trials to belong to the same experiment. */
+/** Fingerprint fields that must match for two trials to belong to the same experiment. */
 const MUST_MATCH: (keyof Fingerprint)[] = ["paperfence", "claudeCode", "agentSdk", "model", "sandbox", "image", "approvalMode"];
+
+/**
+ * Everything else that makes two trials incomparable.
+ *
+ * The fingerprint covers the machine and the model. It does not cover what was
+ * being measured, and receipts from before and after a configuration change,
+ * or against two different scenario versions, were merging into one apparent
+ * experiment and diluting the failure rate.
+ */
+function trialDimensions(r: Receipt): Record<string, string> {
+  return {
+    "repository commit": r.repo.commit ?? "unset",
+    "scenario version": `${r.trial.scenario} v${r.trial.scenarioVersion}`,
+    "turn budget": String(r.trial.maxTurns),
+    variant: r.variant?.name ?? "none",
+  };
+}
 
 export async function mergeReceipts(paths: string[], root: string, opts: MergeOptions = {}): Promise<MergeResult> {
   const log = opts.onProgress ?? (() => {});
@@ -66,6 +83,19 @@ export async function mergeReceipts(paths: string[], root: string, opts: MergeOp
   for (const field of MUST_MATCH) {
     const values = [...new Set(receipts.map((r) => String(r.fingerprint[field] ?? "unset")))];
     if (values.length > 1) mixed.push({ field, values });
+  }
+  // A scenario's version is only comparable within one rule, so group by rule
+  // before complaining: two different rules legitimately have different ones.
+  for (const field of Object.keys(trialDimensions(receipts[0]!))) {
+    const byRule = new Map<string, Set<string>>();
+    for (const r of receipts) {
+      const key = field === "scenario version" ? r.trial.rule.id : "";
+      const set = byRule.get(key) ?? new Set<string>();
+      set.add(trialDimensions(r)[field]!);
+      byRule.set(key, set);
+    }
+    const offending = [...byRule.values()].find((v) => v.size > 1);
+    if (offending) mixed.push({ field, values: [...offending] });
   }
   if (mixed.length && !opts.allowMixed) {
     throw new Error(
@@ -125,7 +155,7 @@ export async function mergeReceipts(paths: string[], root: string, opts: MergeOp
 
   const first = receipts[0]!;
   const fingerprint: Fingerprint = { ...first.fingerprint, at: new Date().toISOString() };
-  const report = buildReport(first.repo.root, [...rules.values()], [], runs, "attack", fingerprint, { skippedForms });
+  const report = buildReport(first.repo.root, [...rules.values()], [], runs, "attack", fingerprint, { skippedForms, noStaticProbe: true });
   log(`merged ${receipts.length} receipt(s) into ${report.verdicts.length} verdict(s)`);
   return { report, receipts, mixed, rejected };
 }

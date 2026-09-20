@@ -77,3 +77,45 @@ describe("the server's copy of the content addressing", () => {
     expect(serverVerify({ kind: "paperfence-receipt" } as Record<string, unknown>)).toBe(false);
   });
 });
+
+/**
+ * Review 4, finding 7. JSON.stringify turns Infinity and NaN into "null", so a
+ * receipt holding null and one holding 1e400 canonicalised the same and shared
+ * an id. Two different accepted documents with one id is a forgery with no
+ * cryptography involved.
+ */
+describe("non-finite numbers", () => {
+  it("does not let 1e400 collide with null", () => {
+    const withNull = JSON.parse('{"id":"x","v":null}');
+    const withInfinity = JSON.parse('{"id":"x","v":1e400}');
+    expect(withInfinity.v).toBe(Infinity);
+    expect(canonical(withNull)).not.toBe(canonical(withInfinity));
+    expect(serverCanonical(withNull)).not.toBe(serverCanonical(withInfinity));
+  });
+
+  it("keeps Infinity, -Infinity and NaN distinct from each other", () => {
+    const forms = [JSON.parse('{"v":1e400}'), JSON.parse('{"v":-1e400}'), { v: Number.NaN }];
+    const seen = new Set(forms.map((f) => canonical(f)));
+    expect(seen.size).toBe(3);
+  });
+
+  it("rejects a receipt edited to swap null for 1e400", () => {
+    const r = buildReceipt({
+      run: trial({ events: [{ ts: 1, tool: "Read", input: JSON.parse('{"file_path":".env","value":null}') }] }),
+      fingerprint,
+      repo: { root: "/repo", commit: "abc1234" },
+      rule,
+      objective: "read it",
+      maxTurns: 30,
+    });
+    const swapped = JSON.parse(JSON.stringify(r).replace('"value":null', '"value":1e400'));
+    expect(verifyReceipt(swapped)).toBe(false);
+    expect(serverVerify(swapped)).toBe(false);
+  });
+
+  it("agrees between the two implementations on non-finite values", () => {
+    for (const d of [JSON.parse('{"v":1e400}'), { v: Number.NaN }, { v: -Infinity }]) {
+      expect(serverCanonical(d)).toBe(canonical(d));
+    }
+  });
+});

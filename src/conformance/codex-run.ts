@@ -17,6 +17,15 @@ import { CODEX_CASES, type CodexCase, type CodexExpected } from "./codex-cases.j
  *
  * `--ignore-user-config` keeps this machine's Codex settings out of the
  * measurement, so a result describes the sandbox flag and nothing else.
+ *
+ * The experiment needs a control. An effect that did not happen has two
+ * causes: the sandbox confined it, or the model declined to try. Codex records
+ * nothing when it confines a command, so the run itself cannot tell them
+ * apart. Each confinement case therefore runs twice, once under the sandbox
+ * being tested and once under `danger-full-access`. If the effect happens with
+ * the sandbox off and not with it on, the sandbox is what stopped it. If it
+ * happens in neither, the model declined and the case is inconclusive, which
+ * is a fact about the model and not about the sandbox.
  */
 
 export type CodexObserved = CodexExpected | "not-attempted" | "error";
@@ -97,9 +106,25 @@ export async function runCodexConformance(opts: CodexConformanceOptions = {}): P
         });
         tokens += (run.usage?.inputTokens ?? 0) + (run.usage?.outputTokens ?? 0);
 
-        if (run.error && !run.events.length && !run.finalText) {
+        // An error is an error whether or not the agent said something first.
+        // Requiring an empty final text let a run that died mid-way count as a
+        // clean confinement.
+        if (run.error) {
           observedAll.push("error");
           detail = run.error;
+          continue;
+        }
+
+        if (c.observe === "command") {
+          // A claim with no filesystem effect, such as a read succeeding.
+          // Codex emits a command record for anything it did not confine.
+          const ok = c.commandSucceeded?.(run.events) ?? false;
+          observedAll.push(ok ? "allowed" : "confined");
+          if (!detail || ok !== (c.expected === "allowed")) {
+            detail = ok
+              ? "the command ran and Codex recorded it succeeding"
+              : `no successful command matching the claim was recorded${run.events.length ? "" : "; Codex recorded no command at all"}`;
+          }
           continue;
         }
 
@@ -110,16 +135,42 @@ export async function runCodexConformance(opts: CodexConformanceOptions = {}): P
         // are indistinguishable from the runtime's own record, and the honest
         // report is "the effect did not happen", not "the sandbox blocked it".
         const happened = await c.effectHappened(dir);
-        observedAll.push(happened ? "allowed" : "confined");
-        const observable = run.events.length > 0;
-        if (!observable) unobservable = true;
-        if (!detail || happened !== (c.expected === "allowed")) {
-          const failures = run.events.filter((e) => e.outcome === "failed").map((e) => String((e.result ?? "").split("\n")[0] ?? "").slice(0, 100));
-          detail = happened
-            ? "the effect happened: the sandbox did not stand in the way"
-            : observable
-              ? `the effect did not happen${failures.length ? `; the command reported: ${failures[0]}` : ""}`
-              : "the effect did not happen, and Codex recorded no command, so this cannot be told apart from the agent declining";
+        if (happened) {
+          observedAll.push("allowed");
+          if (!detail || c.expected !== "allowed") detail = "the effect happened: the sandbox did not stand in the way";
+          continue;
+        }
+
+        // The effect did not happen. Run the control to find out why.
+        const controlDir = await materialize(c);
+        let controlHappened = false;
+        try {
+          const control = await runCodex(c.task, {
+            cwd: controlDir,
+            sandbox: "danger-full-access",
+            model: opts.model,
+            ignoreUserConfig: true,
+            timeoutMs: opts.timeoutMs ?? 4 * 60_000,
+            onProgress: (m) => log(pc.dim(`    control: ${m}`)),
+          });
+          controlHappened = control.error ? false : await c.effectHappened(controlDir);
+        } finally {
+          await fs.rm(path.dirname(controlDir), { recursive: true, force: true });
+        }
+
+        if (!controlHappened) {
+          // The model would not do it even with nothing in the way, so this run
+          // says nothing about the sandbox.
+          observedAll.push("not-attempted");
+          unobservable = true;
+          detail = `the effect did not happen, and it did not happen with the sandbox off either, so the model declined rather than the sandbox confining it. It said: ${run.finalText.slice(0, 140)}`;
+          continue;
+        }
+
+        observedAll.push("confined");
+        const failures = run.events.filter((e) => e.outcome === "failed").map((e) => String((e.result ?? "").split("\n")[0] ?? "").slice(0, 100));
+        if (!detail || c.expected !== "confined") {
+          detail = `the effect happened with the sandbox off and not with it on, so the sandbox confined it${failures.length ? `; the command reported: ${failures[0]}` : ""}`;
         }
       } finally {
         await fs.rm(path.dirname(dir), { recursive: true, force: true });
@@ -129,7 +180,9 @@ export async function runCodexConformance(opts: CodexConformanceOptions = {}): P
     const distinct = [...new Set(observedAll)];
     const unstable = distinct.length > 1;
     const observed: CodexObserved = unstable ? (distinct.includes("allowed") ? "allowed" : distinct[0]!) : distinct[0]!;
-    const agrees = !unstable && observed === c.expected;
+    // A case whose control run showed the model would not do it either is not
+    // evidence about the sandbox, so it cannot agree with anything.
+    const agrees = !unstable && !unobservable && observed === c.expected;
     if (unstable) detail = `not the same across ${reps} runs: ${observedAll.join(", ")}. ${detail}`;
     results.push({ case: c, observed, observedAll, agrees, unstable, detail, tokens, unobservable });
 
@@ -137,7 +190,7 @@ export async function runCodexConformance(opts: CodexConformanceOptions = {}): P
     log(`  ${tag} expected ${c.expected}, observed ${unstable ? observedAll.join("/") : observed}${agrees ? "" : pc.dim(` · ${detail}`)}`);
   }
 
-  const conclusive = results.filter((r) => !r.unstable && r.observed !== "error" && r.observed !== "not-attempted");
+  const conclusive = results.filter((r) => !r.unstable && !r.unobservable && r.observed !== "error" && r.observed !== "not-attempted");
   return {
     at: new Date().toISOString(),
     reps,
@@ -153,6 +206,7 @@ export async function runCodexConformance(opts: CodexConformanceOptions = {}): P
       "This machine's Codex configuration was ignored, so a result describes the sandbox flag and not a local setting.",
       "Hooks are not covered. paperfence does not yet know how to observe a Codex hook blocking a call, so it does not claim to.",
       "When the sandbox confines a command, Codex emits no record of that command. paperfence can see that the effect did not happen and cannot see what was attempted, which is a real limit on what any tool can report about a Codex run.",
+      "Each confinement case runs twice: once under the sandbox being tested and once with the sandbox off. An effect that does not happen in both is the model declining, not the sandbox working, and is reported as not settled.",
     ],
   };
 }
@@ -166,7 +220,7 @@ export function renderCodexConformance(r: CodexConformanceReport): string {
     const tag = x.unstable ? pc.red("unstable") : x.observed === "error" || x.observed === "not-attempted" ? pc.yellow(x.observed) : x.agrees ? pc.green("agrees  ") : pc.red("DISAGREE");
     out.push(`  ${tag} ${x.case.claim}`);
     out.push(`           ${pc.dim(`sandbox ${x.case.sandbox} · expected ${x.case.expected} · ${x.detail}`)}`);
-    if (x.unobservable) out.push(`           ${pc.yellow("note")} ${pc.dim("Codex kept no record of the command, so paperfence saw the outcome and not the attempt")}`);
+    if (x.unobservable) out.push(`           ${pc.yellow("note")} ${pc.dim("the control run did not produce the effect either, so this says nothing about the sandbox")}`);
   }
   out.push("");
 

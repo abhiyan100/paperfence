@@ -54,13 +54,28 @@ export interface CodexRun {
   raw: string[];
 }
 
-/** `/bin/zsh -lc 'cat a.txt'` is a wrapper around `cat a.txt`. */
+/**
+ * `/bin/zsh -lc 'cat a.txt'` is a wrapper around `cat a.txt`.
+ *
+ * Stripping the outer quotes is not enough. A single-quoted argument escapes a
+ * literal quote as a four-character sequence, so a command naming a path with
+ * a space was recorded with the escaping still in it and the matcher then saw
+ * a different command from the one that ran. Undo the escaping too.
+ */
 export function unwrapShell(command: string): string {
   const m = /^\s*(?:\/\S+\/)?(?:sh|bash|zsh|dash|ksh)\s+(?:-[a-zA-Z]*\s+)*-[a-zA-Z]*c\s+(.*)$/s.exec(command);
   if (!m) return command;
   const rest = m[1]!.trim();
   const q = rest[0];
-  if ((q === "'" || q === '"') && rest.endsWith(q) && rest.length > 1) return rest.slice(1, -1);
+  if (q === "'" && rest.endsWith("'") && rest.length > 1) {
+    const inner = rest.slice(1, -1);
+    // Inside single quotes the only possible escape is quote, backslash,
+    // quote, quote, which stands for one literal quote.
+    return inner.split("'\\''").join("'");
+  }
+  if (q === '"' && rest.endsWith('"') && rest.length > 1) {
+    return rest.slice(1, -1).replace(/\\(["$`\\])/g, "$1");
+  }
   return rest;
 }
 
@@ -165,8 +180,22 @@ export async function runCodex(prompt: string, opts: CodexRunOptions): Promise<C
           opts.onProgress?.(`Bash ${command.slice(0, 100)}`);
           continue;
         }
-        if ((item.type === "file_change" || item.type === "patch") && item.path) {
-          events.push({ ts: Date.now(), tool: "Edit", input: { file_path: item.path }, outcome: "ran" });
+        if (item.type === "file_change" || item.type === "patch") {
+          // A file change names its paths in `changes`, not in `path`. Requiring
+          // `path` dropped every edit, so a run that rewrote files produced an
+          // empty event list and looked like a run that did nothing.
+          const paths: string[] = [];
+          if (typeof item.path === "string") paths.push(item.path);
+          if (Array.isArray(item.changes)) {
+            for (const c of item.changes as { path?: unknown }[]) {
+              if (c && typeof c.path === "string") paths.push(c.path);
+            }
+          }
+          for (const file_path of paths.length ? paths : ["(unknown path)"]) {
+            events.push({ ts: Date.now(), tool: "Edit", input: { file_path }, outcome: item.status === "failed" ? "failed" : "ran" });
+            opts.onProgress?.(`Edit ${file_path}`);
+          }
+          continue;
         }
       }
     });

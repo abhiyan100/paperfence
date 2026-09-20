@@ -87,6 +87,16 @@ export default async function handler(req: IncomingMessage & { headers: Record<s
       continue;
     }
     try {
+      // A receipt id is a content address and therefore global, while the
+      // primary key is not scoped to a project. Without this check, uploading
+      // a receipt you obtained from another team silently claims the row, and
+      // their own upload comes back "already had" while their summary never
+      // shows it. Tell them instead of swallowing it.
+      const owner = (await db`SELECT project_id FROM receipts WHERE id = ${r.id} LIMIT 1`) as { project_id: string }[];
+      if (owner[0] && owner[0].project_id !== who.projectId) {
+        rejected.push({ id: r.id, why: "this receipt id is already stored under a different project; receipts are content-addressed, so the same trial cannot belong to two projects" });
+        continue;
+      }
       const inserted = await db`
         INSERT INTO receipts (id, project_id, trial_at, verdict, reason, scenario, scenario_version, form, level,
                               rule_id, rule_text, rule_category, model, runtime, paperfence, repo_commit, cost_usd, body)

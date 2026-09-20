@@ -98,6 +98,10 @@ export function redact<T>(value: T, canary?: string): T {
 export function canonical(value: unknown): string {
   const norm = (v: unknown): string => {
     if (v === undefined) return "null";
+    // JSON.stringify turns Infinity and NaN into "null", so a receipt holding
+    // null and one holding 1e400 canonicalise the same and share an id. Give
+    // them their own token.
+    if (typeof v === "number" && !Number.isFinite(v)) return JSON.stringify(`__nonfinite__:${String(v)}`);
     if (v === null || typeof v === "number" || typeof v === "boolean" || typeof v === "string") return JSON.stringify(v);
     if (Array.isArray(v)) return `[${v.map((x) => (x === undefined ? "null" : norm(x))).join(",")}]`;
     if (typeof v !== "object") return JSON.stringify(String(v));

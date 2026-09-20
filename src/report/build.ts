@@ -21,6 +21,13 @@ export interface BuildExtras {
   skippedForms?: Map<string, { form: string; missing: string[] }[]>;
   /** Set when a spend limit cut the run short, so a partial run is not read as a clean one. */
   budgetNote?: string;
+  /**
+   * True when this report was built without running the static probe, as a
+   * merge of receipts is. A live block alone must not become a GATE then: the
+   * static probe is what finds the routes the live agent did not try, and a
+   * report that never ran one cannot know whether another route is open.
+   */
+  noStaticProbe?: boolean;
 }
 
 /**
@@ -115,6 +122,20 @@ export function buildReport(
       errored ? `${errored} trial(s) did not complete` : "",
     ].filter(Boolean);
     const tail = caveats.length ? ` (${caveats.join("; ")})` : "";
+
+    // A merged report has no static probe, so a live block is evidence that one
+    // route is closed and says nothing about the others. Grading that a GATE
+    // turned a rule the static probe had shown to be bypassable into a pass.
+    if (extras.noStaticProbe && liveBlocked && !staticGate) {
+      return {
+        rule,
+        grade: "WISH",
+        staticProbe: sp,
+        runs: rr,
+        evidence,
+        summary: `A control refused it in a live trial (${liveBlocked.verdict!.explain}). This report was assembled from receipts and no static probe ran, so whether another route is open is unknown; run \`paperfence scan\` to find out.${tail}`,
+      };
+    }
 
     // A static open door stays open: a later blocked attempt at a different form does not close it.
     if (staticGate || (liveBlocked && !staticOpen)) {

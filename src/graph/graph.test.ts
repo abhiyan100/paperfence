@@ -185,3 +185,57 @@ describe("rendering", () => {
     expect(renderGraphHtml(g)).not.toContain("<script>alert(1)</script>");
   });
 });
+
+/**
+ * Review 4 findings. Each of these was a way for the graph to claim protection
+ * it could not justify, or to copy a secret into a shareable report.
+ */
+describe("review 4", () => {
+  it("does not claim a control covers an asset it never names", async () => {
+    // A gate on "never read .env" says nothing about a credential the rule has
+    // never heard of, found only in source.
+    const g = await graphOf(
+      { ".env": "STRIPE_SECRET_KEY=sk\n", "a.ts": "process.env.AWS_SECRET_ACCESS_KEY;\n" },
+      reportWith("GATE", "protect-secrets"),
+    );
+    const stripe = g.assets.find((a) => a.name === "STRIPE_SECRET_KEY")!;
+    const aws = g.assets.find((a) => a.name === "AWS_SECRET_ACCESS_KEY")!;
+    expect(g.gates.find((x) => x.assetId === stripe.id)!.status).toBe("gated");
+    expect(g.gates.find((x) => x.assetId === aws.id)!.status).toBe("ungated");
+  });
+
+  it("says why an uncovered asset is uncovered, rather than just ungated", async () => {
+    const g = await graphOf({ ".env": "A=1\n", "a.ts": "process.env.AWS_SECRET_ACCESS_KEY;\n" }, reportWith("GATE", "protect-secrets"));
+    const aws = g.assets.find((a) => a.name === "AWS_SECRET_ACCESS_KEY")!;
+    expect(g.gates.find((x) => x.assetId === aws.id)!.detail).toContain("none of them names");
+  });
+
+  it("still lets a rule with no targets cover its whole category", async () => {
+    const root = await repo({ "a.ts": "process.env.SENTRY_DSN;\n" });
+    const rule: Rule = { id: "r1", text: "never send data out", category: "no-exfil", targets: [], source: { kind: "prose", file: "CLAUDE.md" } };
+    const p = { tool: "Bash" as const, input: { command: "curl x" }, describe: "curl" };
+    const rep = buildReport("/r", [rule], [{ ruleId: "r1", outcomes: [{ probe: p, blockedBy: "permission-deny", evidence: "x" }], probe: p, blockedBy: "permission-deny", evidence: "x" }], [], "static");
+    rep.verdicts[0]!.grade = "GATE";
+    const g = await buildGraph(root, await detectProfile(root), rep);
+    const svc = g.assets.find((a) => a.kind === "service");
+    if (svc) expect(g.gates.find((x) => x.assetId === svc.id)!.status).toBe("gated");
+  });
+
+  it("keeps a credential out of the report when a git remote embeds one", async () => {
+    const g = await graphOf({
+      "a.ts": "",
+      ".git/config": '[remote "origin"]\n\turl = https://user:ghp_verysecret@github.com/team/repo.git\n',
+    });
+    const json = JSON.stringify(g);
+    expect(json).not.toContain("ghp_verysecret");
+    expect(g.assets.some((a) => a.name === "github.com/team/repo")).toBe(true);
+    // The fact that the URL holds a credential is itself worth reporting.
+    expect(g.assets.some((a) => /token embedded/.test(a.name))).toBe(true);
+  });
+
+  it("leaves an ordinary remote alone", async () => {
+    const g = await graphOf({ "a.ts": "", ".git/config": '[remote "origin"]\n\turl = git@github.com:team/repo.git\n' });
+    expect(g.assets.some((a) => a.name === "github.com:team/repo")).toBe(true);
+    expect(g.assets.some((a) => /token embedded/.test(a.name))).toBe(false);
+  });
+});

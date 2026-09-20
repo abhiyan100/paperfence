@@ -1,5 +1,5 @@
 import type { RepoProfile } from "../repo/profile.js";
-import type { RuleCategory, ScanReport } from "../types.js";
+import type { RuleCategory, RuleVerdict, ScanReport } from "../types.js";
 import { AGENT_ID, discoverAssets, loadInventory } from "./discover.js";
 import type { Asset, CapabilityGraph, Gate } from "./types.js";
 
@@ -23,11 +23,39 @@ const GUARDS: Record<Asset["kind"], RuleCategory[]> = {
   ci: ["scope"],
 };
 
-function statusOf(report: ScanReport | undefined, categories: RuleCategory[]): Gate {
+/**
+ * Does this rule actually stand between an agent and this asset?
+ *
+ * Matching on category alone said that a gate on "never read `.env`" protected
+ * an `AWS_SECRET_ACCESS_KEY` that the rule had never heard of. A control
+ * covers an asset when it names it, names a file the asset was found in, or
+ * names nothing at all and so applies to the whole category.
+ */
+function covers(rule: RuleVerdict["rule"], asset: Asset): boolean {
+  const targets = rule.targets.map((t) => t.replace(/^!/, "").replace(/^`|`$/g, "").replace(/^\.\//, "").replace(/\/+$/, "")).filter(Boolean);
+  // A rule with no target is about the category as a whole: "never send data
+  // out", "no destructive commands". Those cover every asset of their kind.
+  if (!targets.length) return true;
+  const haystack = [asset.name, ...asset.evidence.map((e) => e.file)].map((x) => x.replace(/^\.\//, ""));
+  return targets.some((t) =>
+    haystack.some((h) => h === t || h.endsWith("/" + t) || h.startsWith(t + "/") || h.toLowerCase() === t.toLowerCase()),
+  );
+}
+
+function statusOf(report: ScanReport | undefined, categories: RuleCategory[], asset: Asset): Gate {
   if (!report) {
     return { assetId: "", categories, status: "unknown", detail: "no scan was run, so nothing is known about the controls here" };
   }
-  const relevant = report.verdicts.filter((v) => categories.includes(v.rule.category) && !v.restates);
+  const inCategory = report.verdicts.filter((v) => categories.includes(v.rule.category) && !v.restates);
+  const relevant = inCategory.filter((v) => covers(v.rule, asset));
+  if (inCategory.length && !relevant.length) {
+    return {
+      assetId: "",
+      categories,
+      status: "ungated",
+      detail: `this repository has ${inCategory.length} rule(s) about ${categories.join(" or ")}, and none of them names ${asset.name} or anywhere it was found`,
+    };
+  }
   if (!relevant.length) {
     return { assetId: "", categories, status: "ungated", detail: `this repository has no rule about ${categories.join(" or ")}, so nothing is even asked for` };
   }
@@ -91,7 +119,7 @@ export async function buildGraph(root: string, profile: RepoProfile, report?: Sc
 
   const gates: Gate[] = assets
     .filter((a) => a.id !== AGENT_ID)
-    .map((a) => ({ ...statusOf(report, GUARDS[a.kind] ?? []), assetId: a.id }));
+    .map((a) => ({ ...statusOf(report, GUARDS[a.kind] ?? [], a), assetId: a.id }));
 
   return { root, at: new Date().toISOString(), assets, edges, gates, blindSpots };
 }

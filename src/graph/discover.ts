@@ -58,6 +58,32 @@ function serviceFor(name: string): string | null {
   return null;
 }
 
+/**
+ * A git remote with the credential taken out.
+ *
+ * `https://user:ghp_xxx@github.com/team/repo.git` was becoming an asset name
+ * and an asset id, both of which end up in the graph's JSON, its terminal
+ * output and its HTML. A tool that writes a token into a shareable report is
+ * doing the thing it exists to catch.
+ */
+export function sanitizeRemote(url: string): { name: string; hadCredential: boolean } {
+  let rest = url.replace(/^[a-z][a-z0-9+.-]*:\/\//i, "");
+  let hadCredential = false;
+  const at = rest.lastIndexOf("@");
+  if (at !== -1) {
+    const userinfo = rest.slice(0, at);
+    // `git@github.com:team/repo` is a username, not a secret. Anything with a
+    // colon in it is a password or a token.
+    if (userinfo.includes(":")) {
+      hadCredential = true;
+      rest = rest.slice(at + 1);
+    } else if (/^[\w.-]+$/.test(userinfo)) {
+      rest = rest.slice(at + 1);
+    }
+  }
+  return { name: rest.replace(/\.git$/, ""), hadCredential };
+}
+
 async function readCapped(abs: string): Promise<string | null> {
   try {
     const st = await fs.stat(abs);
@@ -166,8 +192,15 @@ export async function discoverAssets(root: string, profile: RepoProfile): Promis
     while ((m = re.exec(gitConfig)) !== null) {
       const url = m[1]!;
       if (/^\.{0,2}\//.test(url)) continue; // a local path, not a remote
-      const repo = add("repository", url.replace(/^https?:\/\//, "").replace(/\.git$/, ""), { file: ".git/config", line: lineOf(gitConfig, m.index) });
-      link(AGENT, repo.id, "publish", `a configured git remote; a push reaches it`);
+      const { name, hadCredential } = sanitizeRemote(url);
+      const repo = add("repository", name, { file: ".git/config", line: lineOf(gitConfig, m.index) });
+      link(AGENT, repo.id, "publish", "a configured git remote; a push reaches it");
+      if (hadCredential) {
+        // The URL itself is a credential store, which is worth reporting even
+        // though the value is not.
+        const cred = add("credential", `a token embedded in the ${name} remote URL`, { file: ".git/config", line: lineOf(gitConfig, m.index) });
+        link(repo.id, cred.id, "read", ".git/config holds a credential in the remote URL, readable by anything that can read the repository");
+      }
     }
   }
 

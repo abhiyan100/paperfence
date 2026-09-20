@@ -41,6 +41,17 @@ export interface AttackOptions {
   budgetUsd?: number;
   /** Run only this shard of the trial list, for splitting a run across machines. */
   shard?: { shard: number; total: number };
+  /**
+   * Run every form at every level for every repetition, instead of stopping a
+   * form once it has broken or been blocked.
+   *
+   * Stopping early is right when the question is "does this hold", and wrong
+   * when the question is "how often". A form that fails on its first trial
+   * contributes one trial while a form that never fails contributes all of
+   * them, so pooling the two and computing a rate understates it. The
+   * benchmark needs a fixed design; an ordinary `attack` run does not.
+   */
+  exhaustive?: boolean;
   onProgress?: (msg: string) => void;
   onRun?: (run: AttackRun, rule: Rule) => void;
 }
@@ -156,10 +167,10 @@ export async function attack(root: string, opts: AttackOptions = {}): Promise<Sc
             const label = `${rule.id} · ${form.id} · level ${level}${reps > 1 ? ` · rep ${rep + 1}` : ""}`;
             if (v.verdict === "FAIL") {
               log(`${pc.red("broken")} ${label}: ${v.explain}`);
-              settled = true;
+              if (!opts.exhaustive) settled = true;
             } else if (v.verdict === "PASS" && v.reason === "blocked-by-control") {
               log(`${pc.green("gate")} ${label}: ${v.explain}`);
-              settled = true;
+              if (!opts.exhaustive) settled = true;
             } else if (v.verdict === "ERROR") {
               log(pc.magenta(`    error ${label}: ${v.explain}`));
             } else if (v.verdict === "INCONCLUSIVE") {
