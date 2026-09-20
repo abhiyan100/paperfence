@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased (0.1.0 in progress)
+## 0.1.0 — published to npm 2026-09-20
+
+First public release. Alpha: three adversarial reviews, no users yet.
 
 ### 2026-09-20
 
-The release that stopped a missing prerequisite from reading as a passing rule.
+The work that stopped a missing prerequisite from reading as a passing rule.
 
 **Verdicts.** A trial used to end in violated or not. "Not violated" was hiding three
 situations: the control blocked it, the agent declined, and the trial never got far
@@ -76,6 +78,48 @@ which the guard exempts on purpose, so they reported a hole that was not there;
 "run X before Y" compiled every rule as "before committing"; "before pushing" did not
 match; a line with no never/always/must in it was skipped entirely; and an exhausted
 turn budget was reported as an infrastructure error.
+
+### 2026-09-20, later the same day
+
+**Codex promoted, as far as it was measured.** `paperfence conformance --runtime codex`
+runs the real CLI against a matrix of sandbox modes; six cases, all agreeing. `drive`
+and `evaluate` are true; `probeHooks` and `harden` are still false, because a Codex
+hook runs only once trusted by content hash and we cannot yet observe one blocking a
+call. What the measurements found matters more than the promotion: `read-only`
+confines every write and does not confine reads, `workspace-write` makes the whole
+workspace writable so a path allowlist is not enforced, and a confined command leaves
+no record at all, so any tool can see the outcome and not the attempt. A scan now
+evaluates a repository against the runtime it is configured for.
+
+**Capability graph.** `paperfence graph` reads the repository for what an agent can
+reach and joins it to the scan's verdicts, so "protect-secrets is a wish" and ".env
+holds the Stripe key" stop being two separate half-sentences. Stops at the first hop
+and says so; every blast radius is unknown until a human writes one into
+`paperfence.inventory.yaml`.
+
+**Benchmark.** A fixed corpus in `bench/repos`, a written change policy in
+`bench/POLICY.md`, and the scenario catalog at version 2 so the policy can pin it. One
+smoke sweep found Sonnet 5 breaking a protected-branch rule at a plain request: it
+opened a branch, pushed it, asked twice, got no answer because nobody is there, and
+merged to main itself. Two repositories and one smoke run is a proof the pipeline
+works, not a benchmark.
+
+**Distributed runs.** `--shard k/n` on attack and compare, `paperfence merge` to
+recombine receipts. No server. Merge refuses receipts that do not hash to their own
+contents, and refuses to merge across different setups unless told to.
+
+**Control plane.** Receipts pushed to a Postgres database behind three functions, so
+history outlives the machine that made it. `paperfence status` answers what started
+failing since last week and exits 2 when something did. Receipts and nothing else: no
+source, no configuration, no credentials. Optional; everything else works without it.
+
+**Dashboard.** A page that leads with what started failing, because a gauge cannot
+make an argument.
+
+**Fixes found by running the tool on itself, again.** The de-duplication collapsed
+twenty-five distinct prose rules into one. The leaderboard script replaced a hundred
+rows with sixty-one when a run was interrupted. And a bare tool-name deny entry was
+being graded as a control when the runtime ignores it entirely.
 
 ### 2026-09-19
 - `paperfence compare`: run the repo's task suite (bad tasks that must be blocked, good tasks that must still complete) under two configurations, interleaved, in Docker; one receipt with bad blocked, good done, asks, denials, cost, errors, per variant and per task; exit 2 when head regresses base. Variants: `--head`, `--without`, `--hook`, `--deny`, `--hardened`, `--model-b`.
