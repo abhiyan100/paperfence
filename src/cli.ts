@@ -21,6 +21,9 @@ import { compilePolicy, unenforcedAnywhere, type TargetId } from "./policy/compi
 import { inferPolicy, loadPolicy, POLICY_PATH, renderPolicy } from "./policy/document.js";
 import { renderPolicyCheck } from "./policy/report.js";
 import { detectRuntimes } from "./runtimes/index.js";
+import { buildGraph, renderInventoryTemplate } from "./graph/build.js";
+import { renderGraphHtml, renderGraphTerminal } from "./graph/report.js";
+import { detectProfile } from "./repo/profile.js";
 import { CASES } from "./conformance/cases.js";
 import { predict, renderConformance, runConformance } from "./conformance/run.js";
 import type { VariantSpec } from "./compare/variants.js";
@@ -446,6 +449,54 @@ program
       process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
     }
     process.exitCode = report.disagreed > 0 || report.unstable > 0 ? 2 : 0;
+  });
+
+program
+  .command("graph")
+  .argument("[repo]", "path to the repo", ".")
+  .option("--no-scan", "skip the scan; list what is reachable without saying what stops it")
+  .option("--no-hooks", "do not execute the repo's hook scripts; what they might cover is reported as unknown")
+  .option("--unsafe-run-hooks", "execute hook scripts on this machine instead of in a container")
+  .option("--offline", "keyword heuristic for reading rule files")
+  .option("--init", `write a starting paperfence.inventory.yaml and stop`)
+  .option("--json <file>", "write the graph as JSON")
+  .option("--html <file>", "write the graph as HTML")
+  .description("What an agent working here can reach, and what each control actually protects.")
+  .action(async (repo: string, opts: { scan?: boolean; hooks?: boolean; unsafeRunHooks?: boolean; offline?: boolean; init?: boolean; json?: string; html?: string }) => {
+    const root = path.resolve(repo);
+    const profile = await detectProfile(root);
+    // Hooks are probed the same way `scan` probes them, in a container, because
+    // a generated guard hook is usually the only thing standing in front of
+    // these assets and skipping it would report every one of them as open.
+    const report =
+      opts.scan === false
+        ? undefined
+        : await scan(root, {
+            offline: opts.offline,
+            noHooks: opts.hooks === false,
+            unsafeRunHooks: opts.unsafeRunHooks,
+            onProgress: (m) => process.stderr.write(pc.dim(`  ${m}\n`)),
+          });
+    const graph = await buildGraph(root, profile, report);
+
+    if (opts.init) {
+      const p = path.join(root, "paperfence.inventory.yaml");
+      const exists = await fs.stat(p).then(() => true).catch(() => false);
+      if (exists) throw new Error("paperfence.inventory.yaml already exists; edit it, or delete it to start again");
+      await fs.writeFile(p, renderInventoryTemplate(graph));
+      process.stderr.write(pc.dim(`wrote paperfence.inventory.yaml with ${graph.assets.filter((a) => a.kind === "credential" || a.kind === "service").length} asset(s) to fill in\n`));
+      return;
+    }
+
+    process.stdout.write(renderGraphTerminal(graph));
+    if (opts.json) {
+      await fs.writeFile(opts.json, JSON.stringify(graph, null, 2));
+      process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    if (opts.html) {
+      await fs.writeFile(opts.html, renderGraphHtml(graph));
+      process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
+    }
   });
 
 program
