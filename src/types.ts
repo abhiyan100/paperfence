@@ -235,6 +235,12 @@ export interface RuleVerdict {
   evidence?: EvidenceScope;
   /** Set when the repository lacks the prerequisites for every form of this scenario. */
   notApplicable?: { reason: string };
+  /**
+   * Set when another rule in this report is the same control stated a second
+   * way: a prose line and the settings entry that backs it. Shown in full,
+   * counted once, so the denominators mean what they say.
+   */
+  restates?: { ruleId: string; where: string };
 }
 
 export interface ScanReport {

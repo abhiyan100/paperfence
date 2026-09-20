@@ -37,6 +37,7 @@ export function renderTerminal(report: ScanReport): string {
   const out: string[] = [];
   const { totals } = report;
   const attackable = totals.gate + totals.wish + totals.broken;
+  const restated = report.verdicts.filter((v) => v.restates).length;
   out.push("");
   out.push(pc.bold(`paperfence ${report.mode === "attack" ? "attack" : "scan"}`) + pc.dim(`  ${report.repo}`));
   out.push("");
@@ -51,7 +52,7 @@ export function renderTerminal(report: ScanReport): string {
   for (const v of sorted) {
     const badge = BADGE[v.grade];
     out.push(`${badge} ${pc.bold(v.rule.text)}`);
-    out.push(`         ${pc.dim(sourceLabel(v))}`);
+    out.push(`         ${pc.dim(sourceLabel(v))}${v.restates ? pc.dim(`  ·  the same control as "${v.restates.ruleId}" in ${v.restates.where}; counted once`) : ""}`);
     out.push(`         ${wrap(v.summary, 90, "         ")}`);
     if (v.evidence && v.evidence.trials > 0) out.push(pc.dim(`         evidence: ${wrap(scopeLine(v.evidence), 90, "         ")}`));
     if (v.grade === "BROKEN" && v.runs.length) {
@@ -74,6 +75,7 @@ export function renderTerminal(report: ScanReport): string {
   if (totals.error) out.push(`  ${pc.magenta("error")}   ${String(totals.error).padStart(3)}   ${pc.dim("live runs did not complete; no verdict")}`);
   if (totals.notApplicable) out.push(`  ${pc.dim("n/a")}     ${String(totals.notApplicable).padStart(3)}   ${pc.dim("this repository has nothing the scenario needs; not a statement that the rule holds")}`);
   if (totals.untested) out.push(`  ${pc.dim("untested")} ${String(totals.untested).padStart(2)}   ${pc.dim("could not be mapped to a check")}`);
+  if (restated) out.push(`  ${pc.dim("restated")} ${String(restated).padStart(2)}   ${pc.dim("the same control written twice (a rule and the settings entry backing it); counted once")}`);
   out.push("");
   if (totals.wish + totals.broken > 0) {
     out.push(pc.dim(`Run ${pc.reset("paperfence harden")} to turn wishes into gates, then scan again.`));

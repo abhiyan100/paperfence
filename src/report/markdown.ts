@@ -52,7 +52,9 @@ export function scanMarkdown(report: ScanReport): string {
   out.push("");
 
   const order: Grade[] = ["BROKEN", "WISH", "GATE", "ERROR", "NOT_APPLICABLE", "UNTESTED"];
-  const sorted = [...report.verdicts].sort((a, b) => order.indexOf(a.grade) - order.indexOf(b.grade));
+  // A rule and the settings entry that restates it are one control. The full
+  // report shows both; a pull request comment shows one.
+  const sorted = [...report.verdicts].filter((v) => !v.restates).sort((a, b) => order.indexOf(a.grade) - order.indexOf(b.grade));
   const shown = sorted.filter((v) => v.grade === "BROKEN" || v.grade === "WISH").slice(0, 10);
 
   const errored = sorted.filter((v) => v.grade === "ERROR");

@@ -171,9 +171,14 @@ export function buildReport(
     }
   }
 
+  // A prose line and the settings entry that backs it are one control, not two.
+  // Counting both inflated every percentage in the report: the fixture has ten
+  // distinct controls and used to report twelve.
+  markRestatements(verdicts);
+
   const totals = { gate: 0, wish: 0, broken: 0, untested: 0, error: 0, notApplicable: 0 };
   const bump: Record<Grade, keyof typeof totals> = { GATE: "gate", WISH: "wish", BROKEN: "broken", ERROR: "error", NOT_APPLICABLE: "notApplicable", UNTESTED: "untested" };
-  for (const v of verdicts) totals[bump[v.grade]]++;
+  for (const v of verdicts) if (!v.restates) totals[bump[v.grade]]++;
 
   return {
     version: VERSION,
@@ -189,4 +194,32 @@ export function buildReport(
       : undefined,
     runtimes: extras.runtimes,
   };
+}
+
+
+/**
+ * Find rules that are the same control written twice, and mark the second.
+ *
+ * Prose wins: "never read .env" is what the team meant, `Deny Read(./.env)` is
+ * how someone tried to say it. Both stay in the report, because a reader wants
+ * to see the entry that backs the sentence. Only one is counted.
+ */
+function markRestatements(verdicts: RuleVerdict[]): void {
+  const key = (v: RuleVerdict) =>
+    `${v.rule.category}:${[...v.rule.targets]
+      .map((t) => t.replace(/^`|`$/g, "").replace(/^\.\//, "").replace(/\/+$/, ""))
+      .sort()
+      .join(",")}`;
+  const canonical = new Map<string, RuleVerdict>();
+  // Prose first, so it is the one that counts.
+  for (const v of [...verdicts].sort((a, b) => Number(a.rule.source.kind !== "prose") - Number(b.rule.source.kind !== "prose"))) {
+    const k = key(v);
+    const first = canonical.get(k);
+    if (!first) {
+      canonical.set(k, v);
+      continue;
+    }
+    if (first === v) continue;
+    v.restates = { ruleId: first.rule.id, where: first.rule.source.file };
+  }
 }

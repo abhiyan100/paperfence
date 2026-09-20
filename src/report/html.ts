@@ -53,6 +53,7 @@ export function renderHtml(report: ScanReport): string {
   const pct = (n: number) => (attackable ? Math.round((100 * n) / attackable) : 0);
   const order: Grade[] = ["BROKEN", "WISH", "GATE", "ERROR", "UNTESTED"];
   const sorted = [...report.verdicts].sort((a, b) => order.indexOf(a.grade) - order.indexOf(b.grade));
+
   const repoName = report.repo.split("/").filter(Boolean).slice(-1)[0] ?? report.repo;
 
   const rows = sorted
@@ -61,7 +62,7 @@ export function renderHtml(report: ScanReport): string {
   <div class="badge">${GRADE_LABEL[v.grade]}</div>
   <div class="body">
     <h3>${esc(v.rule.text)}</h3>
-    <div class="src">${esc(sourceLabel(v))}</div>
+    <div class="src">${esc(sourceLabel(v))}${v.restates ? ` &middot; the same control as &ldquo;${esc(v.restates.ruleId)}&rdquo; in ${esc(v.restates.where)}, counted once` : ""}</div>
     <p>${esc(v.summary)}</p>
     ${runsHtml(v)}
   </div>
