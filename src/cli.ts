@@ -4,6 +4,7 @@ import path from "node:path";
 import pc from "picocolors";
 import { renderTerminal } from "./report/terminal.js";
 import { renderHtml } from "./report/html.js";
+import { compareMarkdown, scanMarkdown } from "./report/markdown.js";
 import { scan } from "./scan.js";
 import { attack } from "./attack/index.js";
 import { collectRules } from "./scan.js";
@@ -38,9 +39,10 @@ program
   .option("--unsafe-run-hooks", "execute hook scripts on this machine instead of in a container")
   .option("--json <file>", "also write the report as JSON")
   .option("--html <file>", "also write a self-contained HTML report")
+  .option("--markdown <file>", "also write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Static check: would anything mechanical stop the obvious violation of each rule?")
-  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; unsafeRunHooks?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { offline?: boolean; askCounts?: boolean; hooks?: boolean; unsafeRunHooks?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await scan(root, {
       offline: opts.offline,
@@ -57,6 +59,10 @@ program
     if (opts.html) {
       await fs.writeFile(opts.html, renderHtml(report));
       process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
+    }
+    if (opts.markdown) {
+      await fs.writeFile(opts.markdown, scanMarkdown(report) + "\n");
+      process.stderr.write(pc.dim(`wrote ${opts.markdown}\n`));
     }
     process.exitCode = report.totals.broken > 0 ? 2 : report.totals.error > 0 ? 3 : 0;
   });
@@ -77,9 +83,10 @@ program
   .option("--unsafe-host", "run the agent on this machine instead of in Docker (best-effort guard only; use in a VM)")
   .option("--json <file>", "also write the report as JSON")
   .option("--html <file>", "also write a self-contained HTML report")
+  .option("--markdown <file>", "also write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Live check: a coding agent, running with this repo's own rules, is asked to break each one.")
-  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { model?: string; level: string; maxTurns: string; rule?: string[]; reps: string; form?: string[]; receipts?: boolean; category?: string[]; offline?: boolean; keepSandbox?: boolean; unsafeHost?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const report = await attack(root, {
       model: opts.model,
@@ -103,6 +110,10 @@ program
     if (opts.html) {
       await fs.writeFile(opts.html, renderHtml(report));
       process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
+    }
+    if (opts.markdown) {
+      await fs.writeFile(opts.markdown, scanMarkdown(report) + "\n");
+      process.stderr.write(pc.dim(`wrote ${opts.markdown}\n`));
     }
     process.exitCode = report.totals.broken > 0 ? 2 : report.totals.error > 0 ? 3 : 0;
   });
@@ -146,7 +157,27 @@ program
     out.push("");
     for (const n of plan.notes) out.push(pc.dim(`  note: ${n}`));
     if (plan.notes.length) out.push("");
-    if (!opts.dryRun) {
+    if (opts.dryRun) {
+      out.push(pc.bold("Files this would write"));
+      for (const f of result.patch) {
+        const lines = f.after.split("\n").length;
+        out.push(`  ${f.before === null ? pc.green("new ") : pc.yellow("edit")} ${f.path} ${pc.dim(`(${lines} line${lines === 1 ? "" : "s"})`)}`);
+      }
+      out.push("");
+      for (const f of result.patch) {
+        // The guard is the same generated file every time; printing four
+        // hundred lines of it buries the part that is specific to this repo.
+        if (f.path.endsWith("paperfence-guard.cjs")) {
+          out.push(pc.bold(f.path) + pc.dim("  the generated guard, identical for every repo; what it enforces is policy.json below"));
+          out.push("");
+          continue;
+        }
+        out.push(pc.bold(f.path));
+        for (const line of f.after.replace(/\n$/, "").split("\n")) out.push(pc.dim("  ") + line);
+        out.push("");
+      }
+      out.push(pc.dim("Nothing was written. Run without --dry-run to apply."));
+    } else {
       out.push(pc.dim(`wrote ${result.wrote.join(", ")}`));
       out.push(pc.dim(`Run ${pc.reset("paperfence scan")} again to see the difference.`));
     }
@@ -171,9 +202,10 @@ program
   .option("--offline", "keyword heuristic for reading rule files")
   .option("--json <file>", "write the receipt as JSON")
   .option("--html <file>", "write the receipt as HTML")
+  .option("--markdown <file>", "write a Markdown summary for a pull request comment or CI job summary")
   .option("-q, --quiet", "no progress output")
   .description("Can this config change be merged? Run bad tasks (must be blocked) and good tasks (must still work) under base and head.")
-  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; offline?: boolean; json?: string; html?: string; quiet?: boolean }) => {
+  .action(async (repo: string, opts: { head?: string; without?: string[]; hook?: string; deny?: string[]; hardened?: boolean; modelB?: string; model?: string; reps: string; level: string; maxTurns: string; only?: string[]; offline?: boolean; json?: string; html?: string; markdown?: string; quiet?: boolean }) => {
     const root = path.resolve(repo);
     const headSpec: VariantSpec = { name: "head", offline: opts.offline };
     let any = false;
@@ -202,6 +234,10 @@ program
     if (opts.html) {
       await fs.writeFile(opts.html, renderCompareHtml(report));
       process.stderr.write(pc.dim(`wrote ${opts.html}\n`));
+    }
+    if (opts.markdown) {
+      await fs.writeFile(opts.markdown, compareMarkdown(report) + "\n");
+      process.stderr.write(pc.dim(`wrote ${opts.markdown}\n`));
     }
     const head = report.summaries[1]!;
     const base = report.summaries[0]!;

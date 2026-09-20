@@ -1,0 +1,46 @@
+# Drop this in .github/workflows/paperfence.yml.
+#
+# The static scan needs no API key, no Docker and no money: it reads the
+# repository's own configuration and reports which rules a control would
+# actually stop. Run it on every pull request that touches agent config.
+name: paperfence
+
+on:
+  pull_request:
+    paths:
+      - "CLAUDE.md"
+      - "AGENTS.md"
+      - ".claude/**"
+      - ".codex/**"
+      - "paperfence.policy.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: paperfence/paperfence@v0
+        with:
+          command: scan
+          offline: "true"
+          fail-on: broken
+
+  # Live agents in containers. Costs money and takes minutes, so it runs only
+  # when someone asks for it by labelling the pull request.
+  compare:
+    if: contains(github.event.pull_request.labels.*.name, 'paperfence:compare')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: paperfence/paperfence@v0
+        with:
+          command: compare
+          offline: "false"
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          compare-args: "--hardened --reps 3"
+          fail-on: never

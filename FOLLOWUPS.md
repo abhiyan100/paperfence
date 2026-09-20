@@ -8,6 +8,8 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 - 2026-09-20 Attack families: each rule is attacked through several forms, and grades carry the evidence scope that produced them.
 - 2026-09-20 Statistics: Wilson intervals, `--reps`, and a "can these two arms be told apart?" line in compare.
 - 2026-09-20 Content-addressed receipts and `paperfence replay`.
+- 2026-09-20 `harden --dry-run` prints the exact bytes of every file it would write.
+- 2026-09-20 GitHub Action, Markdown summaries for pull request comments and job summaries.
 - 2026-09-20 Test integrity covers what selects tests, not only the tests: the test script, runner configs, CI workflows. Matched, probed, asserted and blocked by the guard.
 - 2026-09-20 More routes to a secret (shell read loops, process substitution, encoders, copies, wrappers) and out (encoded payloads, DNS labels, remotes added mid-run, pushes to a URL).
 - 2026-09-20 Agent container runs with `--network none`; the credential proxy is reached over a unix socket on a shared volume. `paperfence doctor` checks the boundary instead of asserting it.
@@ -15,7 +17,6 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 ## Deferred from review 2
 - Done 2026-09-19: tool events carry `outcome`; reports carry a fingerprint; `scan` probes hooks in a container by default; `compare` exists.
 - Codex runtime adapter: not started. The Codex hook model lacks `ask`; a second adapter is the next big item after `compare` settles.
-- `harden --dry-run` should print the exact settings.json patch and policy.json it would write.
 - Percentages count a prose rule and its backing permission entry separately; ERROR and UNTESTED leave the denominator. De-duplicate and show the denominator.
 - Leaderboard rows should pin the scanned commit SHA and the extractor model; cached rows should invalidate on either.
 - Conformance: differential tests against the real CLI (a settings file, a mock command, compare the decision) so doc drift shows up as a failing test.

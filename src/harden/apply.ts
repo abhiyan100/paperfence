@@ -16,6 +16,8 @@ export interface ApplyResult {
   wrote: string[];
   addedDeny: string[];
   hookRegistered: boolean;
+  /** Every file this would write, as path -> exact contents. Populated on a dry run so the diff is reviewable before anything lands. */
+  patch: { path: string; before: string | null; after: string }[];
 }
 
 const HOOK_CMD = "node .claude/hooks/paperfence-guard.cjs";
@@ -60,21 +62,37 @@ export async function applyHardening(root: string, plan: HardenPlan, opts: { dry
     }
   }
 
+  // Everything this call would write, computed the same way whether or not we
+  // write it, so a dry run shows the bytes that would land rather than a
+  // summary of them.
+  const guardBody = renderHookScript();
+  const policyBody = JSON.stringify(plan.policy, null, 2) + "\n";
+  const settingsBody = JSON.stringify(settings, null, 2) + "\n";
+  const gi = path.join(root, ".gitignore");
+  const gitignoreBefore = await fs.readFile(gi, "utf8").catch(() => null);
+  const needsGitignore = !(gitignoreBefore ?? "").split("\n").some((l) => l.trim() === ".claude/.paperfence-session-*.json");
+  const gitignoreBody = ((gitignoreBefore ?? "").trimEnd() + "\n.claude/.paperfence-session-*.json\n").replace(/^\n/, "");
+
+  const patch: ApplyResult["patch"] = [
+    { path: ".claude/hooks/paperfence-guard.cjs", before: await fs.readFile(path.join(hooksDir, "paperfence-guard.cjs"), "utf8").catch(() => null), after: guardBody },
+    { path: ".claude/hooks/policy.json", before: await fs.readFile(path.join(hooksDir, "policy.json"), "utf8").catch(() => null), after: policyBody },
+    { path: ".claude/settings.json", before: raw, after: settingsBody },
+    ...(needsGitignore ? [{ path: ".gitignore", before: gitignoreBefore, after: gitignoreBody }] : []),
+  ].filter((f) => f.before !== f.after);
+
   if (!opts.dryRun) {
     await fs.mkdir(hooksDir, { recursive: true });
-    await fs.writeFile(path.join(hooksDir, "paperfence-guard.cjs"), renderHookScript(), { mode: 0o755 });
+    await fs.writeFile(path.join(hooksDir, "paperfence-guard.cjs"), guardBody, { mode: 0o755 });
     wrote.push(".claude/hooks/paperfence-guard.cjs");
-    await fs.writeFile(path.join(hooksDir, "policy.json"), JSON.stringify(plan.policy, null, 2) + "\n");
+    await fs.writeFile(path.join(hooksDir, "policy.json"), policyBody);
     wrote.push(".claude/hooks/policy.json");
-    await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2) + "\n");
+    await fs.writeFile(settingsPath, settingsBody);
     wrote.push(".claude/settings.json");
     // Session state file the hook uses for "tests before commit". Keep it out of git.
-    const gi = path.join(root, ".gitignore");
-    const existing = await fs.readFile(gi, "utf8").catch(() => "");
-    if (!existing.split("\n").some((l) => l.trim() === ".claude/.paperfence-session-*.json")) {
-      await fs.writeFile(gi, existing.trimEnd() + "\n.claude/.paperfence-session-*.json\n");
+    if (needsGitignore) {
+      await fs.writeFile(gi, gitignoreBody);
       wrote.push(".gitignore");
     }
   }
-  return { wrote, addedDeny, hookRegistered };
+  return { wrote, addedDeny, hookRegistered, patch };
 }

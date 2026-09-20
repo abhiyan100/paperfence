@@ -1,0 +1,151 @@
+name: paperfence
+description: Check whether this repository's agent rules are enforced by anything, and comment the result on the pull request.
+author: paperfence
+
+branding:
+  icon: shield
+  color: yellow
+
+inputs:
+  command:
+    description: >
+      Which check to run. "scan" is static and needs no model or Docker.
+      "compare" runs real agents in containers and costs money, so it is opt-in.
+    default: scan
+  repo:
+    description: Path to the repository to check, relative to the workspace.
+    default: "."
+  offline:
+    description: Read rule files with a keyword heuristic instead of a model. No API key needed.
+    default: "true"
+  anthropic-api-key:
+    description: >
+      Required unless offline is true. Used to read the rule files, and, for compare,
+      to run the agents. Pass a secret, never a literal.
+    required: false
+  comment:
+    description: Post the result as a pull request comment, updating the same comment each run.
+    default: "true"
+  fail-on:
+    description: >
+      When to fail the job: "broken" (a rule was violated in a live run), "wish" (any rule
+      has nothing mechanical behind it), or "never".
+    default: broken
+  compare-args:
+    description: Extra arguments for compare, for example "--hardened --reps 3".
+    default: "--hardened"
+
+outputs:
+  markdown:
+    description: The Markdown summary, as written to the job summary.
+    value: ${{ steps.run.outputs.markdown }}
+  broken:
+    description: How many rules were violated in a live run.
+    value: ${{ steps.run.outputs.broken }}
+  wishes:
+    description: How many rules have nothing mechanical behind them.
+    value: ${{ steps.run.outputs.wishes }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+
+    - name: Install paperfence
+      shell: bash
+      run: npm install -g paperfence@latest
+
+    - name: Run
+      id: run
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+      run: |
+        set -o pipefail
+        offline=""
+        if [ "${{ inputs.offline }}" = "true" ]; then offline="--offline"; fi
+
+        case "${{ inputs.command }}" in
+          scan)
+            paperfence scan "${{ inputs.repo }}" $offline \
+              --json paperfence.json --markdown paperfence.md || true
+            ;;
+          attack)
+            paperfence attack "${{ inputs.repo }}" $offline \
+              --json paperfence.json --markdown paperfence.md || true
+            ;;
+          compare)
+            paperfence compare "${{ inputs.repo }}" $offline ${{ inputs.compare-args }} \
+              --json paperfence.json --markdown paperfence.md || true
+            ;;
+          *)
+            echo "unknown command: ${{ inputs.command }}" >&2
+            exit 1
+            ;;
+        esac
+
+        # The report is the artifact; the exit code is decided below from its
+        # contents, so a non-zero scan does not hide the summary.
+        broken=$(node -e 'const r=require("./paperfence.json");process.stdout.write(String(r.totals?.broken ?? 0))')
+        wishes=$(node -e 'const r=require("./paperfence.json");process.stdout.write(String(r.totals?.wish ?? 0))')
+        echo "broken=$broken" >> "$GITHUB_OUTPUT"
+        echo "wishes=$wishes" >> "$GITHUB_OUTPUT"
+        {
+          echo "markdown<<PAPERFENCE_EOF"
+          cat paperfence.md
+          echo "PAPERFENCE_EOF"
+        } >> "$GITHUB_OUTPUT"
+        cat paperfence.md >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload the report
+      uses: actions/upload-artifact@v4
+      with:
+        name: paperfence-report
+        path: |
+          paperfence.json
+          paperfence.md
+        if-no-files-found: warn
+
+    - name: Comment on the pull request
+      if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require("fs");
+          const body = fs.readFileSync("paperfence.md", "utf8") + "\n\n<!-- paperfence -->";
+          const { owner, repo } = context.repo;
+          const issue_number = context.payload.pull_request.number;
+          // One comment per pull request, edited in place, so a long-running
+          // branch does not collect a wall of them.
+          const existing = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+          const mine = existing.find((c) => c.user.type === "Bot" && c.body.includes("<!-- paperfence -->"));
+          if (mine) await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
+          else await github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+    - name: Decide the outcome
+      shell: bash
+      run: |
+        broken="${{ steps.run.outputs.broken }}"
+        wishes="${{ steps.run.outputs.wishes }}"
+        case "${{ inputs.fail-on }}" in
+          broken)
+            if [ "$broken" -gt 0 ]; then
+              echo "::error::$broken rule(s) were violated in a live run."
+              exit 1
+            fi
+            ;;
+          wish)
+            if [ "$broken" -gt 0 ] || [ "$wishes" -gt 0 ]; then
+              echo "::error::$broken broken, $wishes with nothing mechanical behind them."
+              exit 1
+            fi
+            ;;
+          never) ;;
+          *)
+            echo "unknown fail-on: ${{ inputs.fail-on }}" >&2
+            exit 1
+            ;;
+        esac
