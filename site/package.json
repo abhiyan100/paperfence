@@ -1,0 +1,11 @@
+{
+  "name": "paperfence-site",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

@@ -17,6 +17,7 @@ import { listReceipts, verifyReceipt } from "./receipt.js";
 import { dockerAvailable, verifyIsolation } from "./sandbox/docker.js";
 import { renderReplay, replay } from "./replay.js";
 import { allReceiptIds, mergeReceipts, mergeSummary, parseShard } from "./merge.js";
+import { createProject, push, renderSummary, summary } from "./control/client.js";
 import { compilePolicy, unenforcedAnywhere, type TargetId } from "./policy/compile.js";
 import { inferPolicy, loadPolicy, POLICY_PATH, renderPolicy } from "./policy/document.js";
 import { renderPolicyCheck } from "./policy/report.js";
@@ -568,6 +569,61 @@ program
     await fs.mkdir(path.dirname(out), { recursive: true });
     await fs.writeFile(out, JSON.stringify(report, null, 2));
     process.stderr.write(pc.dim(`wrote ${path.relative(root, out)}\n`));
+  });
+
+program
+  .command("push")
+  .argument("[repo]", "path to the repo whose receipts to send", ".")
+  .option("--endpoint <url>", "control plane to send to (default: PAPERFENCE_ENDPOINT, then the hosted one)")
+  .option("--token <token>", "project write token (default: PAPERFENCE_TOKEN)")
+  .option("-q, --quiet", "no progress output")
+  .description("Send this repo's receipts to a control plane, so history survives the machine that made it.")
+  .action(async (repo: string, opts: { endpoint?: string; token?: string; quiet?: boolean }) => {
+    const root = path.resolve(repo);
+    const r = await push(root, {
+      endpoint: opts.endpoint,
+      token: opts.token,
+      onProgress: opts.quiet ? undefined : (m) => process.stderr.write(pc.dim(`  ${m}\n`)),
+    });
+    const out: string[] = [""];
+    if (!r.sent) {
+      out.push(pc.dim("  No receipts to send. `paperfence attack` writes one per trial."));
+    } else {
+      out.push(`  ${pc.green(String(r.stored))} new of ${r.sent} sent${r.project ? pc.dim(` · ${r.project}`) : ""}`);
+      if (r.alreadyHad) out.push(pc.dim(`  ${r.alreadyHad} were already there; a receipt id is the hash of its contents, so sending twice stores once.`));
+    }
+    for (const s of r.skipped) out.push(`  ${pc.red("skipped")} ${s.id}: ${s.why}`);
+    for (const s of r.rejected) out.push(`  ${pc.yellow("rejected")} ${s.id}: ${s.why}`);
+    out.push("");
+    process.stdout.write(out.join("\n"));
+  });
+
+program
+  .command("status")
+  .option("--endpoint <url>", "control plane to ask (default: PAPERFENCE_ENDPOINT, then the hosted one)")
+  .option("--token <token>", "project token (default: PAPERFENCE_TOKEN)")
+  .option("--days <n>", "how far back to look", "7")
+  .option("--json", "print the raw summary")
+  .description("What changed since last week: rules that started failing, and what has been running.")
+  .action(async (opts: { endpoint?: string; token?: string; days: string; json?: boolean }) => {
+    const s = await summary({ endpoint: opts.endpoint, token: opts.token, days: Number(opts.days) });
+    process.stdout.write(opts.json ? JSON.stringify(s, null, 2) + "\n" : renderSummary(s));
+    process.exitCode = s.newlyBroken.length ? 2 : 0;
+  });
+
+const project = program.command("project").description("Projects on a control plane.");
+
+project
+  .command("create")
+  .argument("<name>", "a name for the project, usually the repository")
+  .option("--endpoint <url>", "control plane to create it on")
+  .description("Create a project and mint its write token. Needs the deployment's admin token.")
+  .action(async (name: string, opts: { endpoint?: string }) => {
+    const r = await createProject(name, { endpoint: opts.endpoint });
+    const out = ["", pc.bold(`created ${r.name}`), "", `  id     ${r.id}`, `  token  ${pc.bold(r.token)}`, ""];
+    out.push(pc.dim("  The token is shown once and is not stored; only its hash is. Put it in CI as PAPERFENCE_TOKEN."));
+    out.push("");
+    process.stdout.write(out.join("\n"));
   });
 
 program
