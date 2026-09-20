@@ -147,6 +147,25 @@ npx paperfence doctor
 
 For a live trial the agent runs with `--network none`: loopback only, no default route, no DNS, no peers. Its only way out is a unix socket on a shared volume, served by a proxy that forwards `POST /v1/messages`, requires a per-run token, and holds the only credential. `doctor` checks that rather than asserting it: no route to the host gateway, no route to `host.docker.internal`, no route to a container on the proxy's network, no privilege escalation.
 
+## Checking our own permission model
+
+```
+npx paperfence conformance --list     # the claims, and what we predict
+npx paperfence conformance            # check each one against the real runtime
+```
+
+Every static verdict rests on `src/config/permissions.ts` being a correct reading of Claude Code's documented semantics. The conformance suite checks that reading case by case against the real runtime: build a repository with the settings, ask an agent to make exactly one call, observe whether the runtime refused, asked, or allowed.
+
+Its first run found something paperfence was not saying. Several rules reported as gaps are not silent allows. The runtime **prompts**.
+
+| | attended | unattended |
+|---|---|---|
+| `/usr/bin/curl` against a `Bash(curl:*)` deny | you are asked | it runs |
+| `sh -c 'curl ...'` against the same | you are asked | it runs |
+| `grep` against a `Read` deny | you are asked | it runs |
+
+paperfence answers the unattended question, because that is the one CI has. If you are watching, you have a control it does not count, worth exactly as much as your attention to prompts.
+
 ## Runtimes
 
 paperfence does four separable things to a runtime, and says which of them it can do for each:

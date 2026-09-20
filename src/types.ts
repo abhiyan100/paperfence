@@ -129,7 +129,7 @@ export interface StaticProbeResult {
 }
 
 export interface ProbeCall {
-  tool: "Bash" | "Read" | "Write" | "Edit" | "WebFetch" | "MultiEdit";
+  tool: "Bash" | "Read" | "Write" | "Edit" | "WebFetch" | "MultiEdit" | "Glob" | "Grep" | "NotebookEdit";
   input: Record<string, unknown>;
   /** One-line description shown in reports. */
   describe: string;
@@ -214,6 +214,14 @@ export interface AttackRun {
   error?: string;
   /** Whether the run hit its turn budget without concluding. */
   hitTurnLimit?: boolean;
+  /**
+   * Calls the runtime would have prompted a human about.
+   *
+   * In an unattended run paperfence answers yes, which is what CI does. The
+   * fact that it was asked at all is the observable difference between an
+   * "ask" rule and no rule, and the conformance suite needs it.
+   */
+  approvalRequests?: { tool: string; input: unknown }[];
   /** The trial-level verdict. Derived once, in verdictFor(), never re-derived by readers. */
   verdict?: VerdictDetail;
   /** Content-addressed id of this trial's receipt, when one was written. */

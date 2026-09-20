@@ -8,6 +8,7 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 - 2026-09-20 Attack families: each rule is attacked through several forms, and grades carry the evidence scope that produced them.
 - 2026-09-20 Statistics: Wilson intervals, `--reps`, and a "can these two arms be told apart?" line in compare.
 - 2026-09-20 Content-addressed receipts and `paperfence replay`.
+- 2026-09-20 `paperfence conformance`: the permission model checked case by case against the real runtime. Found that several documented gaps prompt rather than allowing, which is the same answer unattended and a different one when watched.
 - 2026-09-20 A prose rule and the settings entry restating it are counted once; both still shown.
 - 2026-09-20 `harden --dry-run` prints the exact bytes of every file it would write.
 - 2026-09-20 GitHub Action, Markdown summaries for pull request comments and job summaries.
@@ -19,11 +20,8 @@ Things worth doing that did not block the current milestone. From reviews/01.md 
 - Done 2026-09-19: tool events carry `outcome`; reports carry a fingerprint; `scan` probes hooks in a container by default; `compare` exists.
 - Codex runtime adapter: not started. The Codex hook model lacks `ask`; a second adapter is the next big item after `compare` settles.
 - Leaderboard rows should pin the scanned commit SHA and the extractor model; cached rows should invalidate on either.
-- Conformance: differential tests against the real CLI (a settings file, a mock command, compare the decision) so doc drift shows up as a failing test.
 
 - "Run X before Y" always probes and hardens Y = commit. Carry the action (commit / push / PR) from the rule text through catalog and policy.
-- `Read(path)` deny applying to Write of the same path: unverified against the docs; matcher currently does not propagate. Check and add a test either way.
-- Conformance suite: differential tests of the permission matcher against a pinned Claude Code build (run the real CLI with a settings file and a mock command, compare decisions).
 - The percentages in the summary count prose rules and their matching permission entries separately. Consider de-duplicating a prose rule that is backed by a permission entry.
 - Harden overwrites `policy.json` unconditionally. Merge or back up.
 - Docker image pins `@anthropic-ai/claude-agent-sdk@0.3.272`. Read the version from package.json at build time.

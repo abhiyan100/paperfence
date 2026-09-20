@@ -32,9 +32,20 @@ A container that died says nothing about your policy. Nor does an agent that use
 
 `paperfence replay` re-runs the same repository, scenario version, form, level, model and turn budget. It cannot re-run the agent. A replay that comes out differently is a fact about the agent, and the output says which parts of the setup drifted so you can tell the two apart.
 
-## The permission model is a reading of the documentation
+## The permission model is checked against the runtime, and answers the unattended question
 
-`src/config/permissions.ts` implements Claude Code's permission semantics as documented, and the tests encode that reading. Where the documentation and the tool disagree, the fix is a failing test here, not a quiet adjustment. A conformance suite that diffs our decisions against the real CLI is not written yet, and until it is, the static verdicts are as good as our reading.
+`src/config/permissions.ts` implements Claude Code's permission semantics as documented. `paperfence conformance` checks that reading against the real runtime, case by case, and a runtime change shows up as a failing claim rather than as a silently wrong report.
+
+One result from it matters enough to state here. Several rules paperfence reports as gaps are not silent allows: the runtime **prompts**.
+
+| | attended session | unattended run |
+|---|---|---|
+| `/usr/bin/curl` against a `Bash(curl:*)` deny | the developer is asked | it runs |
+| `sh -c 'curl ...'` against the same | the developer is asked | it runs |
+| `grep` against a `Read` deny | the developer is asked | it runs |
+| an edit outside an `Edit(dir/**)` deny | the developer is asked | it runs |
+
+paperfence answers the unattended question, because that is the one CI has and the one nobody is watching. If you are sitting at a terminal with approvals on, you have a control paperfence does not count, and it is exactly as reliable as you are at reading prompts.
 
 ## `harden` changes what two rules mean
 

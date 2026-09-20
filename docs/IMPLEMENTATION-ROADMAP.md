@@ -35,7 +35,7 @@ Debt, in priority order:
 | 6 | Test integrity beyond byte equality; secret access paths and encoded exfiltration | done |
 | 7 | GitHub Action + PR summary | done |
 | 8 | Docs: threat model, limitations, decisions; README refresh | done |
-| 9 | Conformance suite against the real CLI | next |
+| 9 | Conformance suite against the real CLI | done; ADR 0008 |
 | 10 | Control plane, runners, web dashboard, capability graph, public benchmark | deferred with reasons; ADR 0007 |
 
 Rule: no UI on top of unstable semantics. Slices 1–3 before anything user-facing beyond the CLI.
@@ -53,9 +53,8 @@ find. See `reviews/03.md`.
 
 ## Still open
 
-- Conformance suite against the real Claude Code CLI. Highest value of anything
-  unbuilt: it is what promotes the Codex adapter past discovery, and what keeps
-  the permission matcher honest as the runtime changes.
+- Codex conformance cases, which is what would promote that adapter past
+  discovery.
 - Publishing to npm, without which the GitHub Action cannot run elsewhere.
 - Leaderboard rows do not pin the scanned commit or the extractor model.
 - The Dockerfile pins the SDK version by hand rather than reading package.json.

@@ -20,6 +20,8 @@ import { compilePolicy, unenforcedAnywhere, type TargetId } from "./policy/compi
 import { inferPolicy, loadPolicy, POLICY_PATH, renderPolicy } from "./policy/document.js";
 import { renderPolicyCheck } from "./policy/report.js";
 import { detectRuntimes } from "./runtimes/index.js";
+import { CASES } from "./conformance/cases.js";
+import { predict, renderConformance, runConformance } from "./conformance/run.js";
 import type { VariantSpec } from "./compare/variants.js";
 import type { PressureLevel } from "./types.js";
 
@@ -364,6 +366,40 @@ policy
       process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
     }
     process.exitCode = unenforced.filter((s) => !s.statement.acceptAsGuidance).length > 0 ? 2 : 0;
+  });
+
+program
+  .command("conformance")
+  .option("--only <ids...>", "run only these case ids")
+  .option("--model <model>", "model that drives the runtime (default claude-sonnet-5)")
+  .option("--max-turns <n>", "turn budget per case", "6")
+  .option("--list", "list the cases and what paperfence predicts, without running anything")
+  .option("--json <file>", "write the result as JSON")
+  .description("Check paperfence's reading of Claude Code's permission rules against the real runtime.")
+  .action(async (opts: { only?: string[]; model?: string; maxTurns: string; list?: boolean; json?: string }) => {
+    if (opts.list) {
+      const out = ["", pc.bold(`${CASES.length} conformance cases`), ""];
+      for (const c of CASES) {
+        out.push(`  ${pc.bold(c.id.padEnd(28))} ${pc.dim("predicts")} ${predict(c, "/repo").padEnd(6)} ${c.gap ? pc.yellow("gap ") : "    "} ${c.claim}`);
+      }
+      out.push("");
+      out.push(pc.dim("A case marked gap pins something the runtime allows that a reader might expect it to refuse."));
+      out.push("");
+      process.stdout.write(out.join("\n"));
+      return;
+    }
+    const report = await runConformance({
+      only: opts.only,
+      model: opts.model,
+      maxTurns: Number(opts.maxTurns),
+      onProgress: (m) => process.stderr.write(`  ${m}\n`),
+    });
+    process.stdout.write(renderConformance(report));
+    if (opts.json) {
+      await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
+      process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+    }
+    process.exitCode = report.disagreed > 0 ? 2 : 0;
   });
 
 program

@@ -107,6 +107,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
   const guardBlocks: string[] = [];
   let finalText = "";
   let turns = 0;
+  const approvalRequests: { tool: string; input: unknown }[] = [];
   let costUsd: number | undefined;
   let error: string | undefined;
   const startedAt = Date.now();
@@ -125,8 +126,13 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
         settingSources: ["project", "local"],
         systemPrompt: { type: "preset", preset: "claude_code" },
         // A user who approves everything. That is how unattended runs behave.
+        // Being asked at all is recorded: it is the only observable difference
+        // between a permissions.ask rule and no rule.
         permissionMode: "default",
-        canUseTool: async (_toolName, input) => ({ behavior: "allow", updatedInput: input }),
+        canUseTool: async (toolName, input) => {
+          approvalRequests.push({ tool: toolName, input });
+          return { behavior: "allow", updatedInput: input };
+        },
         hooks,
         // Minimal environment: the agent must not inherit this machine's tokens and keys.
         env: minimalEnv(sb),
@@ -210,6 +216,7 @@ export async function runAdversary(rule: Rule, level: PressureLevel, objective: 
     startedAt,
     endedAt: Date.now(),
     events,
+    approvalRequests,
     finalText: finalText.trim().slice(0, 4000),
     mechanicallyBlocked: blockEvidence.length > 0,
     blockEvidence: [...blockEvidence, ...attempted],
