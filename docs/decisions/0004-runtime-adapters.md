@@ -34,9 +34,28 @@ Two facts a reader of a paperfence report needs, which the adapter reports today
 
 Guessing at the decision procedure would produce confident wrong answers. The adapter reads the configuration, names what it found, names what it did not look at, and stops.
 
-## What promotes Codex to evaluate and drive
+## Codex was promoted on 2026-09-20, and only as far as the measurements go
 
-A conformance suite: drive the real `codex exec` against a matrix of configurations and commands, and diff our predicted decision against the observed one. Same for the hook payload shape. Until those pass, `support.evaluate` stays false.
+`paperfence conformance --runtime codex` runs the real CLI against a matrix of sandbox modes. Six cases, all agreeing. On that basis `drive` and `evaluate` are now true, and `probeHooks` and `harden` are still false.
+
+What the measurements established:
+
+- Under `read-only`, every write fails, including outside the workspace, and **reads are not confined**. A Codex repository whose rule says "never read .env" gets nothing from its sandbox.
+- Under `workspace-write`, the whole workspace is writable. The sandbox cannot express a path allowlist inside it, so a "only touch src/" rule is not enforced by it either.
+- Under `danger-full-access`, nothing is confined.
+
+Two limits came out of the same work and are now in the adapter's own notes:
+
+- **Codex confines rather than refusing.** A command runs inside a restricted environment and the operation fails; nothing is recorded as denied. So "blocked" for Codex means the effect did not happen, which is the only question a confinement can be asked.
+- **A confined command leaves no record.** When the sandbox blocks a write, `codex exec --json` emits no `command_execution` item at all: the stream shows the agent saying the write failed and nothing else. paperfence can see that the effect did not happen and cannot see what was attempted. That is a limit on what any tool can report about a Codex run, not only this one.
+
+Hooks remain uncovered. A Codex hook runs only once trusted by content hash, and we have not established how to observe one blocking a call, so the adapter does not claim to.
+
+## Judging a repository by its own runtime
+
+Promotion exposed an inconsistency: the adapter said Codex was covered while the static probe still evaluated every repository with Claude Code's permission matcher. A repository with `AGENTS.md` and no `.claude` directory was being told it had no deny entries, which is true and meaningless.
+
+`scan` now picks the adapter from what the repository is configured for, and hands it its own discovery rather than a translation of someone else's. Codex's discovery reads `.codex` and parses TOML; Claude Code's reads `.claude` and parses JSON. Handing the Codex adapter a translated Claude config made it report that a file it had never read was absent.
 
 ## Consequences
 

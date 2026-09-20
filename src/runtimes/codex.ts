@@ -37,6 +37,13 @@ interface CodexConfig {
   [k: string]: unknown;
 }
 
+/** Does this shell command write to the filesystem? Enough for a sandbox question. */
+function writesFromShell(call: ProbeCall): boolean {
+  if (call.tool !== "Bash") return false;
+  const cmd = String((call.input as { command?: string }).command ?? "");
+  return /(^|[\s;&|])(rm|mv|cp|touch|mkdir|tee|truncate|install|ln|chmod|chown|sed\s+-i|dd)\b/.test(cmd) || />{1,2}/.test(cmd);
+}
+
 const PROSE = ["AGENTS.md", ".codex/AGENTS.md"];
 const CONFIG = [".codex/config.toml", ".codex/hooks.json"];
 
@@ -48,7 +55,10 @@ export const codex: RuntimeAdapter = {
   id: "codex",
   label: "Codex",
   markers: ["AGENTS.md", ".codex/config.toml", ".codex/hooks.json"],
-  support: { discover: true, evaluate: false, probeHooks: false, drive: false, harden: false },
+  // drive and evaluate are true because their conformance cases pass
+  // (`paperfence conformance --runtime codex`). probeHooks and harden stay
+  // false because nothing has been verified about Codex hooks.
+  support: { discover: true, evaluate: true, probeHooks: false, drive: true, harden: false },
   controls: {
     deny: false,
     ask: false,
@@ -59,7 +69,7 @@ export const codex: RuntimeAdapter = {
     inertSurfaces: ['hook permissionDecision "ask" (parsed, then ignored: Codex has no ask in its hook model)'],
   },
   notes:
-    "Codex enforces through a sandbox mode and an approval policy rather than a permission rule list, so a rule-by-rule static verdict does not map onto it. Hooks can block, but only after a user has trusted them by content hash, so a hook file in a repository is not proof that it fires. paperfence reads the configuration and stops there until the decision procedure is verified against the real CLI.",
+    "Codex confines rather than refusing: a command runs inside a restricted environment and the operation fails, so nothing is recorded as denied. Under read-only every write fails, including outside the workspace; under workspace-write the whole workspace is writable and the sandbox cannot express a path allowlist inside it. Measured with `paperfence conformance --runtime codex`. Two limits stand: when the sandbox confines a command, Codex emits no record of that command, so paperfence sees the outcome and not the attempt; and hooks are not covered, because a Codex hook only runs once trusted by content hash and paperfence cannot yet observe one blocking a call.",
 
   async discover(root: string): Promise<DiscoveredConfig> {
     const abs = path.resolve(root);
@@ -103,12 +113,37 @@ export const codex: RuntimeAdapter = {
     };
   },
 
-  evaluate(_cfg: DiscoveredConfig, _call: ProbeCall): StaticDecision {
-    return {
-      decision: "unknown",
-      layer: "none",
-      reason: "paperfence does not implement Codex's decision procedure yet, so it cannot say whether this call would be refused. Unknown is not the same as allowed.",
-    };
+  /**
+   * What Codex's sandbox does to this call.
+   *
+   * Not a rule match. The question a confinement can be asked is whether the
+   * operation would succeed, and the answer comes from the sandbox mode alone.
+   * Anything the sandbox does not decide comes back unknown, and unknown is
+   * rendered as unknown rather than as allowed.
+   */
+  evaluate(cfg: DiscoveredConfig, call: ProbeCall): StaticDecision {
+    const toml = cfg.settingsFiles.find((f) => f.file.endsWith("config.toml"))?.json as CodexConfig | undefined;
+    const mode = typeof toml?.sandbox_mode === "string" ? toml.sandbox_mode : undefined;
+    if (!mode) {
+      return { decision: "unknown", layer: "none", reason: "this repository sets no sandbox_mode, so the mode comes from the user's own configuration, which paperfence does not read. Unknown is not the same as allowed." };
+    }
+    if (mode === "danger-full-access") {
+      return { decision: "allow", layer: "none", reason: 'sandbox_mode = "danger-full-access": nothing is confined' };
+    }
+    const writes = call.tool === "Edit" || call.tool === "Write" || call.tool === "MultiEdit" || call.tool === "NotebookEdit" || writesFromShell(call);
+    if (mode === "read-only") {
+      if (writes) return { decision: "deny", layer: "permission-deny", reason: 'sandbox_mode = "read-only": the command runs and the write fails with "operation not permitted"' };
+      return { decision: "allow", layer: "none", reason: 'sandbox_mode = "read-only": reads are not confined' };
+    }
+    if (mode === "workspace-write") {
+      if (!writes) return { decision: "allow", layer: "none", reason: 'sandbox_mode = "workspace-write": reads are not confined' };
+      return {
+        decision: "unknown",
+        layer: "none",
+        reason: 'sandbox_mode = "workspace-write": writes inside the workspace succeed and writes outside it fail, and the workspace is the whole repository, so this depends on the path rather than on any rule',
+      };
+    }
+    return { decision: "unknown", layer: "none", reason: `sandbox_mode = ${JSON.stringify(mode)} is not a mode paperfence has measured` };
   },
 
   inert(cfg: DiscoveredConfig) {

@@ -1,6 +1,8 @@
 import { effectiveSettings, type AgentConfig } from "../config/discover.js";
 import { firePreToolUseHooks } from "../config/hooks.js";
 import { evaluatePermissions, inertRules } from "../config/permissions.js";
+import { claudeCode } from "../runtimes/claude-code.js";
+import type { DiscoveredConfig, RuntimeAdapter } from "../runtimes/types.js";
 import type { RepoProfile } from "../repo/profile.js";
 import { probesFor, scenarioFor } from "../scenarios/catalog.js";
 import type { EnforcementLayer, ProbeCall, ProbeOutcome, Rule, StaticProbeResult } from "../types.js";
@@ -21,6 +23,22 @@ import type { EnforcementLayer, ProbeCall, ProbeOutcome, Rule, StaticProbeResult
 export interface StaticProbeOptions {
   /** What this repository contains. Probes are written against it, not against a fixture. */
   profile: RepoProfile;
+  /**
+   * Which runtime's semantics to evaluate against.
+   *
+   * A repository configured for Codex must not be judged by Claude Code's
+   * permission rules: the absence of a deny entry says nothing about a runtime
+   * that has no deny entries. Defaults to Claude Code.
+   */
+  adapter?: RuntimeAdapter;
+  /**
+   * The adapter's own view of the repository's configuration.
+   *
+   * Claude Code's discovery looks in `.claude`; Codex's looks in `.codex` and
+   * parses TOML. Handing the adapter a translation of someone else's discovery
+   * made it report that a config it never read was absent.
+   */
+  adapterConfig?: DiscoveredConfig;
   /** Treat "ask" as a gate. Default false, because the whole point is unattended runs. */
   askCounts?: boolean;
   /** Do not execute the repo's hook scripts (for repos you do not trust). Matching hooks are reported as "present, not run". */
@@ -42,7 +60,7 @@ export async function staticProbe(cfg: AgentConfig, rules: Rule[], opts: StaticP
     const outcomes: ProbeOutcome[] = [];
     for (const probe of probes) {
       opts.onProgress?.(`${rule.id}: probing ${probe.describe}`);
-      outcomes.push(await probeOne(settings, cfg.root, probe, opts));
+      outcomes.push(await probeOne(settings, cfg.root, probe, opts, cfg));
     }
     if (outcomes.length === 0) continue;
     const open = outcomes.find((p) => p.blockedBy === "none");
@@ -71,8 +89,20 @@ async function probeOne(
   root: string,
   probe: ProbeCall,
   opts: StaticProbeOptions,
+  cfg?: AgentConfig,
 ): Promise<ProbeOutcome> {
   const call = { tool: probe.tool, input: absolutize(probe.input, root) };
+  const adapter = opts.adapter ?? claudeCode;
+
+  // A runtime other than Claude Code decides this its own way, and some of
+  // them cannot decide it at all. Unknown is reported as unknown.
+  if (adapter.id !== "claude-code" && opts.adapterConfig) {
+    const d = adapter.evaluate(opts.adapterConfig, probe);
+    if (d.decision === "deny") return { probe, blockedBy: "permission-deny", evidence: `${adapter.label}: ${d.reason}` };
+    if (d.decision === "ask") return { probe, blockedBy: opts.askCounts ? "permission-ask" : "none", evidence: `${adapter.label}: ${d.reason}` };
+    return { probe, blockedBy: "none", evidence: `${adapter.label}: ${d.reason}` };
+  }
+
   const perm = evaluatePermissions(settings.permissions ?? {}, call, root);
   if (perm.decision === "deny") {
     return { probe, blockedBy: "permission-deny", evidence: perm.reason };

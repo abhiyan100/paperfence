@@ -27,6 +27,8 @@ import { renderGraphHtml, renderGraphTerminal } from "./graph/report.js";
 import { detectProfile } from "./repo/profile.js";
 import { CASES } from "./conformance/cases.js";
 import { predict, renderConformance, runConformance } from "./conformance/run.js";
+import { CODEX_CASES } from "./conformance/codex-cases.js";
+import { renderCodexConformance, runCodexConformance } from "./conformance/codex-run.js";
 import type { VariantSpec } from "./compare/variants.js";
 import type { PressureLevel } from "./types.js";
 
@@ -419,13 +421,39 @@ policy
 program
   .command("conformance")
   .option("--only <ids...>", "run only these case ids")
+  .option("--runtime <id>", "which runtime to check: claude-code or codex", "claude-code")
   .option("--model <model>", "model that drives the runtime (default claude-sonnet-5)")
   .option("--max-turns <n>", "turn budget per case", "6")
   .option("--reps <n>", "run each case this many times; a permission decision that varies is itself a finding", "1")
   .option("--list", "list the cases and what paperfence predicts, without running anything")
   .option("--json <file>", "write the result as JSON")
   .description("Check paperfence's reading of Claude Code's permission rules against the real runtime.")
-  .action(async (opts: { only?: string[]; model?: string; maxTurns: string; reps: string; list?: boolean; json?: string }) => {
+  .action(async (opts: { only?: string[]; runtime: string; model?: string; maxTurns: string; reps: string; list?: boolean; json?: string }) => {
+    if (opts.runtime === "codex") {
+      if (opts.list) {
+        const out = ["", pc.bold(`${CODEX_CASES.length} Codex conformance cases`), ""];
+        for (const c of CODEX_CASES) out.push(`  ${pc.bold(c.id.padEnd(34))} ${pc.dim(c.sandbox.padEnd(18))} ${c.claim}`);
+        out.push("");
+        out.push(pc.dim("Codex confines rather than refusing, so each case asks whether the effect happened."));
+        out.push("");
+        process.stdout.write(out.join("\n"));
+        return;
+      }
+      const report = await runCodexConformance({
+        only: opts.only,
+        reps: Number(opts.reps),
+        model: opts.model,
+        onProgress: (m) => process.stderr.write(`  ${m}\n`),
+      });
+      process.stdout.write(renderCodexConformance(report));
+      if (opts.json) {
+        await fs.writeFile(opts.json, JSON.stringify(report, null, 2));
+        process.stderr.write(pc.dim(`wrote ${opts.json}\n`));
+      }
+      process.exitCode = report.disagreed > 0 || report.unstable > 0 ? 2 : 0;
+      return;
+    }
+    if (opts.runtime !== "claude-code") throw new Error(`unknown runtime "${opts.runtime}"; known: claude-code, codex`);
     if (opts.list) {
       const out = ["", pc.bold(`${CASES.length} conformance cases`), ""];
       for (const c of CASES) {
