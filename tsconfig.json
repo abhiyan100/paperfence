@@ -11,8 +11,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "outDir": "dist",
-    "rootDir": "src",
     "declaration": false
   },
-  "include": ["src"]
+  "include": ["src", "site/lib", "site/api", "scripts"]
 }

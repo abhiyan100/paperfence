@@ -18,7 +18,9 @@ A Postgres database on Neon and three serverless functions on Vercel, deployed a
 
 **Who may write.** One write token per project. The token is shown once, at creation, and only its SHA-256 hash is stored, so a database dump does not let anyone write. Comparison is constant-time. Creating a project needs the deployment's own admin secret rather than a project token, so a leaked project token cannot mint more of them.
 
-**What the client refuses to send.** A receipt that does not hash to its own contents. Uploading evidence that has been edited is worse than uploading none.
+**What is refused, on both sides.** A receipt that does not hash to its own contents. The client checks before uploading and the server checks again, because a client is whatever is holding a project token.
+
+The server check was missing at first, and an audit of the deployed service found it: a receipt with the id `pf_forged00001` and no relationship to its contents was accepted and stored. The whole claim of the receipt format is that an edited receipt is a different receipt, and a store that accepts whatever it is handed does not keep that claim. The control plane runs in a separate package and cannot import the CLI's receipt code, so it carries its own copy of the content addressing, pinned by a test in the main package asserting the two agree on a set of documents including one with a `__proto__` key.
 
 ## `status` is the whole point
 

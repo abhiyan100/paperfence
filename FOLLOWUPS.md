@@ -54,3 +54,4 @@ Recorded because several of these were bugs once and the tests that catch them a
 - Receipt canonicalisation must not lose a `__proto__` key.
 - Redaction happens at the sandbox boundary, not only in receipts.
 - `allSegments` stays faithful to Claude Code and does not look inside `sh -c`. `allSegmentsDeep` is what paperfence's own matcher and guard use.
+- The control plane verifies a receipt's content address server-side. The client checking it is not enough; a client is whatever holds a project token.

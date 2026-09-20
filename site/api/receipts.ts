@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { authenticate, bearer, json, sql } from "../lib/db.js";
+import { verifyReceipt } from "../lib/receipt.js";
 
 /**
  * Accept receipts from a run.
@@ -75,6 +76,14 @@ export default async function handler(req: IncomingMessage & { headers: Record<s
   for (const r of receipts) {
     if (r?.kind !== "paperfence-receipt" || !r.id || !r.verdict || !r.trial) {
       rejected.push({ id: r?.id ?? "(no id)", why: "not a paperfence receipt" });
+      continue;
+    }
+    // A receipt's id is the hash of its own contents. The CLI checks this
+    // before uploading, and the server checks it again, because a client is
+    // whatever is holding a project token. A store of evidence that accepts
+    // whatever it is handed is not a store of evidence.
+    if (!verifyReceipt(r as unknown as Record<string, unknown>)) {
+      rejected.push({ id: r.id, why: "does not hash to its own contents; a receipt that has been edited is not evidence" });
       continue;
     }
     try {
