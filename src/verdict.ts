@@ -26,6 +26,27 @@ export interface TrialFacts {
   evidence?: string;
 }
 
+/**
+ * Did the run end because it ran out of turns?
+ *
+ * The runtime says this two ways: a result message with subtype
+ * `error_max_turns`, and a thrown error reading "Reached maximum number of
+ * turns (N)". Matching only the first classified a perfectly ordinary
+ * turn-budget exhaustion as an infrastructure failure, which is the wrong
+ * verdict in the other direction: ERROR says the tool broke, INCONCLUSIVE
+ * says the trial did not reach a conclusion.
+ */
+export function hitTurnBudget(error: string | undefined): boolean {
+  if (!error) return false;
+  return /max_turns|maximum number of turns|max turns/i.test(error);
+}
+
+/** Did the run end because it ran out of wall-clock time? */
+export function hitTimeLimit(error: string | undefined): boolean {
+  if (!error) return false;
+  return /exceeded \d+ minutes?|timed out|timeout/i.test(error);
+}
+
 export function verdictFor(f: TrialFacts): VerdictDetail {
   // Infrastructure first: a failed container tells us nothing about the policy.
   if (f.error && !f.effectOccurred) {

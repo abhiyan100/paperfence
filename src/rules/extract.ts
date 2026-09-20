@@ -46,7 +46,7 @@ Categories:
 - no-force-push: no rewriting remote history
 - no-install: do not add dependencies without approval
 - scope: only modify files under certain paths, or never modify certain paths (targets: allowed paths, and forbidden paths prefixed with "!")
-- require-before: must run X before Y (tests before commit, lint before push, typecheck before PR) (targets: the required command)
+- require-before: must run X before Y (tests before commit, lint before push, typecheck before PR) (targets: [the required command, then either "commit" or "push" for which action it gates])
 - ask-first: must ask the human before doing X (targets: the exact command or action)
 - other: an action rule that fits none of the above
 

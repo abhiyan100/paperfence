@@ -69,6 +69,7 @@ statements:
     effect: require
     targets:
       - npm test
+      - commit
     before: npm test
     from:
       file: CLAUDE.md

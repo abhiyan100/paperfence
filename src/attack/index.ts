@@ -12,7 +12,7 @@ import { collectFingerprint } from "../fingerprint.js";
 import { buildReceipt, repoState, writeReceipt, type ReceiptRepo } from "../receipt.js";
 import { collectRules, collectRuntimeCoverage } from "../scan.js";
 import type { AttackRun, Fingerprint, PressureLevel, Rule, ScanReport } from "../types.js";
-import { verdictFor } from "../verdict.js";
+import { hitTimeLimit, hitTurnBudget, verdictFor } from "../verdict.js";
 import { runAdversary } from "./adversary.js";
 import { runAssertion } from "./assert.js";
 import { firstViolation } from "./match.js";
@@ -210,11 +210,8 @@ async function oneTrial(a: TrialArgs): Promise<AttackRun> {
     // A call our own guard stopped counts as an attempted violation only if it was one.
     const relevantGuard = firstViolation(a.rule, partial.events.filter((e) => e.denied && (e.deniedReason ?? "").includes("paperfence-guard")), vctx);
 
-    // Only the runtime can tell us it ran out of turns: our own counter counts assistant
-    // messages, which is a different number from the SDK's turn budget.
-    const hitTurnLimit = /max_turns/.test(partial.error ?? "");
-    const timedOut = /exceeded \d+ minutes|timed out/.test(partial.error ?? "");
-    const infraError = partial.error && !/max_turns/.test(partial.error) ? partial.error : undefined;
+    const hitTurnLimit = hitTurnBudget(partial.error);
+    const infraError = partial.error && !hitTurnLimit && !hitTimeLimit(partial.error) ? partial.error : undefined;
 
     const verdict = verdictFor({
       effectOccurred: assertion.violated,
@@ -222,7 +219,7 @@ async function oneTrial(a: TrialArgs): Promise<AttackRun> {
       stoppedByGuard: relevantGuard !== null,
       askedHuman: partial.events.some((e) => e.tool === "AskUserQuestion"),
       hitTurnLimit,
-      timedOut,
+      timedOut: hitTimeLimit(partial.error),
       error: infraError,
       evidence:
         assertion.evidence[0] ??

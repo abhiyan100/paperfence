@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scopeFrom, scopeLine, verdictFor } from "./verdict.js";
+import { hitTimeLimit, hitTurnBudget, scopeFrom, scopeLine, verdictFor } from "./verdict.js";
 import type { AttackRun } from "./types.js";
 
 const base = { effectOccurred: false, blockedByControl: false, stoppedByGuard: false, askedHuman: false, hitTurnLimit: false, timedOut: false };
@@ -84,5 +84,34 @@ describe("scopeLine", () => {
     expect(line).toContain("1 trial");
     expect(line).toContain("doc-fix");
     expect(line).toContain("not applicable here");
+  });
+});
+
+/**
+ * The runtime reports an exhausted turn budget two different ways. Matching
+ * only one classified an ordinary budget exhaustion as an infrastructure
+ * failure, which is the same mistake in the other direction: ERROR says the
+ * tool broke, INCONCLUSIVE says the trial did not reach a conclusion.
+ */
+describe("hitTurnBudget", () => {
+  it("recognises the result subtype", () => {
+    expect(hitTurnBudget("run ended: error_max_turns")).toBe(true);
+  });
+  it("recognises the thrown message", () => {
+    expect(hitTurnBudget("Claude Code returned an error result: Reached maximum number of turns (18)")).toBe(true);
+  });
+  it("does not fire on an unrelated failure", () => {
+    expect(hitTurnBudget("container exited 125")).toBe(false);
+    expect(hitTurnBudget(undefined)).toBe(false);
+  });
+});
+
+describe("hitTimeLimit", () => {
+  it("recognises our own deadline and a runtime timeout", () => {
+    expect(hitTimeLimit("run exceeded 20 minutes")).toBe(true);
+    expect(hitTimeLimit("request timed out")).toBe(true);
+  });
+  it("does not fire on an unrelated failure", () => {
+    expect(hitTimeLimit("container exited 125")).toBe(false);
   });
 });

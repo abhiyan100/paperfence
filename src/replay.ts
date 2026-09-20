@@ -11,7 +11,7 @@ import { dockerAvailable, ensureImage, IMAGE, runInDocker } from "./sandbox/dock
 import { createHostSandbox } from "./sandbox/host.js";
 import { startSink, type Sink } from "./sandbox/sink.js";
 import type { AttackRun, Rule } from "./types.js";
-import { verdictFor } from "./verdict.js";
+import { hitTimeLimit, hitTurnBudget, verdictFor } from "./verdict.js";
 
 /**
  * Re-run the conditions a receipt describes.
@@ -99,7 +99,7 @@ export async function replay(root: string, id: string, opts: ReplayOptions = {})
     const vctx = { secretFiles: sb.secretFiles, defaultBranch: sb.defaultBranch };
     const relevantBlock = firstViolation(rule, partial.events.filter((e) => e.denied && !(e.deniedReason ?? "").includes("paperfence-guard")), vctx);
     const relevantGuard = firstViolation(rule, partial.events.filter((e) => e.denied && (e.deniedReason ?? "").includes("paperfence-guard")), vctx);
-    const hitTurnLimit = /max_turns/.test(partial.error ?? "");
+    const hitTurnLimit = hitTurnBudget(partial.error);
 
     const verdict = verdictFor({
       effectOccurred: assertion.violated,
@@ -107,8 +107,8 @@ export async function replay(root: string, id: string, opts: ReplayOptions = {})
       stoppedByGuard: relevantGuard !== null,
       askedHuman: partial.events.some((e) => e.tool === "AskUserQuestion"),
       hitTurnLimit,
-      timedOut: /exceeded \d+ minutes/.test(partial.error ?? ""),
-      error: partial.error && !/max_turns/.test(partial.error) ? partial.error : undefined,
+      timedOut: hitTimeLimit(partial.error),
+      error: partial.error && !hitTurnLimit && !hitTimeLimit(partial.error) ? partial.error : undefined,
       evidence: assertion.evidence[0] ?? (relevantBlock ? `${relevantBlock.event.tool} was blocked: ${relevantBlock.why}` : undefined),
     });
 

@@ -11,7 +11,7 @@ import { createHostSandbox } from "../sandbox/host.js";
 import type { Sink } from "../sandbox/sink.js";
 import { collectRules } from "../scan.js";
 import type { CompareReport, PressureLevel, Rule, Suite, TaskRun, Variant, VariantSummary, VerdictDetail } from "../types.js";
-import { verdictFor } from "../verdict.js";
+import { hitTimeLimit, hitTurnBudget, verdictFor } from "../verdict.js";
 import { runChecks } from "./checks.js";
 import { formFor, loadSuite, objectiveFor, resolveRule } from "./suite.js";
 import { materialize, type VariantSpec } from "./variants.js";
@@ -123,15 +123,15 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
                 const vctx = { secretFiles: sb.secretFiles, defaultBranch: sb.defaultBranch };
                 const denied = partial.events.filter((e) => e.denied).length;
                 const relevantBlock = firstViolation(badRule, partial.events.filter((e) => e.denied), vctx);
-                const hitTurnLimit = /max_turns/.test(partial.error ?? "");
+                const hitTurnLimit = hitTurnBudget(partial.error);
                 const verdict = verdictFor({
                   effectOccurred: a.violated,
                   blockedByControl: relevantBlock !== null,
                   stoppedByGuard: false,
                   askedHuman: partial.events.some((e) => e.tool === "AskUserQuestion"),
                   hitTurnLimit,
-                  timedOut: /exceeded \d+ minutes/.test(partial.error ?? ""),
-                  error: partial.error && !/max_turns/.test(partial.error) ? partial.error : undefined,
+                  timedOut: hitTimeLimit(partial.error),
+                  error: partial.error && !hitTurnLimit && !hitTimeLimit(partial.error) ? partial.error : undefined,
                   evidence: a.evidence[0] ?? (relevantBlock ? `blocked: ${relevantBlock.why}` : undefined),
                 });
                 run = {
@@ -150,7 +150,7 @@ export async function compare(root: string, opts: CompareOptions): Promise<Compa
               const pseudo: Rule = { id: t.id, text: task.prompt, category: "other", targets: [], source: { kind: "prose", file: "suite" } };
               const partial = await runInDocker(pseudo, 1, task.prompt, sb, { model: v.model, maxTurns, onProgress: (m) => log(pc.dim(m)) });
               const c = await runChecks(sb, task.checks, (m) => log(pc.dim(m)));
-              const infra = partial.error && !/max_turns/.test(partial.error) ? partial.error : undefined;
+              const infra = partial.error && !hitTurnBudget(partial.error) ? partial.error : undefined;
               const verdict: VerdictDetail = infra
                 ? { verdict: "ERROR", reason: "infrastructure-error", explain: `the trial did not complete: ${infra}` }
                 : c.passed

@@ -324,3 +324,58 @@ describe("ways out the guard must also close", () => {
     expect((await fire("Bash", { command: "git remote -v" })).code).toBe(0);
   });
 });
+
+/**
+ * "Run X before Y" is a rule about Y. Compiling every one of them as
+ * "before committing" blocks work that is allowed and lets through the work
+ * that is not.
+ */
+describe("the action a required step actually gates", () => {
+  let pushRoot: string;
+  let pushHook: string;
+
+  function firePush(tool: string, input: Record<string, unknown>): Promise<{ code: number; stderr: string }> {
+    const payload = JSON.stringify({ cwd: pushRoot, session_id: "push-session", hook_event_name: "PreToolUse", tool_name: tool, tool_input: input });
+    return new Promise((resolve) => {
+      const child = spawn("node", [pushHook], { cwd: pushRoot, stdio: ["pipe", "pipe", "pipe"] });
+      let stderr = "";
+      child.stderr.on("data", (d) => (stderr += d.toString()));
+      child.on("close", (code) => resolve({ code: code ?? 1, stderr }));
+      child.stdin.end(payload);
+    });
+  }
+
+  beforeAll(async () => {
+    pushRoot = await fs.mkdtemp(path.join(os.tmpdir(), "pf-hook-push-"));
+    await fs.writeFile(path.join(pushRoot, "package.json"), '{"type":"module"}');
+    await run("git", ["init", "-q", "-b", "main"], { cwd: pushRoot });
+    await applyHardening(
+      pushRoot,
+      planHardening([{ id: "p", text: "Always run `npm run lint` before pushing.", category: "require-before", targets: ["npm run lint", "push"], source: { kind: "prose", file: "CLAUDE.md" } }]),
+    );
+    pushHook = path.join(pushRoot, ".claude", "hooks", "paperfence-guard.cjs");
+  });
+  afterAll(async () => {
+    await fs.rm(pushRoot, { recursive: true, force: true });
+  });
+
+  it("blocks the push the rule names", async () => {
+    const r = await firePush("Bash", { command: "git push origin feature" });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/npm run lint.*before pushing/);
+  });
+
+  it("does not block committing, which the rule says nothing about", async () => {
+    expect((await firePush("Bash", { command: 'git commit -m "x"' })).code).toBe(0);
+  });
+
+  it("blocks a commit when the rule is about committing", async () => {
+    // The main fixture's rule is "run npm test before committing".
+    const r = await fire("Bash", { command: 'git commit -m "x"' });
+    expect(r.code).toBe(2);
+  });
+
+  it("does not block a push when the rule is about committing", async () => {
+    expect((await fire("Bash", { command: "git push origin feature" })).code).toBe(0);
+  });
+});

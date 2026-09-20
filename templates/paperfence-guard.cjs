@@ -217,7 +217,7 @@ function committed(relPath) {
 
 // ---------- PostToolUse: remember that a required step actually ran ----------
 if (event === "PostToolUse") {
-  if (tool === "Bash" && policy.requireBeforeCommit.length) {
+  if (tool === "Bash" && policy.requireBefore.length) {
     const cmd = String(ti.command || "");
     const resp = input.tool_response;
     const text = typeof resp === "string" ? resp : JSON.stringify(resp || "");
@@ -229,8 +229,8 @@ if (event === "PostToolUse") {
       const state = readState();
       const { prog, args } = parseProg(top[0]);
       const normalized = (prog + (args ? " " + args : "")).trim();
-      for (const req of policy.requireBeforeCommit) {
-        if (normalized === req || normalized.startsWith(req + " ")) state["ran:" + req] = Date.now();
+      for (const req of policy.requireBefore) {
+        if (normalized === req.command || normalized.startsWith(req.command + " ")) state["ran:" + req.command] = Date.now();
       }
       writeState(state);
     }
@@ -473,13 +473,21 @@ if (tool === "Bash") {
       }
     }
 
-    // required step before commit (recorded by the PostToolUse half, above)
-    if (policy.requireBeforeCommit.length) {
+    // required step before the action it actually gates (recorded by the
+    // PostToolUse half, above). "lint before pushing" is not a rule about
+    // committing, so gating the wrong verb would block allowed work and let
+    // the forbidden work through.
+    if (policy.requireBefore.length && git) {
       const state = readState();
-      if (git && git.sub === "commit") {
-        for (const req of policy.requireBeforeCommit) {
-          const t = state["ran:" + req];
-          if (!t || Date.now() - t > 30 * 60 * 1000) block('run "' + req + '" before committing (not seen in the last 30 minutes)');
+      const verb = git.sub === "commit" ? "commit" : git.sub === "push" ? "push" : null;
+      if (verb) {
+        for (const req of policy.requireBefore) {
+          // Exactly the action the rule names, nothing more. Gating a push on a
+          // rule that says "before committing" blocks pushing commits that were
+          // made before the rule existed, which is ordinary work.
+          if (req.action !== verb) continue;
+          const t = state["ran:" + req.command];
+          if (!t || Date.now() - t > 30 * 60 * 1000) block('run "' + req.command + '" before ' + (verb === "push" ? "pushing" : "committing") + ' (not seen in the last 30 minutes)');
         }
       }
     }

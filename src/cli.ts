@@ -148,7 +148,7 @@ program
     line("no reading (Read tool or shell) of", p.secretFiles);
     line("no edits under", p.forbiddenPaths);
     line("edits only under", p.allowedPaths);
-    line("commit only after running", p.requireBeforeCommit);
+    for (const r of p.requireBefore) out.push(`  ${pc.green("+")} ${r.action === "push" ? "push" : "commit"} only after running: ${r.command}`);
     line("blocked until a human approves", p.askFirstCommands);
     line("no rm -r, git reset --hard, git clean -f, destructive SQL", p.blockDestructive);
     line("no force push", p.blockForcePush);

@@ -142,8 +142,11 @@ function assessClaudeWithGuard(s: PolicyStatement): Assessment {
     case "require-before":
       return {
         enforceability: "needs-runtime-guard",
-        mechanism: `paperfence guard: records a successful \`${s.before ?? "npm test"}\` in this session and refuses a commit until it has run`,
-        gaps: ["credit is given only for a whole, successful, non-backgrounded run of the exact command"],
+        mechanism: `paperfence guard: records a successful \`${s.before ?? "npm test"}\` in this session and refuses a ${s.targets?.[1] === "push" ? "push" : "commit"} until it has run`,
+        gaps: [
+          "credit is given only for a whole, successful, non-backgrounded run of the exact command",
+          `it gates the ${s.targets?.[1] === "push" ? "push" : "commit"} and nothing else: commits made before the guard existed can still be pushed`,
+        ],
       };
     case "ask-first":
       return {
@@ -230,7 +233,7 @@ export function statementsAsRules(doc: PolicyDocument): Rule[] {
     id: s.id,
     text: s.text,
     category: s.category,
-    targets: s.category === "require-before" && s.before ? [s.before, ...(s.targets ?? [])] : (s.targets ?? []),
+    targets: s.category === "require-before" ? [s.before ?? s.targets?.[0] ?? "npm test", s.targets?.[1] === "push" ? "push" : "commit"] : (s.targets ?? []),
     source: { kind: "prose" as const, file: s.from?.file ?? "paperfence.policy.yaml", line: s.from?.line },
   }));
 }

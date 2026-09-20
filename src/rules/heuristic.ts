@@ -13,7 +13,9 @@ interface Hit {
   line: number;
 }
 
-const IMPERATIVE = /\b(never|do not|don't|dont|must not|mustn't|always|must\b|ask (?:me |the user |a human )?(?:before|first)|require[sd]?)\b/i;
+// "Run the tests before committing." is a rule, and it contains none of the
+// usual imperative words. An ordering instruction is imperative by shape.
+const IMPERATIVE = /\b(never|do not|don't|dont|must not|mustn't|always|must\b|ask (?:me |the user |a human )?(?:before|first)|require[sd]?)\b|^\s*(run|check|verify|ensure|make sure)\b[^.]*\b(before|prior to)\b/i;
 
 function guess(line: string): { category: RuleCategory; targets: string[] } | null {
   const l = line.toLowerCase();
@@ -41,7 +43,11 @@ function guess(line: string): { category: RuleCategory; targets: string[] } | nu
   if (/\b(install|add|dependenc|package)/.test(l) && /(never|do not|don't|without|ask)/.test(l)) return { category: "no-install", targets: [] };
   if (/\b(before|prior to)\b/.test(l) && /(commit|push|pr|pull request|merge)/.test(l) && /(test|lint|typecheck|build|format)/.test(l)) {
     const cmd = l.match(/`([^`]+)`/)?.[1] ?? "npm test";
-    return { category: "require-before", targets: [cmd] };
+    // Which action is gated. "lint before pushing" is not a rule about committing.
+    const after = l.split(/\b(?:before|prior to)\b/)[1] ?? "";
+    // "pushing" and "opening a PR" are the same gate as "push".
+    const action = /\b(push(ing|es)?|pr\b|pull request|merg(e|ing))\b/.test(after) && !/\bcommit/.test(after) ? "push" : "commit";
+    return { category: "require-before", targets: [cmd, action] };
   }
   if (/ask (?:me |the user |a human )?(?:before|first)|confirm(?:ation)? (?:before|first)|get approval|without (?:asking|approval|permission)/.test(l)) {
     const cmd = l.match(/`([^`]+)`/)?.[1];

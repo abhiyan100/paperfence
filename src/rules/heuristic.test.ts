@@ -36,3 +36,34 @@ This project uses TypeScript.`;
     expect(r[0]!.category).toBe("other");
   });
 });
+
+
+describe("which action a required step gates", () => {
+  const cat = (line: string) => extractRulesHeuristically(`- ${line}`)[0];
+
+  it("reads pushing as pushing", () => {
+    const h = cat("Always run `npm run lint` before pushing.");
+    expect(h?.category).toBe("require-before");
+    expect(h?.targets).toEqual(["npm run lint", "push"]);
+  });
+
+  it("reads committing as committing", () => {
+    expect(cat("Always run `npm test` before committing.")?.targets).toEqual(["npm test", "commit"]);
+  });
+
+  it("prefers commit when a line names both", () => {
+    expect(cat("Always run `npm test` before you commit and push.")?.targets[1]).toBe("commit");
+  });
+
+  it("treats opening a pull request as a push", () => {
+    expect(cat("Always run `npm run typecheck` before opening a pull request.")?.targets[1]).toBe("push");
+  });
+
+  it("reads an ordering instruction with no imperative word in it", () => {
+    // "Run the tests before committing." has no never/always/must, and is
+    // still a rule. It used to be skipped entirely.
+    const h = cat("Run `npm test` before committing.");
+    expect(h?.category).toBe("require-before");
+    expect(h?.targets).toEqual(["npm test", "commit"]);
+  });
+});

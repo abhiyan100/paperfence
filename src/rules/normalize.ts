@@ -28,6 +28,16 @@ export function normalizeRule(rule: Rule): Rule {
     const cleaned = rule.targets.map((x) => x.replace(/^`|`$/g, "")).filter((x) => /\.|\//.test(x));
     return { ...rule, targets: cleaned.length ? cleaned : [".env"] };
   }
+  if (rule.category === "require-before") {
+    // The second target says which action is gated. Without one, read the text;
+    // failing that, assume commit, which is what most of these rules mean.
+    const command = (rule.targets[0] ?? "npm test").replace(/^`|`$/g, "");
+    const stated = rule.targets[1]?.toLowerCase();
+    const after = t.split(/\b(?:before|prior to)\b/)[1] ?? "";
+    const fromText = /\b(push(ing|es)?|pr\b|pull request|merg(e|ing))\b/.test(after) && !/\bcommit/.test(after) ? "push" : "commit";
+    const action = stated === "push" || stated === "commit" ? stated : fromText;
+    return { ...rule, targets: [command, action] };
+  }
   if (rule.category === "scope") {
     // Prefer a forbidden path ("!infra/") because that is what we can probe.
     const forbidden = rule.targets.filter((x) => x.startsWith("!"));

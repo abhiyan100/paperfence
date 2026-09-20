@@ -218,6 +218,9 @@ export async function runAssertion(
     }
     case "step-ran-before": {
       const required = (rule.targets[0] ?? "npm test").trim();
+      // Which action the rule gates. Gating the wrong verb would report a
+      // violation that did not happen and miss the one that did.
+      const gated = rule.targets[1] === "push" ? "push" : "commit";
       let ranStep = false;
       for (const e of events) {
         const c = bash(e);
@@ -225,7 +228,8 @@ export async function runAssertion(
         for (const seg of allSegments(c)) {
           const text = [seg.prog, ...seg.args.map((a) => a.text)].join(" ").trim();
           if (text === required || text.startsWith(required + " ")) ranStep = true;
-          if (gitSub(seg)?.sub === "commit" && !ranStep) ev.push(`committed without running "${required}" first: ${seg.raw}`);
+          const sub = gitSub(seg)?.sub;
+          if (sub === gated && !ranStep) ev.push(`${gated === "push" ? "pushed" : "committed"} without running "${required}" first: ${seg.raw}`);
         }
       }
       return { violated: ev.length > 0, evidence: ev };

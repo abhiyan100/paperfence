@@ -100,7 +100,7 @@ export function inferPolicy(rules: Rule[], runtimes: string[] = ["claude-code"])
   // someone tried to say it.
   const ordered = [...rules].sort((a, b) => Number(a.source.kind !== "prose") - Number(b.source.kind !== "prose"));
   for (const r of ordered) {
-    const key = `${r.category}:${normalizeTargets(r.targets).join(",")}`;
+    const key = `${r.category}:${targetKey(r.targets)}`;
     // Two rules with the same category and the same targets are one control
     // stated twice. Counting both would inflate every denominator downstream.
     if (byKey.has(key)) continue;
@@ -130,7 +130,11 @@ export function inferPolicy(rules: Rule[], runtimes: string[] = ["claude-code"])
   };
 }
 
-/** `./.env` and `.env` are the same file; `tests/` and `tests` the same directory. */
+/**
+ * `./.env` and `.env` are the same file; `tests/` and `tests` the same
+ * directory. Order is preserved, because for some categories it carries
+ * meaning: a require-before statement's targets are [command, action].
+ */
 function normalizeTargets(targets: string[]): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
@@ -142,7 +146,12 @@ function normalizeTargets(targets: string[]): string[] {
     seen.add(clean);
     out.push(clean);
   }
-  return out.sort();
+  return out;
+}
+
+/** Order-independent form, for deciding whether two rules are the same control. */
+function targetKey(targets: string[]): string {
+  return [...normalizeTargets(targets)].sort().join(",");
 }
 
 export function renderPolicy(doc: PolicyDocument): string {

@@ -22,13 +22,27 @@ export interface HardenPlan {
   notes: string[];
 }
 
+/**
+ * "Run X before Y". Y matters: a rule that says lint before pushing is not a
+ * rule about committing, and compiling it as one both blocks work that is
+ * allowed and lets through the thing that is not.
+ */
+export type GatedAction = "commit" | "push";
+
+export interface RequireBefore {
+  /** The command that must have run. */
+  command: string;
+  /** What it must have run before. */
+  action: GatedAction;
+}
+
 export interface Policy {
   protectedBranches: string[];
   protectedTestPaths: string[];
   secretFiles: string[];
   forbiddenPaths: string[];
   allowedPaths: string[];
-  requireBeforeCommit: string[];
+  requireBefore: RequireBefore[];
   askFirstCommands: string[];
   blockDestructive: boolean;
   blockForcePush: boolean;
@@ -43,7 +57,7 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
     secretFiles: [],
     forbiddenPaths: [],
     allowedPaths: [],
-    requireBeforeCommit: [],
+    requireBefore: [],
     askFirstCommands: [],
     blockDestructive: false,
     blockForcePush: false,
@@ -99,9 +113,12 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
           else push(policy.allowedPaths, t.replace(/\/$/, ""));
         }
         break;
-      case "require-before":
-        push(policy.requireBeforeCommit, r.targets[0] ?? "npm test");
+      case "require-before": {
+        const command = r.targets[0] ?? "npm test";
+        const action: GatedAction = r.targets[1] === "push" ? "push" : "commit";
+        if (!policy.requireBefore.some((x) => x.command === command && x.action === action)) policy.requireBefore.push({ command, action });
         break;
+      }
       case "ask-first":
         if (r.targets[0]) push(policy.askFirstCommands, r.targets[0]);
         break;
@@ -112,6 +129,7 @@ export function planHardening(rules: Rule[], categoriesToFix?: Set<RuleCategory>
 
   if (policy.secretFiles.length) notes.push("Read() deny entries cover the Read tool and cat/head/tail/sed; the hook also blocks grep, source, redirects, and node/python one-liners that name the file.");
   if (policy.askFirstCommands.length) notes.push("Ask-first commands are blocked outright in unattended runs. When a human is present, move them to permissions.ask instead.");
+  for (const r of policy.requireBefore) notes.push(`"${r.command}" must have run, successfully and in full, before a ${r.action}. Credit lasts 30 minutes and the agent cannot write the record.`);
 
   return { deny: [...deny].sort(), policy, notes };
 }
